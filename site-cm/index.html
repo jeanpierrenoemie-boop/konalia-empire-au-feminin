@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noémie · Community Manager Freelance</title>
+  <meta name="description" content="Je gère ta présence Instagram. Pour entrepreneures et commerces qui n'ont plus le temps de le faire.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bordeaux: #4A0E2B;
+      --or: #D4AF37;
+      --creme: #FAF8F4;
+      --vert: #2D4A3E;
+      --beige: #F2EDE4;
+      --texte: #1A1A1A;
+      --gris: #6B6B6B;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--texte);
+      background: var(--creme);
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(250, 248, 244, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--bordeaux);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--texte);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--bordeaux); }
+
+    .nav-cta {
+      background: var(--bordeaux);
+      color: white !important;
+      padding: 0.6rem 1.4rem;
+      border-radius: 2px;
+    }
+
+    .nav-cta:hover { background: #3a0b22 !important; color: white !important; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 2rem 4rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      gap: 4rem;
+    }
+
+    .hero-text { flex: 1; }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--beige);
+      color: var(--bordeaux);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(74, 14, 43, 0.15);
+    }
+
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 600;
+      line-height: 1.15;
+      color: var(--bordeaux);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--or);
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--gris);
+      margin-bottom: 2.5rem;
+      max-width: 480px;
+      line-height: 1.75;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--bordeaux);
+      color: white;
+      padding: 1rem 2rem;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover { background: #3a0b22; transform: translateY(-1px); }
+
+    .btn-secondary {
+      border: 1.5px solid var(--bordeaux);
+      color: var(--bordeaux);
+      padding: 1rem 2rem;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover { background: var(--bordeaux); color: white; }
+
+    .hero-visual {
+      flex: 0 0 380px;
+      background: var(--beige);
+      border-radius: 4px;
+      padding: 3rem 2.5rem;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-visual::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--bordeaux), var(--or));
+    }
+
+    .hero-stat {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .hero-stat:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+    .hero-stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 600;
+      color: var(--bordeaux);
+      display: block;
+      line-height: 1;
+    }
+
+    .hero-stat-label {
+      font-size: 0.875rem;
+      color: var(--gris);
+      margin-top: 0.5rem;
+    }
+
+    /* SECTION BASE */
+    section { padding: 6rem 2rem; }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    .section-tag {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--or);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 600;
+      color: var(--bordeaux);
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--gris);
+      max-width: 560px;
+      line-height: 1.75;
+    }
+
+    /* PROBLÈME */
+    .probleme { background: var(--bordeaux); color: white; }
+
+    .probleme .section-title { color: white; }
+    .probleme .section-tag { color: var(--or); }
+
+    .probleme-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .probleme-text p {
+      color: rgba(255,255,255,0.8);
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+
+    .probleme-liste {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .probleme-liste li {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      background: rgba(255,255,255,0.08);
+      padding: 1.2rem 1.5rem;
+      border-radius: 4px;
+      border-left: 3px solid var(--or);
+    }
+
+    .probleme-liste .arrow {
+      color: var(--or);
+      font-size: 1.1rem;
+      margin-top: 0.1rem;
+      flex-shrink: 0;
+    }
+
+    .probleme-liste li span {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* SERVICES */
+    .services { background: var(--creme); }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3.5rem;
+    }
+
+    .service-card {
+      background: white;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 4px;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .service-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(74, 14, 43, 0.1);
+    }
+
+    .service-card.featured {
+      border-color: var(--bordeaux);
+      border-width: 2px;
+    }
+
+    .service-card.featured::after {
+      content: 'Populaire';
+      position: absolute;
+      top: 1.2rem; right: 1.2rem;
+      background: var(--or);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+    }
+
+    .service-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: var(--bordeaux);
+      margin-bottom: 0.3rem;
+    }
+
+    .service-price span {
+      font-size: 1rem;
+      color: var(--gris);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+    }
+
+    .service-name {
+      font-weight: 700;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--texte);
+      margin-bottom: 0.5rem;
+    }
+
+    .service-desc {
+      font-size: 0.875rem;
+      color: var(--gris);
+      margin-bottom: 1.8rem;
+      line-height: 1.6;
+    }
+
+    .service-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .service-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      font-size: 0.875rem;
+      color: var(--texte);
+      line-height: 1.5;
+    }
+
+    .service-list li::before {
+      content: '✓';
+      color: var(--or);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+
+    /* PROCESS */
+    .process { background: var(--beige); }
+
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      margin-top: 3.5rem;
+      position: relative;
+    }
+
+    .process-steps::before {
+      content: '';
+      position: absolute;
+      top: 2.5rem;
+      left: 12%;
+      right: 12%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--bordeaux), var(--or), var(--bordeaux));
+      z-index: 0;
+    }
+
+    .process-step {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .process-step-num {
+      width: 5rem;
+      height: 5rem;
+      border-radius: 50%;
+      background: var(--bordeaux);
+      color: white;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      border: 3px solid var(--creme);
+      box-shadow: 0 0 0 2px var(--bordeaux);
+    }
+
+    .process-step h3 {
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--bordeaux);
+      margin-bottom: 0.7rem;
+    }
+
+    .process-step p {
+      font-size: 0.85rem;
+      color: var(--gris);
+      line-height: 1.6;
+    }
+
+    /* CIBLES */
+    .cibles { background: white; }
+
+    .cibles-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-top: 3.5rem;
+    }
+
+    .cible-card {
+      background: var(--creme);
+      border-radius: 4px;
+      padding: 3rem;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      position: relative;
+    }
+
+    .cible-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .cible-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      color: var(--bordeaux);
+      margin-bottom: 0.8rem;
+    }
+
+    .cible-card p {
+      font-size: 0.9rem;
+      color: var(--gris);
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+
+    .cible-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .cible-tag {
+      background: var(--beige);
+      color: var(--bordeaux);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+      border: 1px solid rgba(74, 14, 43, 0.1);
+    }
+
+    /* RÉSULTATS */
+    .resultats { background: var(--bordeaux); color: white; }
+
+    .resultats .section-title { color: white; }
+    .resultats .section-tag { color: var(--or); }
+    .resultats .section-subtitle { color: rgba(255,255,255,0.7); }
+
+    .resultats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      margin-top: 3.5rem;
+    }
+
+    .resultat-card {
+      text-align: center;
+      padding: 2rem;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .resultat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 600;
+      color: var(--or);
+      display: block;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .resultat-label {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.5;
+    }
+
+    /* ABOUT */
+    .about { background: var(--creme); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about-visual {
+      background: var(--beige);
+      border-radius: 4px;
+      padding: 3rem;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      position: relative;
+    }
+
+    .about-visual::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--bordeaux), var(--or));
+      border-radius: 4px 4px 0 0;
+    }
+
+    .about-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      color: var(--bordeaux);
+      line-height: 1.5;
+      font-style: italic;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-quote-author {
+      font-size: 0.85rem;
+      color: var(--gris);
+      font-weight: 500;
+    }
+
+    .about-text p {
+      color: var(--gris);
+      line-height: 1.75;
+      margin-bottom: 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .about-text strong { color: var(--bordeaux); }
+
+    .about-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 2rem;
+    }
+
+    .about-value {
+      background: var(--beige);
+      color: var(--bordeaux);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.4rem 1rem;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+    }
+
+    /* CTA */
+    .cta-section {
+      background: var(--beige);
+      text-align: center;
+      padding: 8rem 2rem;
+    }
+
+    .cta-section .section-title { margin: 1rem auto 1.5rem; max-width: 700px; }
+
+    .cta-section .section-subtitle {
+      margin: 0 auto 3rem;
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .cta-btns {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* FAQ */
+    .faq { background: white; }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 3.5rem;
+    }
+
+    .faq-item {
+      background: var(--creme);
+      border-radius: 4px;
+      padding: 2rem;
+      border: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .faq-question {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--bordeaux);
+      margin-bottom: 0.8rem;
+    }
+
+    .faq-answer {
+      font-size: 0.875rem;
+      color: var(--gris);
+      line-height: 1.7;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--texte);
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      padding: 2.5rem 2rem;
+      font-size: 0.85rem;
+    }
+
+    footer a { color: var(--or); text-decoration: none; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .hero { flex-direction: column; gap: 3rem; padding-top: 6rem; }
+      .hero-visual { flex: none; width: 100%; }
+      .services-grid { grid-template-columns: 1fr; }
+      .process-steps { grid-template-columns: 1fr 1fr; }
+      .process-steps::before { display: none; }
+      .probleme-grid, .cibles-grid, .about-grid { grid-template-columns: 1fr; }
+      .resultats-grid { grid-template-columns: 1fr 1fr; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 500px) {
+      .resultats-grid { grid-template-columns: 1fr 1fr; }
+      .process-steps { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Noémie.K</a>
+    <ul class="nav-links">
+      <li><a href="#services">Formules</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#about">À propos</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#contact" class="nav-cta">Appel découverte</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section style="padding: 0;">
+    <div class="hero">
+      <div class="hero-text">
+        <span class="hero-tag">Community Manager Freelance</span>
+        <h1>Je gère ta présence Instagram.<br>Toi, tu fais <em>ce que tu fais de mieux.</em></h1>
+        <p class="hero-sub">Tu as une activité qui tourne, des clients satisfaits — mais tes réseaux sont le désert. Je m'occupe de tout, de A à Z, pour que ton Instagram travaille pour toi.</p>
+        <div class="hero-btns">
+          <a href="#contact" class="btn-primary">Prendre un RDV découverte gratuit</a>
+          <a href="#services" class="btn-secondary">Voir les formules</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-stat">
+          <span class="hero-stat-number">+40%</span>
+          <p class="hero-stat-label">d'abonnés organiques en 30 jours avec une stratégie cohérente</p>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-number">×3</span>
+          <p class="hero-stat-label">taux d'engagement multiplié en créant de vraie interaction</p>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-number">3–5</span>
+          <p class="hero-stat-label">demandes qualifiées par DM dès le premier mois</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLÈME -->
+  <section class="probleme">
+    <div class="container">
+      <div class="probleme-grid">
+        <div class="probleme-text">
+          <p class="section-tag">Le problème que personne ne dit vraiment</p>
+          <h2 class="section-title">Tu sais ce que tu fais.<br>Mais tes réseaux, c'est le désert.</h2>
+          <p>Tu as une activité qui tourne. Tes clients sont contents. Mais publier du contenu de qualité, avec régularité, stratégie et créativité… c'est 3 à 5 heures par semaine que tu n'as tout simplement plus.</p>
+          <p>Le résultat ? Des clients potentiels qui passent devant ton compte, ne comprennent pas ce que tu fais, et repartent. C'est exactement ce problème que je résous.</p>
+        </div>
+        <ul class="probleme-liste">
+          <li><span class="arrow">→</span><span>Du temps (3 à 5h par semaine minimum) que tu n'as pas</span></li>
+          <li><span class="arrow">→</span><span>De la régularité — même quand tu n'as pas envie</span></li>
+          <li><span class="arrow">→</span><span>Une stratégie claire — pas juste poster pour poster</span></li>
+          <li><span class="arrow">→</span><span>De la créativité pour trouver des idées. Tout le temps.</span></li>
+          <li><span class="arrow">→</span><span>Et quand tu gères déjà tout le reste… c'est la dernière chose dont tu as l'énergie.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="services">
+    <div class="container">
+      <p class="section-tag">Mes formules</p>
+      <h2 class="section-title">Transparent sur les tarifs.<br>Précis sur ce que tu reçois.</h2>
+      <p class="section-subtitle">Trois niveaux d'accompagnement pour que tu choisisses selon tes besoins réels — pas selon ce que je veux te vendre.</p>
+      <div class="services-grid">
+
+        <div class="service-card">
+          <p class="service-name">Essentielle</p>
+          <p class="service-price">500€<span>/mois</span></p>
+          <p class="service-desc">Pour démarrer avec une présence propre et régulière.</p>
+          <ul class="service-list">
+            <li>12 publications par mois</li>
+            <li>Visuels Canva personnalisés</li>
+            <li>Légendes rédigées + hashtags optimisés</li>
+            <li>Rapport mensuel de performance</li>
+          </ul>
+          <a href="#contact" class="btn-secondary" style="width:100%; text-align:center;">Démarrer</a>
+        </div>
+
+        <div class="service-card featured">
+          <p class="service-name">Présence Active</p>
+          <p class="service-price">800€<span>/mois</span></p>
+          <p class="service-desc">Pour celles qui veulent une communauté vivante et engagée.</p>
+          <ul class="service-list">
+            <li>Tout l'Essentiel inclus</li>
+            <li>Stories quotidiennes (5j/7)</li>
+            <li>Réponse aux DM et commentaires</li>
+            <li>1 Reel par semaine</li>
+          </ul>
+          <a href="#contact" class="btn-primary" style="width:100%; text-align:center;">Démarrer</a>
+        </div>
+
+        <div class="service-card">
+          <p class="service-name">Stratégie Complète</p>
+          <p class="service-price">1 200€<span>/mois</span></p>
+          <p class="service-desc">Pour celles qui veulent déléguer en totalité et voir croître leur business.</p>
+          <ul class="service-list">
+            <li>Tout la Présence Active inclus</li>
+            <li>Stratégie éditoriale mensuelle</li>
+            <li>Mise en place Systeme.io</li>
+            <li>Séquence email de bienvenue</li>
+            <li>Bilan stratégique mensuel en visio</li>
+          </ul>
+          <a href="#contact" class="btn-secondary" style="width:100%; text-align:center;">Démarrer</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="process" id="process">
+    <div class="container">
+      <p class="section-tag">Comment ça se passe</p>
+      <h2 class="section-title">Un process clair, du début à la fin.</h2>
+      <p class="section-subtitle">Transparent, sans surprise. Tu sais exactement ce qui se passe et quand.</p>
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="process-step-num">1</div>
+          <h3>L'appel de démarrage</h3>
+          <p>On parle de ton activité, tes valeurs, ta clientèle, tes objectifs. Je comprends ton univers avant de créer quoi que ce soit.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">2</div>
+          <h3>La stratégie éditoriale</h3>
+          <p>Je construis ton calendrier de contenu pour le mois. Thèmes, formats, fréquence. Tu valides avant que je commence.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">3</div>
+          <h3>Création & publication</h3>
+          <p>Je crée les visuels, rédige les légendes, programme les publications et réponds à ta communauté en ton nom.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">4</div>
+          <h3>Le bilan mensuel</h3>
+          <p>Je t'envoie un rapport simple : ce qui a marché, ce qu'on ajuste, les chiffres clés. On grandit ensemble.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CIBLES -->
+  <section class="cibles">
+    <div class="container">
+      <p class="section-tag">Pour qui</p>
+      <h2 class="section-title">Tu te reconnais dans l'un des deux profils ?</h2>
+      <div class="cibles-grid">
+        <div class="cible-card">
+          <div class="cible-icon">👩‍💼</div>
+          <h3>Entrepreneures & Coachs</h3>
+          <p>Tu as une expertise, une offre, des clients satisfaits. Mais ton Instagram ne reflète pas ce que tu vaux vraiment. Tu n'as plus l'énergie de gérer ta visibilité après avoir tout donné à tes clients.</p>
+          <div class="cible-tags">
+            <span class="cible-tag">Coach</span>
+            <span class="cible-tag">Thérapeute</span>
+            <span class="cible-tag">Formatrice</span>
+            <span class="cible-tag">Consultante</span>
+            <span class="cible-tag">Freelance</span>
+          </div>
+        </div>
+        <div class="cible-card">
+          <div class="cible-icon">🏪</div>
+          <h3>Commerces Locaux</h3>
+          <p>Ta boutique est belle, ton travail est de qualité. Mais ta vitrine digitale ne le montre pas. Tu veux que des clients arrivent en disant "je vous ai vus sur Instagram" — sans avoir à t'en occuper.</p>
+          <div class="cible-tags">
+            <span class="cible-tag">Fleuriste</span>
+            <span class="cible-tag">Institut beauté</span>
+            <span class="cible-tag">Restaurant</span>
+            <span class="cible-tag">Boutique</span>
+            <span class="cible-tag">Coiffeur</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RÉSULTATS -->
+  <section class="resultats">
+    <div class="container">
+      <p class="section-tag">Résultats en 30 jours</p>
+      <h2 class="section-title">Les chiffres ne mentent pas.</h2>
+      <p class="section-subtitle">Ce que produit 30 jours de présence stratégique cohérente sur Instagram.</p>
+      <div class="resultats-grid">
+        <div class="resultat-card">
+          <span class="resultat-number">+40%</span>
+          <p class="resultat-label">d'abonnés organiques en publiant régulièrement du contenu ciblé</p>
+        </div>
+        <div class="resultat-card">
+          <span class="resultat-number">×3</span>
+          <p class="resultat-label">taux d'engagement multiplié grâce à une vraie interaction communautaire</p>
+        </div>
+        <div class="resultat-card">
+          <span class="resultat-number">3–5</span>
+          <p class="resultat-label">demandes qualifiées en DM quand la bio est claire et les CTA efficaces</p>
+        </div>
+        <div class="resultat-card">
+          <span class="resultat-number">+30%</span>
+          <p class="resultat-label">de trafic vers le site ou la boutique quand chaque post a un objectif précis</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual">
+          <p class="about-quote">"Mon histoire n'est pas linéaire — et c'est exactement ce qui me donne de la légitimité pour t'aider."</p>
+          <p class="about-quote-author">— Noémie · Community Manager Freelance</p>
+        </div>
+        <div class="about-text">
+          <p class="section-tag">À propos</p>
+          <h2 class="section-title">Noémie.</h2>
+          <p>Il y a quelques mois, j'étais salariée. Aujourd'hui je construis quelque chose qui m'appartient.</p>
+          <p>Je suis <strong>maman, entrepreneuse, et Community Manager freelance</strong>. Je sais ce que c'est de tout gérer en même temps. De vouloir une belle présence en ligne mais de ne plus avoir d'énergie le soir.</p>
+          <p>C'est pour ça que j'ai choisi ce métier. <strong>Je gère la présence Instagram des entrepreneures et petits commerces</strong> qui n'ont plus le temps de le faire — pour qu'elles puissent se concentrer sur ce qu'elles font de mieux.</p>
+          <p>Pas de jargon. Pas de promesses impossibles. Juste du travail sérieux, de la régularité et de la bienveillance.</p>
+          <div class="about-values">
+            <span class="about-value">Liberté</span>
+            <span class="about-value">Puissance</span>
+            <span class="about-value">Équilibre</span>
+            <span class="about-value">Bienveillance</span>
+            <span class="about-value">Authenticité</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <p class="section-tag">Questions fréquentes</p>
+      <h2 class="section-title">Les objections honnêtes.</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <p class="faq-question">Est-ce que c'est vraiment toi qui écris les textes ?</p>
+          <p class="faq-answer">Oui. Toujours. Je m'imprègne de ton univers, ta façon de parler, tes valeurs. Tu valides chaque contenu avant publication si tu le souhaites.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-question">Et si mes abonnés remarquent que ce n'est plus moi ?</p>
+          <p class="faq-answer">C'est mon travail de faire en sorte que ça semble toujours venir de toi. Après notre appel de démarrage, j'adapte complètement mon style au tien.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-question">Comment ça se passe si je ne suis pas contente ?</p>
+          <p class="faq-answer">Pas d'engagement long terme. Si après le premier mois ça ne te convient pas, on s'arrête là. Sans justification, sans frais supplémentaires.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-question">Est-ce que 500€/mois c'est rentable pour moi ?</p>
+          <p class="faq-answer">Si une seule personne te contacte grâce à Instagram et devient cliente, le retour sur investissement est souvent là dès le premier mois.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-question">Combien de temps avant de voir des résultats ?</p>
+          <p class="faq-answer">Les premiers signes apparaissent en 2 à 4 semaines. Les résultats solides (demandes entrantes régulières) se construisent sur 2 à 3 mois de régularité.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-question">Est-ce que tu travailles sur d'autres réseaux qu'Instagram ?</p>
+          <p class="faq-answer">Je me spécialise sur Instagram et TikTok. Si tu as besoin d'une présence sur d'autres plateformes, on en parle lors de l'appel découverte.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="contact">
+    <div class="container">
+      <p class="section-tag">Prête à déléguer ?</p>
+      <h2 class="section-title">30 minutes offertes.<br>Sans engagement.</h2>
+      <p class="section-subtitle">Tu cliques sur le lien, tu remplis un court formulaire, on se retrouve en visio. Je t'explique ce que je ferais concrètement pour toi. Pas de jargon, pas de pression.</p>
+      <div class="cta-btns">
+        <a href="mailto:noemie.entrepreneuse@gmail.com" class="btn-primary">Réserver mon appel découverte gratuit</a>
+        <a href="https://instagram.com/noemie.entrepreneuse" class="btn-secondary" target="_blank">Me contacter sur Instagram</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Noémie · Community Manager Freelance · <a href="mailto:noemie.entrepreneuse@gmail.com">noemie.entrepreneuse@gmail.com</a></p>
+    <p style="margin-top: 0.5rem;">Instagram : <a href="https://instagram.com/noemie.entrepreneuse" target="_blank">@noemie.entrepreneuse</a> · TikTok : <a href="https://tiktok.com/@noemie.k75" target="_blank">@noemie.k75</a></p>
+  </footer>
+
+</body>
+</html>
