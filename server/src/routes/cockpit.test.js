@@ -65,7 +65,7 @@ beforeAll(async () => {
     .run(randomUUID(), userId);
 
   /* market contact */
-  db.prepare(`INSERT INTO market_contacts (id, user_id, name, status) VALUES (?, ?, 'Marie D.', 'contacted')`)
+  db.prepare(`INSERT INTO market_contacts (id, user_id, name, status) VALUES (?, ?, 'Marie D.', 'en_cours')`)
     .run(randomUUID(), userId);
 
   const r = await request(app).post('/auth/login').send({ email: 'sarah@ck.test', password: 'pass' });
