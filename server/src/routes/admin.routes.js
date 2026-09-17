@@ -353,7 +353,7 @@ router.post('/sprint-content/:n', async (req, res) => {
   const n = parseInt(req.params.n, 10);
   if (isNaN(n) || n < 1 || n > 12) return res.status(400).json({ error: 'Numéro de sprint invalide' });
 
-  const { cohort_id = null, result, understand, mission, support, deliverable, unlock_reason } = req.body ?? {};
+  const { cohort_id = null, result, understand, mission, support, deliverable, unlock_reason, video_url, audio_url } = req.body ?? {};
 
   const existing = cohort_id
     ? await db.queryOne(`SELECT id FROM sprint_content WHERE sprint_number = ? AND cohort_id = ?`, [n, cohort_id])
@@ -362,9 +362,9 @@ router.post('/sprint-content/:n', async (req, res) => {
 
   const id = randomUUID();
   await db.execute(`
-    INSERT INTO sprint_content (id, sprint_number, cohort_id, result, understand, mission, support, deliverable, unlock_reason)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `, [id, n, cohort_id, result ?? null, understand ?? null, mission ?? null, support ?? null, deliverable ?? null, unlock_reason ?? null]);
+    INSERT INTO sprint_content (id, sprint_number, cohort_id, result, understand, mission, support, deliverable, unlock_reason, video_url, audio_url)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `, [id, n, cohort_id, result ?? null, understand ?? null, mission ?? null, support ?? null, deliverable ?? null, unlock_reason ?? null, video_url ?? null, audio_url ?? null]);
 
   await db.writeAudit({
     actorId: req.user.id,
@@ -385,7 +385,7 @@ router.patch('/sprint-content/:n', async (req, res) => {
   if (isNaN(n) || n < 1 || n > 12) return res.status(400).json({ error: 'Numéro de sprint invalide' });
 
   const { cohort_id = null, ...fields } = req.body ?? {};
-  const ALLOWED = ['result', 'understand', 'mission', 'support', 'deliverable', 'unlock_reason'];
+  const ALLOWED = ['result', 'understand', 'mission', 'support', 'deliverable', 'unlock_reason', 'video_url', 'audio_url'];
   const updates = Object.fromEntries(Object.entries(fields).filter(([k]) => ALLOWED.includes(k)));
   if (Object.keys(updates).length === 0) return res.status(400).json({ error: 'Aucun champ modifiable fourni' });
 

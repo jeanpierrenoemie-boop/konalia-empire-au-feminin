@@ -145,6 +145,12 @@ export async function buildCopiloteContext(db, userId, shortcutType = 'general')
     [userId]
   );
 
+  const s1InventoryRow = await db.queryOne(
+    `SELECT content FROM participant_data WHERE owner_id = ? AND data_type = 's1_inventory' LIMIT 1`,
+    [userId]
+  );
+  const s1Inventory = s1InventoryRow ? JSON.parse(s1InventoryRow.content) : null;
+
   // ── build structured per shortcut type ──────────────────────────────────────
   let structured = {};
 
@@ -159,6 +165,7 @@ export async function buildCopiloteContext(db, userId, shortcutType = 'general')
         parking_agir_maintenant: parkingAgir,
         passport: passport ?? null,
         market_summary,
+        s1_inventory: s1Inventory ?? null,
       };
       break;
 
@@ -216,6 +223,7 @@ export async function buildCopiloteContext(db, userId, shortcutType = 'general')
         passport: passport ?? null,
         parking_agir_count: parkingAgir.length,
         market_summary,
+        s1_inventory: s1Inventory ?? null,
       };
       break;
   }

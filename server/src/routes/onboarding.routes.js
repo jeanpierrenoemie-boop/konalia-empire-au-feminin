@@ -144,9 +144,9 @@ router.post('/complete', async (req, res) => {
       `, [
         randomUUID(),
         req.user.id,
-        'Démarrer le C.A.D.R.E. — Étape C : Clarifier',
-        f.commitment ?? 'Début du parcours',
-        'Ouvrir la première mission de l\'étape C',
+        'Faire l\'inventaire de ce que tu possèdes déjà avant de chercher une direction.',
+        f.commitment ?? 'Début du parcours — phase C : Clarifier',
+        'Commencer ton Inventaire de Départ en Sprint 1.',
       ]);
     }
 

@@ -461,6 +461,8 @@ CREATE TABLE IF NOT EXISTS sprint_content (
   support       TEXT,
   deliverable   TEXT,
   unlock_reason TEXT,
+  video_url     TEXT,
+  audio_url     TEXT,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

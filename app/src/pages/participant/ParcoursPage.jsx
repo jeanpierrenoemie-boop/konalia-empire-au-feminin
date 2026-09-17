@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { CadreProgression } from '../../components/cadre/CadreProgression';
 import { LoadingState } from '../../components/states/LoadingState';
 import { ErrorState } from '../../components/states/ErrorState';
+import { SprintOnePanel } from '../../components/sprint1/SprintOnePanel';
 import styles from './ParcoursPage.module.css';
 import pageStyles from './Page.module.css';
 
@@ -71,156 +72,6 @@ function GatePanel({ gate, sprintNumber, onPass }) {
         </button>
       )}
       {error && <p className={styles.gateError}>{error}</p>}
-    </div>
-  );
-}
-
-function MissionPanel() {
-  const [missions, setMissions] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState({});
-  const [drafts, setDrafts] = useState({});
-  const [errors, setErrors] = useState({});
-
-  useEffect(() => {
-    fetch('/api/parcours/missions', { credentials: 'include' })
-      .then(r => r.json())
-      .then(data => { setMissions(data); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, []);
-
-  async function handleSubmit(missionId) {
-    const content = drafts[missionId] ?? '';
-    setSubmitting(s => ({ ...s, [missionId]: true }));
-    setErrors(e => ({ ...e, [missionId]: null }));
-    try {
-      const r = await fetch(`/api/parcours/missions/${missionId}/submit`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
-      });
-      const body = await r.json().catch(() => ({}));
-      if (!r.ok) {
-        setErrors(e => ({ ...e, [missionId]: body.error ?? 'Erreur lors de la soumission' }));
-      } else {
-        setMissions(ms => ms.map(m =>
-          m.id === missionId
-            ? { ...m, submission_id: body.id, submission_status: body.status, submission_content: body.content, reviewer_note: body.reviewer_note, reviewed_at: body.reviewed_at }
-            : m
-        ));
-        setDrafts(d => { const n = { ...d }; delete n[missionId]; return n; });
-      }
-    } finally {
-      setSubmitting(s => ({ ...s, [missionId]: false }));
-    }
-  }
-
-  if (loading) return <div style={{ padding: '8px', color: '#666', fontSize: '14px' }}>Chargement des missions…</div>;
-  if (!missions || missions.length === 0) return null;
-
-  return (
-    <div style={{ marginTop: '16px', borderTop: '1px solid #e0e0e0', paddingTop: '12px' }}>
-      <h4 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#555' }}>
-        Livrables à soumettre
-      </h4>
-      {missions.map(mission => {
-        const status = mission.submission_status;
-        const draftValue = drafts[mission.id] ?? (status === 'draft' || !status ? (mission.submission_content ?? '') : '');
-        const isApproved = status === 'approved';
-        const isSubmitted = status === 'submitted' || status === 'reviewed';
-        const isRejected = status === 'rejected';
-        const showForm = !isApproved && (!isSubmitted || isRejected);
-
-        return (
-          <div key={mission.id} style={{ marginBottom: '16px', padding: '12px', background: '#f9f9f9', borderRadius: '6px', border: '1px solid #e8e8e8' }}>
-            <div style={{ fontWeight: 600, marginBottom: '4px' }}>{mission.title}</div>
-            {mission.description && (
-              <div style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>{mission.description}</div>
-            )}
-
-            {isApproved && (
-              <div style={{ color: '#2e7d32', fontWeight: 600, fontSize: '13px' }}>✓ VALIDÉ</div>
-            )}
-
-            {isSubmitted && !isRejected && (
-              <div>
-                <div style={{ color: '#1565c0', fontWeight: 600, fontSize: '13px', marginBottom: '6px' }}>EN ATTENTE DE VALIDATION</div>
-                <div style={{ fontSize: '13px', color: '#444', background: '#fff', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', marginBottom: '8px', whiteSpace: 'pre-wrap' }}>
-                  {mission.submission_content}
-                </div>
-                <button
-                  style={{ fontSize: '12px', padding: '4px 10px', cursor: 'pointer', background: 'none', border: '1px solid #aaa', borderRadius: '4px' }}
-                  onClick={() => setDrafts(d => ({ ...d, [mission.id]: mission.submission_content ?? '' }))}
-                >
-                  Modifier ma soumission
-                </button>
-              </div>
-            )}
-
-            {isRejected && (
-              <div style={{ color: '#e65100', fontWeight: 600, fontSize: '13px', marginBottom: '6px' }}>
-                CORRECTION DEMANDÉE
-                {mission.reviewer_note && (
-                  <div style={{ fontWeight: 400, color: '#bf360c', marginTop: '4px', background: '#fff3e0', padding: '6px 8px', borderRadius: '4px', border: '1px solid #ffcc80' }}>
-                    {mission.reviewer_note}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {showForm && (
-              <div>
-                <textarea
-                  style={{ width: '100%', minHeight: '80px', padding: '8px', fontSize: '13px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', resize: 'vertical' }}
-                  placeholder="Décris ton livrable ici…"
-                  value={draftValue}
-                  onChange={e => setDrafts(d => ({ ...d, [mission.id]: e.target.value }))}
-                />
-                {errors[mission.id] && (
-                  <div style={{ color: '#c62828', fontSize: '12px', marginTop: '4px' }}>{errors[mission.id]}</div>
-                )}
-                <button
-                  style={{ marginTop: '6px', padding: '6px 14px', background: '#1a1a1a', color: '#fff', border: 'none', borderRadius: '4px', cursor: submitting[mission.id] ? 'not-allowed' : 'pointer', fontSize: '13px' }}
-                  disabled={submitting[mission.id]}
-                  onClick={() => handleSubmit(mission.id)}
-                >
-                  {submitting[mission.id] ? 'Envoi…' : 'Soumettre mon livrable'}
-                </button>
-              </div>
-            )}
-
-            {isSubmitted && !isRejected && mission.id in drafts && (
-              <div style={{ marginTop: '8px' }}>
-                <textarea
-                  style={{ width: '100%', minHeight: '80px', padding: '8px', fontSize: '13px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', resize: 'vertical' }}
-                  placeholder="Modifie ton livrable ici…"
-                  value={drafts[mission.id]}
-                  onChange={e => setDrafts(d => ({ ...d, [mission.id]: e.target.value }))}
-                />
-                {errors[mission.id] && (
-                  <div style={{ color: '#c62828', fontSize: '12px', marginTop: '4px' }}>{errors[mission.id]}</div>
-                )}
-                <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
-                  <button
-                    style={{ padding: '6px 14px', background: '#1a1a1a', color: '#fff', border: 'none', borderRadius: '4px', cursor: submitting[mission.id] ? 'not-allowed' : 'pointer', fontSize: '13px' }}
-                    disabled={submitting[mission.id]}
-                    onClick={() => handleSubmit(mission.id)}
-                  >
-                    {submitting[mission.id] ? 'Envoi…' : 'Resoumettre'}
-                  </button>
-                  <button
-                    style={{ padding: '6px 14px', background: 'none', border: '1px solid #aaa', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
-                    onClick={() => setDrafts(d => { const n = { ...d }; delete n[mission.id]; return n; })}
-                  >
-                    Annuler
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
     </div>
   );
 }
@@ -406,8 +257,10 @@ function SprintCard({ sprint, isCurrent, onPass }) {
               Sprint validé — ce contenu reste accessible à tout moment.
             </div>
           )}
-          {isCurrent && open && <MissionPanel />}
-          {isCurrent && (
+          {isCurrent && sprint.number === 1 && (
+            <SprintOnePanel sprint={sprint} onMissionUpdate={onPass} />
+          )}
+          {isCurrent && sprint.number !== 1 && (
             <MissionPanel sprintNumber={sprint.number} onMissionUpdate={onPass} />
           )}
           {isCurrent && sprint.gate && (

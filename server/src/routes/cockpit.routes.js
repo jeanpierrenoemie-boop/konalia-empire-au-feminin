@@ -118,6 +118,31 @@ router.get('/', async (req, res) => {
     [uid]
   );
 
+  /* 10. S1 inventory status — only relevant when on sprint 1 */
+  let s1Inventory = null;
+  if (progress?.sprint_number === 1) {
+    const inv = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's1_inventory' LIMIT 1`,
+      [uid]
+    );
+    if (inv) {
+      const parsed = JSON.parse(inv.content);
+      const sections = parsed.sections ?? {};
+      const sectionsFilled = ['A','B','C','D','E'].filter(k => {
+        const s = sections[k];
+        if (Array.isArray(s)) return s.some(e => e && String(e).trim());
+        if (s && typeof s === 'object') return Object.values(s).some(v => v && String(v).trim());
+        return false;
+      }).length;
+      s1Inventory = {
+        status: parsed.status ?? 'draft',
+        sectionsFilled,
+        hasObservation: !!(parsed.observation ?? '').trim(),
+        updatedAt: inv.updated_at,
+      };
+    }
+  }
+
   return res.json({
     progress: progress ?? null,
     pilotage: pilotage ?? null,
@@ -130,6 +155,7 @@ router.get('/', async (req, res) => {
     agirMaintenantCount,
     passport: passport ?? null,
     openSupportCount: openSupport?.count ?? 0,
+    s1Inventory,
   });
 });
 

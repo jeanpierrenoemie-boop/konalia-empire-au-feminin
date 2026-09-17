@@ -34,6 +34,7 @@ router.get('/', requireAuth, async (req, res) => {
   const cohortId = enrollment?.cohort_id ?? null;
   const contentRows = await db.queryAll(`
     SELECT sprint_number, result, understand, mission, support, deliverable, unlock_reason,
+           video_url, audio_url,
            cohort_id IS NULL AS is_global
     FROM sprint_content
     WHERE cohort_id = ? OR cohort_id IS NULL
@@ -75,6 +76,8 @@ router.get('/', requireAuth, async (req, res) => {
       support: content?.support ?? sprint.support,
       deliverable: content?.deliverable ?? sprint.deliverable,
       unlock_reason: content?.unlock_reason ?? sprint.unlock_reason,
+      video_url: content?.video_url ?? null,
+      audio_url: content?.audio_url ?? null,
       state,
       week_in_sprint: isCurrent ? (currentProgress.week_in_sprint ?? null) : null,
       unlocked_at: passed?.passed_at ?? (isCurrent ? currentProgress.unlocked_at : null) ?? null,

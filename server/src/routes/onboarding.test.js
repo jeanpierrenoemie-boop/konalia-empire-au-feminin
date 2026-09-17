@@ -176,7 +176,7 @@ describe('Structured data population', () => {
     const db = getDb();
     const ps = db.prepare('SELECT * FROM pilotage_state WHERE user_id = ?').get(starterId);
     expect(ps).not.toBeNull();
-    expect(ps.current_priority).toMatch(/C.*Clarifier/i);
+    expect(ps.current_priority).toMatch(/inventaire/i);
     expect(ps.status).toBe('active');
     expect(ps.updated_by_user).toBe(1);
   });
