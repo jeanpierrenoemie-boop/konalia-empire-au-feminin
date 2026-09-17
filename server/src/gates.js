@@ -84,8 +84,7 @@ function evaluate(conditions, override) {
 
 /* S2 — requires sprint 1 deliverable (inventaire de situation) */
 function gateS2(db, userId) {
-  const submitted = missionSubmitted(db, userId, 1) || weeklyReviewSubmitted(db, userId, 1)
-    || proofsCount(db, userId, 'C') > 0;
+  const submitted = missionSubmitted(db, userId, 1) || proofsCount(db, userId, 'C') > 0;
   return evaluate([
     { label: 'Inventaire sprint 1 soumis ou preuve déposée', met: submitted },
   ], getOverride(db, userId, 2));
@@ -93,7 +92,7 @@ function gateS2(db, userId) {
 
 /* S3 (C→A) — requires exploitable paths from Clarifier */
 function gateS3(db, userId) {
-  const hasMission2 = missionSubmitted(db, userId, 2) || weeklyReviewSubmitted(db, userId, 2);
+  const hasMission2 = missionSubmitted(db, userId, 2);
   const hasDecision = hasActiveDecision(db, userId, ['project', 'persona', 'scope', 'other']);
   return evaluate([
     { label: 'Sprint 2 complété (Ressources Exploitables)', met: hasMission2 },
@@ -103,7 +102,7 @@ function gateS3(db, userId) {
 
 /* S4 — requires arbitration matrix from sprint 3 */
 function gateS4(db, userId) {
-  const submitted = missionSubmitted(db, userId, 3) || weeklyReviewSubmitted(db, userId, 3);
+  const submitted = missionSubmitted(db, userId, 3);
   return evaluate([
     { label: 'Matrice d\'arbitrage sprint 3 soumise', met: submitted },
   ], getOverride(db, userId, 4));
@@ -111,7 +110,7 @@ function gateS4(db, userId) {
 
 /* S5 (A→D) — requires validated direction */
 function gateS5(db, userId) {
-  const hasMission4 = missionSubmitted(db, userId, 4) || weeklyReviewSubmitted(db, userId, 4);
+  const hasMission4 = missionSubmitted(db, userId, 4);
   const hasDirection = hasActiveDecision(db, userId, ['project', 'pivot', 'scope']);
   return evaluate([
     { label: 'Sprint 4 complété (Direction verrouillée)', met: hasMission4 },
@@ -122,7 +121,7 @@ function gateS5(db, userId) {
 /* S6 — requires cible test + problem to investigate */
 function gateS6(db, userId) {
   const hasPersona = hasActiveDecision(db, userId, ['persona']);
-  const hasMission5 = missionSubmitted(db, userId, 5) || weeklyReviewSubmitted(db, userId, 5);
+  const hasMission5 = missionSubmitted(db, userId, 5);
   return evaluate([
     { label: 'Sprint 5 complété (Cible & Problème)', met: hasMission5 },
     { label: 'Persona validé comme décision active', met: hasPersona },
@@ -131,7 +130,7 @@ function gateS6(db, userId) {
 
 /* S7 — requires offer test V1 */
 function gateS7(db, userId) {
-  const submitted = missionSubmitted(db, userId, 6) || weeklyReviewSubmitted(db, userId, 6);
+  const submitted = missionSubmitted(db, userId, 6);
   return evaluate([
     { label: 'Offre Minimum Testable sprint 6 soumise', met: submitted },
   ], getOverride(db, userId, 7));
@@ -139,7 +138,7 @@ function gateS7(db, userId) {
 
 /* S8 (D→R) — requires offer + pitch + test price documented */
 function gateS8(db, userId) {
-  const hasMission7 = missionSubmitted(db, userId, 7) || weeklyReviewSubmitted(db, userId, 7);
+  const hasMission7 = missionSubmitted(db, userId, 7);
   const hasProofD = proofsCount(db, userId, 'D') > 0;
   const hasRevenueDecision = hasActiveDecision(db, userId, ['revenue']);
   return evaluate([
@@ -179,7 +178,7 @@ function gateS11(db, userId) {
 /* S12 — requires bilan / go-no-go decision */
 function gateS12(db, userId) {
   const hasGoNogo = hasActiveDecision(db, userId, ['go_nogo']);
-  const hasMission11 = missionSubmitted(db, userId, 11) || weeklyReviewSubmitted(db, userId, 11);
+  const hasMission11 = missionSubmitted(db, userId, 11);
   return evaluate([
     { label: 'Sprint 11 complété (Bilan décisionnel)', met: hasMission11 },
     { label: 'Décision Go/No-Go enregistrée', met: hasGoNogo },
@@ -188,7 +187,7 @@ function gateS12(db, userId) {
 
 /* Sprint 12 completion (final) */
 function gateFinal(db, userId) {
-  const submitted = missionSubmitted(db, userId, 12) || weeklyReviewSubmitted(db, userId, 12);
+  const submitted = missionSubmitted(db, userId, 12);
   return evaluate([
     { label: 'Continuité 90 jours soumise (sprint 12)', met: submitted },
   ], getOverride(db, userId, 'final'));

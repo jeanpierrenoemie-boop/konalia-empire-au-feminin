@@ -151,28 +151,57 @@ describe('POST /api/weekly-review/:id/submit', () => {
   });
 });
 
-/* ── Gates interaction ────────────────────────────────────────── */
-describe('weeklyReviewSubmitted gate integration', () => {
-  it('submitted review is detected by gates query (sprint 2)', async () => {
-    const db = getDb();
-    const found = db.prepare(`
-      SELECT 1 FROM weekly_reviews WHERE user_id = ? AND sprint_number = ? AND status = 'submitted' LIMIT 1
-    `).get(userId2, 2); // bob submitted for sprint 2 implicitly — we'll check alice sprint 1
-    // Alice submitted sprint 1
-    const foundAlice = db.prepare(`
-      SELECT 1 FROM weekly_reviews WHERE user_id = ? AND sprint_number = 1 AND status = 'submitted' LIMIT 1
-    `).get(userId1);
-    expect(foundAlice).toBeTruthy();
-  });
-
-  it('submitted review for sprint N satisfies weeklyReviewSubmitted(db, userId, N)', async () => {
+/* ── Gates interaction (B19.1 — WR cannot open a gate alone) ─── */
+describe('Weekly Review does NOT open strategic gates', () => {
+  it('weekly review alone does not satisfy gateS2 (ROUGE without mission or proof)', async () => {
     const { evaluateGate } = await import('../gates.js');
     const db = getDb();
-    const result = evaluateGate(db, userId1, 2); // Gate S2 checks sprint 1
-    // Alice has submitted sprint 1 weekly review → gate S2 should see it as met
-    const weeklyCondition = result.conditions.find(c => c.label.toLowerCase().includes('revue') || c.met);
-    // The gate result is computed; we just verify it doesn't crash and is one of the valid statuses
-    expect(['VERT', 'ORANGE', 'ROUGE']).toContain(result.status);
+    // userId1 has submitted a weekly review for sprint 1 (done above in submit tests)
+    // but has no mission_submission for sprint 1 and no proof for cadre step C
+    const result = evaluateGate(db, userId1, 2);
+    // Gate S2 checks sprint 1 mission OR sprint 1 proof — NOT weekly review
+    expect(result.status).toBe('ROUGE');
+    expect(result.conditions[0].met).toBe(false);
+  });
+
+  it('weekly review alone does not satisfy gateS4 (ROUGE without sprint 3 mission)', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const db = getDb();
+    // Insert a weekly review for sprint 3 for userId1 and submit it
+    const wrId = randomUUID();
+    db.prepare(`INSERT INTO weekly_reviews (id, user_id, cohort_id, sprint_number, week_number, status) VALUES (?,?,?,3,1,'submitted')`)
+      .run(wrId, userId1, cohortId);
+    const result = evaluateGate(db, userId1, 4);
+    // Sprint 3 mission was never submitted
+    expect(result.status).toBe('ROUGE');
+  });
+
+  it('weekly review alone does not satisfy gateFinal (ROUGE without sprint 12 mission)', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const db = getDb();
+    const wrId = randomUUID();
+    db.prepare(`INSERT INTO weekly_reviews (id, user_id, cohort_id, sprint_number, week_number, status) VALUES (?,?,?,12,1,'submitted')`)
+      .run(wrId, userId1, cohortId);
+    const result = evaluateGate(db, userId1, 'final');
+    expect(result.status).toBe('ROUGE');
+  });
+
+  it('weekly review submitted is queryable from DB (pilotage/analytics use)', async () => {
+    const db = getDb();
+    const row = db.prepare(`
+      SELECT 1 FROM weekly_reviews WHERE user_id = ? AND sprint_number = 1 AND status = 'submitted' LIMIT 1
+    `).get(userId1);
+    expect(row).toBeTruthy();
+  });
+
+  it('gateS2 with proof C deposited is VERT (legitimate non-mission path)', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const db = getDb();
+    // Insert a proof for cadre step C
+    db.prepare(`INSERT INTO proofs (id, user_id, cadre_step, proof_type, title, content) VALUES (?,?,?,'note','Inventaire situation','Preuve réelle déposée')`)
+      .run(randomUUID(), userId1, 'C');
+    const result = evaluateGate(db, userId1, 2);
+    expect(result.conditions[0].met).toBe(true);
   });
 });
 
