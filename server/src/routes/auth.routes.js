@@ -33,12 +33,7 @@ router.post('/login', async (req, res) => {
 
   db.prepare("UPDATE users SET last_login = datetime('now') WHERE id = ?").run(user.id);
 
-  const token = signToken({
-    sub: user.id,
-    role: user.role,
-    tier: user.tier,
-    is_test: user.is_test,
-  });
+  const token = signToken({ sub: user.id });
 
   res.cookie('rc_session', token, cookieOptions());
 
