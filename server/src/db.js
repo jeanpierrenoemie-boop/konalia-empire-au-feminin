@@ -61,6 +61,7 @@ const MIGRATION_FILES = [
   '013_notifications.sql',
   '014_sprint_content.sql',
   '015_invitations.sql',
+  '016_password_resets.sql',
 ];
 
 function runMigrations(db) {

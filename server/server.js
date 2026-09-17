@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import helmet from 'helmet';
 import authRoutes from './src/routes/auth.routes.js';
 import dataRoutes from './src/routes/data.routes.js';
 import onboardingRoutes from './src/routes/onboarding.routes.js';
@@ -20,9 +21,12 @@ import frictionsRoutes from './src/routes/frictions.routes.js';
 import notificationsRoutes from './src/routes/notifications.routes.js';
 import missionsRouter from './src/routes/missions.routes.js';
 import invitationsRouter from './src/routes/invitations.routes.js';
+import weeklyReviewRouter from './src/routes/weekly-review.routes.js';
 
 export function createApp() {
   const app = express();
+
+  app.use(helmet({ contentSecurityPolicy: false }));
 
   app.use(cors({
     origin: (process.env.ALLOWED_ORIGINS ?? '').split(',').map(s => s.trim()).filter(Boolean),
@@ -50,6 +54,7 @@ export function createApp() {
   app.use('/api/frictions', frictionsRoutes);
   app.use('/api/notifications', notificationsRoutes);
   app.use('/api/invitations', invitationsRouter);
+  app.use('/api/weekly-review', weeklyReviewRouter);
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
 

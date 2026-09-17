@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import styles from './LoginPage.module.css';
 
@@ -64,6 +64,7 @@ export function LoginPage() {
           <button type="submit" className={styles.btn} disabled={loading}>
             {loading ? 'Connexion…' : 'Se connecter'}
           </button>
+          <Link to="/forgot-password" className={styles.forgotLink}>Mot de passe oublié ?</Link>
         </form>
       </div>
     </div>

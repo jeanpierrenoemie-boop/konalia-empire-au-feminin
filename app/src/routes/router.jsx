@@ -23,10 +23,14 @@ import { CarteSignaux } from '../pages/participant/Marche/CarteSignaux';
 import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage';
 import { FrictionsPage } from '../pages/admin/FrictionsPage';
 import { ActivationPage } from '../pages/ActivationPage';
+import { ForgotPasswordPage } from '../pages/ForgotPasswordPage';
+import { ResetPasswordPage } from '../pages/ResetPasswordPage';
 
 export const router = createBrowserRouter([
-  { path: '/login',    element: <LoginPage /> },
-  { path: '/activate', element: <ActivationPage /> },
+  { path: '/login',           element: <LoginPage /> },
+  { path: '/activate',        element: <ActivationPage /> },
+  { path: '/forgot-password', element: <ForgotPasswordPage /> },
+  { path: '/reset-password',  element: <ResetPasswordPage /> },
 
   /* Onboarding — authenticated but not yet onboarded */
   {

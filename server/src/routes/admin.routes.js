@@ -4,7 +4,7 @@
  * Every strategic override creates an audit_event.
  */
 import { Router } from 'express';
-import { randomUUID } from 'crypto';
+import { randomUUID, randomBytes, createHash } from 'crypto';
 import { getDb, writeAudit, notify } from '../db.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { requireAdmin } from '../middleware/requireRole.js';
@@ -503,6 +503,46 @@ router.patch('/submissions/:id/review', (req, res) => {
 
   const updated = db.prepare(`SELECT * FROM mission_submissions WHERE id = ?`).get(id);
   res.json(updated);
+});
+
+/* ── POST /api/admin/generate-reset-link ────────────────────────── */
+router.post('/generate-reset-link', (req, res) => {
+  const { email } = req.body ?? {};
+  if (!email) return res.status(400).json({ error: 'email requis' });
+
+  const db = getDb();
+  const user = db.prepare(
+    `SELECT id, email, first_name FROM users WHERE email = ? COLLATE NOCASE AND role != 'NOEMIE_ADMIN'`
+  ).get(email.trim());
+
+  if (!user) return res.status(404).json({ error: 'Aucun compte participant trouvé pour cet email' });
+
+  const raw = randomBytes(32).toString('hex');
+  const hash = createHash('sha256').update(raw).digest('hex');
+  const expiresAt = new Date(Date.now() + 2 * 3_600_000)
+    .toISOString().replace('T', ' ').slice(0, 19);
+
+  db.prepare("UPDATE password_resets SET used_at = datetime('now') WHERE user_id = ? AND used_at IS NULL")
+    .run(user.id);
+  db.prepare(
+    `INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES (?, ?, ?)`
+  ).run(user.id, hash, expiresAt);
+
+  writeAudit(db, {
+    actorId: req.user.id,
+    eventType: 'password_reset_requested',
+    targetUserId: user.id,
+    tableName: 'password_resets',
+    afterState: { triggered_by_admin: true, expires_at: expiresAt },
+  });
+
+  const baseUrl = process.env.APP_BASE_URL ?? 'http://localhost:5173';
+  return res.json({
+    email: user.email,
+    first_name: user.first_name,
+    reset_url: `${baseUrl}/reset-password?token=${raw}`,
+    expires_at: expiresAt,
+  });
 });
 
 /* ── GET /api/admin/cohorts ──────────────────────────────────────── */

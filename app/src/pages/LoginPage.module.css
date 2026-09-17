@@ -104,6 +104,14 @@
   cursor: not-allowed;
 }
 
+.forgotLink {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
+  text-decoration: none;
+}
+.forgotLink:hover { text-decoration: underline; }
+
 .error {
   background: var(--status-rouge-bg);
   color: var(--status-rouge-text);
