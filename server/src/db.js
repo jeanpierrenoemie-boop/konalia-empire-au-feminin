@@ -49,6 +49,7 @@ const MIGRATION_FILES = [
   '001_bootstrap.sql',
   '002_v1_model.sql',
   '003_sprint_gates.sql',
+  '004_gate_overrides.sql',
 ];
 
 function runMigrations(db) {

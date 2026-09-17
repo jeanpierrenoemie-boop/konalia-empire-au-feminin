@@ -207,6 +207,115 @@
   border-radius: var(--radius-sm);
 }
 
+/* ── Gate panel ── */
+.gatePanel {
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border: 1px solid transparent;
+}
+
+.gateVert {
+  background: var(--status-vert-bg);
+  border-color: var(--status-vert-text);
+}
+
+.gateOrange {
+  background: var(--status-orange-bg, #fff8e1);
+  border-color: var(--status-orange-text, #c67c00);
+}
+
+.gateRouge {
+  background: var(--status-rouge-bg);
+  border-color: color-mix(in srgb, var(--status-rouge-text) 30%, transparent);
+}
+
+.gateTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.gateDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot_gateVert { background: var(--status-vert-text); }
+.dot_gateOrange { background: var(--status-orange-text, #c67c00); }
+.dot_gateRouge { background: var(--status-rouge-text); }
+
+.gateTitle {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.gateVert .gateTitle { color: var(--status-vert-text); }
+.gateOrange .gateTitle { color: var(--status-orange-text, #c67c00); }
+.gateRouge .gateTitle { color: var(--status-rouge-text); }
+
+.overrideReason {
+  font-size: var(--text-xs);
+  font-style: italic;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.conditionList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.condition {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.conditionMet { color: var(--color-text-secondary); }
+.conditionMissing { color: var(--color-text-muted); }
+
+.conditionIcon {
+  flex-shrink: 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.conditionMet .conditionIcon { color: var(--status-vert-text); }
+
+.passButton {
+  align-self: flex-start;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.passButton:disabled { opacity: 0.6; cursor: wait; }
+.passButton:hover:not(:disabled) { opacity: 0.9; }
+
+.gateError {
+  font-size: var(--text-xs);
+  color: var(--status-rouge-text);
+  margin: 0;
+}
+
 @media (max-width: 600px) {
   .phaseHeader { padding: var(--space-4); }
   .sprintHeader { padding: var(--space-3) var(--space-4); }

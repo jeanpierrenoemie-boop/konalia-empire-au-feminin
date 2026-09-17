@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CadreProgression } from '../../components/cadre/CadreProgression';
 import { LoadingState } from '../../components/states/LoadingState';
 import { ErrorState } from '../../components/states/ErrorState';
 import styles from './ParcoursPage.module.css';
 import pageStyles from './Page.module.css';
-
-const CADRE_LABELS = { C: 'Clarifier', A: 'Arbitrer', D: 'Définir', R: 'Rencontrer', E: 'Évoluer' };
 
 const STATE_LABELS = {
   passed:      { text: 'Validé', css: 'passed' },
@@ -15,7 +13,69 @@ const STATE_LABELS = {
   locked:      { text: 'Verrouillé', css: 'locked' },
 };
 
-function SprintCard({ sprint, isCurrent }) {
+const GATE_COLOR = { VERT: 'gateVert', ORANGE: 'gateOrange', ROUGE: 'gateRouge' };
+
+function GatePanel({ gate, sprintNumber, onPass }) {
+  const [passing, setPassing] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function handlePass() {
+    setPassing(true);
+    setError(null);
+    try {
+      const r = await fetch(`/api/parcours/gate/${sprintNumber}/pass`, {
+        method: 'POST', credentials: 'include',
+      });
+      if (!r.ok) {
+        const body = await r.json().catch(() => ({}));
+        setError(body.error ?? 'Erreur lors de la validation');
+      } else {
+        onPass();
+      }
+    } catch {
+      setError('Erreur réseau');
+    } finally {
+      setPassing(false);
+    }
+  }
+
+  const colorCss = GATE_COLOR[gate.status] ?? GATE_COLOR.ROUGE;
+
+  return (
+    <div className={`${styles.gatePanel} ${styles[colorCss]}`}>
+      <div className={styles.gateTitleRow}>
+        <span className={`${styles.gateDot} ${styles[`dot_${colorCss}`]}`} aria-hidden />
+        <span className={styles.gateTitle}>
+          {gate.status === 'VERT' && 'Prêt à valider'}
+          {gate.status === 'ORANGE' && 'Avancement exceptionnel'}
+          {gate.status === 'ROUGE' && 'Conditions à remplir'}
+        </span>
+      </div>
+
+      {gate.override_reason && (
+        <p className={styles.overrideReason}>{gate.override_reason}</p>
+      )}
+
+      <ul className={styles.conditionList}>
+        {gate.conditions.map((c, i) => (
+          <li key={i} className={`${styles.condition} ${c.met ? styles.conditionMet : styles.conditionMissing}`}>
+            <span className={styles.conditionIcon} aria-hidden>{c.met ? '✓' : '○'}</span>
+            {c.label}
+          </li>
+        ))}
+      </ul>
+
+      {gate.status === 'VERT' && (
+        <button className={styles.passButton} onClick={handlePass} disabled={passing}>
+          {passing ? 'Validation…' : 'Valider ce sprint →'}
+        </button>
+      )}
+      {error && <p className={styles.gateError}>{error}</p>}
+    </div>
+  );
+}
+
+function SprintCard({ sprint, isCurrent, onPass }) {
   const [open, setOpen] = useState(isCurrent);
   const stateInfo = STATE_LABELS[sprint.state] ?? STATE_LABELS.locked;
   const isLocked = sprint.state === 'locked';
@@ -91,13 +151,16 @@ function SprintCard({ sprint, isCurrent }) {
               Sprint validé — ce contenu reste accessible à tout moment.
             </div>
           )}
+          {isCurrent && sprint.gate && (
+            <GatePanel gate={sprint.gate} sprintNumber={sprint.number} onPass={onPass} />
+          )}
         </div>
       )}
     </div>
   );
 }
 
-function PhaseSection({ phase, sprints, currentSprintNumber }) {
+function PhaseSection({ phase, sprints, currentSprintNumber, onPass }) {
   const phaseSpints = sprints.filter(s => s.cadre_step === phase.step);
   return (
     <section className={`${styles.phase} ${styles[`phase_${phase.state}`]}`}>
@@ -119,6 +182,7 @@ function PhaseSection({ phase, sprints, currentSprintNumber }) {
             key={sprint.number}
             sprint={sprint}
             isCurrent={sprint.number === currentSprintNumber}
+            onPass={onPass}
           />
         ))}
       </div>
@@ -131,7 +195,7 @@ export function ParcoursPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  async function load() {
+  const load = useCallback(async function load() {
     setLoading(true);
     setError(null);
     try {
@@ -143,9 +207,9 @@ export function ParcoursPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   const currentStep = data?.phases?.find(p =>
     data.sprints?.find(s => s.number === data.currentSprintNumber)?.cadre_step === p.step
@@ -172,6 +236,7 @@ export function ParcoursPage() {
             phase={phase}
             sprints={data.sprints}
             currentSprintNumber={data.currentSprintNumber}
+            onPass={load}
           />
         ))}
       </div>
