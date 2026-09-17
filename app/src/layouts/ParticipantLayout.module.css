@@ -1,0 +1,18 @@
+.shell {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.main {
+  flex: 1;
+  margin-left: var(--nav-width-desktop);
+  padding: var(--space-8);
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .main {
+    margin-left: 0;
+    padding: calc(var(--nav-height-mobile) + var(--space-5)) var(--space-4) var(--space-8);
+  }
+}
