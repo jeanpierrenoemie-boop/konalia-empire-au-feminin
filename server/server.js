@@ -10,6 +10,7 @@ import parcoursRoutes from './src/routes/parcours.routes.js';
 import passeportRoutes from './src/routes/passeport.routes.js';
 import decisionsRoutes from './src/routes/decisions.routes.js';
 import preuvesRoutes from './src/routes/preuves.routes.js';
+import parkingRoutes from './src/routes/parking.routes.js';
 
 export function createApp() {
   const app = express();
@@ -30,6 +31,7 @@ export function createApp() {
   app.use('/api/passeport', passeportRoutes);
   app.use('/api/decisions', decisionsRoutes);
   app.use('/api/preuves', preuvesRoutes);
+  app.use('/api/parking', parkingRoutes);
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
 

@@ -14,6 +14,7 @@ import { RessourcesPage } from '../pages/participant/RessourcesPage';
 import { PreuvesPage } from '../pages/participant/PreuvesPage';
 import { PasseportPage } from '../pages/participant/PasseportPage';
 import { DecisionsPage } from '../pages/participant/DecisionsPage';
+import { ParkingPage } from '../pages/participant/ParkingPage';
 import { ElitePage } from '../pages/participant/ElitePage';
 import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage';
 
@@ -47,6 +48,7 @@ export const router = createBrowserRouter([
       { path: 'preuves',    element: <PreuvesPage />,    handle: { title: 'Mes Preuves' } },
       { path: 'passeport',  element: <PasseportPage />,  handle: { title: 'Passeport Projet' } },
       { path: 'decisions',  element: <DecisionsPage />,  handle: { title: 'Journal des Décisions' } },
+      { path: 'parking',    element: <ParkingPage />,    handle: { title: 'Parking à Idées' } },
       {
         path: 'elite',
         element: <RequireElite><ElitePage /></RequireElite>,

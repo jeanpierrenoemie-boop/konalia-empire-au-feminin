@@ -51,6 +51,7 @@ const MIGRATION_FILES = [
   '003_sprint_gates.sql',
   '004_gate_overrides.sql',
   '005_decisions_v2.sql',
+  '006_parking_dispersion.sql',
 ];
 
 function runMigrations(db) {

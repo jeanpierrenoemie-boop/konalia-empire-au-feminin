@@ -23,6 +23,45 @@
   margin: 0;
 }
 
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.parkingLink {
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+  text-decoration: none;
+}
+.parkingLink:hover { text-decoration: underline; }
+
+.agirRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  text-decoration: none;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--status-vert-text) 10%, transparent);
+  transition: background 0.15s;
+}
+.agirRow:hover { background: color-mix(in srgb, var(--status-vert-text) 18%, transparent); }
+
+.agirRow p {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+.agirRow strong { color: var(--status-vert-text); }
+
+.parking {
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.parking:hover { opacity: 0.8; }
+
 .item, .parking {
   display: flex;
   align-items: flex-start;

@@ -90,10 +90,21 @@ router.get('/', (req, res) => {
     lastMarketAction = lastContact ?? lastConversation ?? null;
   }
 
-  /* 7. Parking ideas count */
-  const parkingCount = db.prepare(
-    `SELECT COUNT(*) as count FROM parking_ideas WHERE user_id = ? AND status = 'parked'`
-  ).get(uid);
+  /* 7. Parking ideas counts — PAS MAINTENANT block */
+  const parkingRows = db.prepare(`
+    SELECT dispersion_status, COUNT(*) AS n
+    FROM parking_ideas WHERE user_id = ?
+    GROUP BY dispersion_status
+  `).all(uid);
+
+  const parkingByStatus = {};
+  for (const row of parkingRows) parkingByStatus[row.dispersion_status ?? 'PARKING'] = row.n;
+
+  /* Legacy rows (no dispersion_status) count as PARKING */
+  const parkingCount = (parkingByStatus['PARKING'] ?? 0)
+    + (parkingByStatus['TESTER_PLUS_TARD'] ?? 0)
+    + (parkingByStatus['null'] ?? 0);
+  const agirMaintenantCount = parkingByStatus['AGIR_MAINTENANT'] ?? 0;
 
   /* 8. Project passport */
   const passport = db.prepare(`
@@ -114,7 +125,8 @@ router.get('/', (req, res) => {
     totalProofs,
     lastDecision: lastDecision ?? null,
     lastMarketAction: lastMarketAction ?? null,
-    parkingCount: parkingCount?.count ?? 0,
+    parkingCount,
+    agirMaintenantCount,
     passport: passport ?? null,
     openSupportCount: openSupport?.count ?? 0,
   });

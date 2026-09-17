@@ -23,7 +23,7 @@ export function CockpitPage() {
     progress, pilotage, currentMission,
     proofs, totalProofs,
     lastDecision, lastMarketAction,
-    parkingCount, openSupportCount,
+    parkingCount, agirMaintenantCount, openSupportCount,
   } = data ?? {};
 
   return (
@@ -54,7 +54,11 @@ export function CockpitPage() {
       <LastMarketAction action={lastMarketAction} />
 
       {/* PAS MAINTENANT */}
-      <PasMaintenantBlock pilotage={pilotage} parkingCount={parkingCount ?? 0} />
+      <PasMaintenantBlock
+        pilotage={pilotage}
+        parkingCount={parkingCount ?? 0}
+        agirMaintenantCount={agirMaintenantCount ?? 0}
+      />
 
       {/* CTA fixes */}
       <CockpitCTA openSupportCount={openSupportCount ?? 0} />
