@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { NotificationBell } from '../notifications/NotificationBell';
 import styles from './ParticipantNav.module.css';
 
 const NAV_ITEMS = [
@@ -54,6 +55,9 @@ export function ParticipantNav({ isElite = false, mobileOpen, onClose }) {
           } onClick={onClose}>
             <span>Mes Preuves</span>
           </NavLink>
+          <div className={styles.bellWrap}>
+            <NotificationBell />
+          </div>
         </div>
       </nav>
     </>

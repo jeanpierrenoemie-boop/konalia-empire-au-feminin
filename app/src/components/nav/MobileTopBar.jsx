@@ -1,3 +1,4 @@
+import { NotificationBell } from '../notifications/NotificationBell';
 import styles from './MobileTopBar.module.css';
 
 export function MobileTopBar({ onMenuOpen, pageTitle }) {
@@ -10,6 +11,7 @@ export function MobileTopBar({ onMenuOpen, pageTitle }) {
       </button>
       <span className={styles.title}>{pageTitle || 'Reprise de Contrôle'}</span>
       <div className={styles.spacer} />
+      <NotificationBell />
     </header>
   );
 }

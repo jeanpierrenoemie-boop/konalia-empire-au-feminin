@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getDb, writeAudit } from '../db.js';
+import { getDb, writeAudit, notify } from '../db.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { requireAdmin } from '../middleware/requireRole.js';
 
@@ -55,6 +55,23 @@ router.get('/', (req, res) => {
       user_prelab: userPrelab ?? null,
       prelab_submitted: !!userPrelab,
     };
+  }
+
+  // Lazy pre-lab reminder: generate once if lab < 48h away and no prelab submitted
+  if (next_lab && !next_lab.prelab_submitted && next_lab.hours_until > 0 && next_lab.hours_until < 48) {
+    const alreadyNotified = db.prepare(`
+      SELECT id FROM notifications
+      WHERE user_id = ? AND type = 'prelab_reminder'
+        AND body LIKE ? AND created_at > datetime('now', '-2 days')
+    `).get(uid, `%${next_lab.id}%`);
+    if (!alreadyNotified) {
+      notify(db, {
+        userId: uid,
+        type: 'prelab_reminder',
+        title: `Prépare ton Lab — ${next_lab.title}`,
+        body: `${next_lab.id}|Dans ${Math.round(next_lab.hours_until)}h — soumets ta question prioritaire avant le Lab.`,
+      });
+    }
   }
 
   res.json({

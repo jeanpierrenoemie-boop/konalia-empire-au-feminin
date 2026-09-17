@@ -58,6 +58,7 @@ const MIGRATION_FILES = [
   '010_admin_cockpit.sql',
   '011_audit_event_types.sql',
   '012_frictions_v2.sql',
+  '013_notifications.sql',
 ];
 
 function runMigrations(db) {
@@ -97,4 +98,11 @@ export function writeAudit(db, { actorId, targetUserId = null, eventType, tableN
     afterState  ? JSON.stringify(afterState)  : null,
     reason
   );
+}
+
+export function notify(db, { userId, type, title, body = null }) {
+  db.prepare(`
+    INSERT INTO notifications (id, user_id, type, title, body)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(randomUUID(), userId, type, title, body ?? null);
 }

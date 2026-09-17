@@ -5,7 +5,7 @@
  */
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getDb, writeAudit } from '../db.js';
+import { getDb, writeAudit, notify } from '../db.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { requireAdmin, requireElite } from '../middleware/requireRole.js';
 
@@ -102,6 +102,12 @@ router.post('/admin/sessions', requireAdmin, (req, res) => {
     afterState: { point_number: num, scheduled_at },
   });
 
+  notify(db, {
+    userId: user_id,
+    type: 'elite_appointment',
+    title: `Point ELITE #${num} planifié — ${POINT_TITLES[num]}`,
+    body: scheduled_at ? `Prévu le ${new Date(scheduled_at).toLocaleDateString('fr-FR')}` : null,
+  });
   res.status(201).json(db.prepare(`SELECT * FROM elite_sessions WHERE id = ?`).get(id));
 });
 

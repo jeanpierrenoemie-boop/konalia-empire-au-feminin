@@ -5,7 +5,7 @@
  */
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getDb, writeAudit } from '../db.js';
+import { getDb, writeAudit, notify } from '../db.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { requireAdmin } from '../middleware/requireRole.js';
 
@@ -214,6 +214,12 @@ router.post('/gate-override', (req, res) => {
     reason: reason.trim(),
   });
 
+  notify(db, {
+    userId: user_id,
+    type: 'mission_validated',
+    title: `Mission validée — Sprint ${sprint_number}`,
+    body: exception_type === 'VERT' ? 'Ta mission a été validée (VERT). Continue !' : 'Validation exceptionnelle enregistrée.',
+  });
   res.status(201).json(db.prepare(`SELECT * FROM gate_overrides WHERE id = ?`).get(id));
 });
 
@@ -271,6 +277,12 @@ router.post('/correction-request', (req, res) => {
     tableName: 'admin_interventions',
     recordId: id,
     afterState: { note },
+  });
+  notify(db, {
+    userId: target_user_id,
+    type: 'correction_requested',
+    title: 'Correction demandée',
+    body: note.trim().slice(0, 120),
   });
 
   res.status(201).json(db.prepare(`SELECT * FROM admin_interventions WHERE id = ?`).get(id));

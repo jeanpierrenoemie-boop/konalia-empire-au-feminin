@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import { useCockpit } from './useCockpit';
 import { LoadingState } from '../../components/states/LoadingState';
 import { ErrorState } from '../../components/states/ErrorState';
+import { SignalerModal } from '../../components/frictions/SignalerModal';
 import { CadreHeader } from './cockpit/CadreHeader';
 import { PilotageBlock } from './cockpit/PilotageBlock';
 import { MissionBlock } from './cockpit/MissionBlock';
@@ -15,6 +17,7 @@ import styles from './CockpitPage.module.css';
 export function CockpitPage() {
   const { user } = useAuth();
   const { data, loading, error, reload } = useCockpit();
+  const [signalerOpen, setSignalerOpen] = useState(false);
 
   if (loading) return <LoadingState label="Chargement du cockpit…" />;
   if (error)   return <ErrorState title="Erreur de chargement" message={error} onRetry={reload} />;
@@ -61,7 +64,8 @@ export function CockpitPage() {
       />
 
       {/* CTA fixes */}
-      <CockpitCTA openSupportCount={openSupportCount ?? 0} />
+      <CockpitCTA openSupportCount={openSupportCount ?? 0} onSignaler={() => setSignalerOpen(true)} />
+      {signalerOpen && <SignalerModal onClose={() => setSignalerOpen(false)} />}
     </div>
   );
 }

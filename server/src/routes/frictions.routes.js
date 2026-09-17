@@ -4,7 +4,7 @@
  */
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getDb, writeAudit } from '../db.js';
+import { getDb, writeAudit, notify } from '../db.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { requireAdmin } from '../middleware/requireRole.js';
 
@@ -116,6 +116,14 @@ router.patch('/admin/:id', requireAdmin, (req, res) => {
       tableName: 'pilot_frictions',
       recordId: friction.id,
       afterState: { decision, status, admin_response },
+    });
+  }
+  if (admin_response !== undefined && admin_response?.trim()) {
+    notify(db, {
+      userId: friction.user_id,
+      type: 'support_response',
+      title: 'Réponse à ton signalement',
+      body: admin_response.trim().slice(0, 120),
     });
   }
 
