@@ -397,14 +397,9 @@ function InvitationsPanel() {
 
   useEffect(() => {
     load();
-    fetch(`${API}/api/admin/cockpit`, { credentials: 'include' })
-      .then(r => r.json())
-      .then(d => {
-        const seen = new Set();
-        const cs = (d.participants ?? []).map(p => ({ id: p.cohort_id, name: p.cohort_name }))
-          .filter(c => c.id && !seen.has(c.id) && seen.add(c.id));
-        setCohorts(cs);
-      })
+    fetch(`${API}/api/admin/cohorts`, { credentials: 'include' })
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(d => setCohorts(Array.isArray(d) ? d : []))
       .catch(() => {});
   }, [load]);
 
@@ -468,8 +463,14 @@ function InvitationsPanel() {
           </div>
           <input type="email" placeholder="Email *" required value={form.email} onChange={e => set('email', e.target.value)}
             style={{ padding: '7px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }} />
+          {cohorts.length === 0 ? (
+            <p style={{ margin: 0, fontSize: '13px', color: '#d97706', padding: '8px 10px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '4px' }}>
+              Aucune cohorte disponible. Crée ou initialise une cohorte avant d'envoyer une invitation.
+            </p>
+          ) : null}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             <select required value={form.cohort_id} onChange={e => set('cohort_id', e.target.value)}
+              disabled={cohorts.length === 0}
               style={{ padding: '7px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}>
               <option value="">Cohorte *</option>
               {cohorts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}

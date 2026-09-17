@@ -287,3 +287,67 @@ describe('Elite endpoints', () => {
     expect(res.body.user_id).toBe(eliteId);
   });
 });
+
+/* ── P0.1 — GET /api/admin/cohorts ───────────────────────────────── */
+describe('GET /api/admin/cohorts', () => {
+  it('admin retrieves cohorts list', async () => {
+    const res = await request(app)
+      .get('/api/admin/cohorts')
+      .set('Cookie', adminCookie);
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+    const c = res.body[0];
+    expect(c).toHaveProperty('id');
+    expect(c).toHaveProperty('name');
+    expect(c).toHaveProperty('start_date');
+  });
+
+  it('participant cannot access /api/admin/cohorts (403)', async () => {
+    const res = await request(app)
+      .get('/api/admin/cohorts')
+      .set('Cookie', participantCookie);
+    expect(res.status).toBe(403);
+  });
+
+  it('unauthenticated request is rejected (401)', async () => {
+    const res = await request(app).get('/api/admin/cohorts');
+    expect(res.status).toBe(401);
+  });
+
+  it('cohort with 0 enrollments is still returned', async () => {
+    const db = getDb();
+    const emptyCohortId = randomUUID();
+    db.prepare(`INSERT INTO cohorts (id, name, start_date, created_by) VALUES (?, 'Cohorte Vide', '2026-01-01', ?)`)
+      .run(emptyCohortId, adminId);
+
+    const res = await request(app)
+      .get('/api/admin/cohorts')
+      .set('Cookie', adminCookie);
+    expect(res.status).toBe(200);
+    const found = res.body.find(c => c.id === emptyCohortId);
+    expect(found).toBeTruthy();
+    expect(found.name).toBe('Cohorte Vide');
+  });
+
+  it('cohort with enrolled participants is also returned', async () => {
+    const res = await request(app)
+      .get('/api/admin/cohorts')
+      .set('Cookie', adminCookie);
+    expect(res.status).toBe(200);
+    const found = res.body.find(c => c.id === cohortId);
+    expect(found).toBeTruthy();
+  });
+
+  it('response does not include participant data', async () => {
+    const res = await request(app)
+      .get('/api/admin/cohorts')
+      .set('Cookie', adminCookie);
+    expect(res.status).toBe(200);
+    res.body.forEach(c => {
+      expect(c).not.toHaveProperty('email');
+      expect(c).not.toHaveProperty('user_id');
+      expect(c).not.toHaveProperty('password_hash');
+    });
+  });
+});

@@ -505,4 +505,13 @@ router.patch('/submissions/:id/review', (req, res) => {
   res.json(updated);
 });
 
+/* ── GET /api/admin/cohorts ──────────────────────────────────────── */
+router.get('/cohorts', (req, res) => {
+  const db = getDb();
+  const cohorts = db.prepare(
+    `SELECT id, name, start_date, end_date, status FROM cohorts ORDER BY start_date DESC`
+  ).all();
+  res.json(cohorts);
+});
+
 export default router;
