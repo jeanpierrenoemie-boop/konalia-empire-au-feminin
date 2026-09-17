@@ -408,7 +408,7 @@ CREATE INDEX IF NOT EXISTS idx_sprint_gate_log_user ON sprint_gate_log(user_id);
 CREATE TABLE IF NOT EXISTS gate_overrides (
   id             VARCHAR(36) PRIMARY KEY,
   user_id        VARCHAR(36) NOT NULL REFERENCES users(id),
-  sprint_number  INTEGER     NOT NULL CHECK(sprint_number BETWEEN 1 AND 12),
+  sprint_number  TEXT        NOT NULL,
   override_by    VARCHAR(36) NOT NULL REFERENCES users(id),
   reason         TEXT        NOT NULL CHECK(length(trim(reason)) >= 10),
   exception_type TEXT        NOT NULL DEFAULT 'VERT' CHECK(exception_type IN ('VERT','ORANGE')),

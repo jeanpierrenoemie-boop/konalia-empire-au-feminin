@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
   `, [req.user.id, limit]);
 
   const unreadRow = await db.queryOne(
-    `SELECT COUNT(*) AS n FROM notifications WHERE user_id = ? AND read = 0`,
+    `SELECT COUNT(*) AS n FROM notifications WHERE user_id = ? AND read = FALSE`,
     [req.user.id]
   );
 
@@ -39,14 +39,14 @@ router.post('/:id/read', async (req, res) => {
   );
   if (!n) return res.status(404).json({ error: 'Notification introuvable' });
 
-  await db.execute(`UPDATE notifications SET read = 1 WHERE id = ?`, [req.params.id]);
+  await db.execute(`UPDATE notifications SET read = TRUE WHERE id = ?`, [req.params.id]);
   res.json({ ok: true });
 });
 
 /* POST /api/notifications/read-all — mark all read */
 router.post('/read-all', async (req, res) => {
   const db = getAdapter();
-  await db.execute(`UPDATE notifications SET read = 1 WHERE user_id = ?`, [req.user.id]);
+  await db.execute(`UPDATE notifications SET read = TRUE WHERE user_id = ?`, [req.user.id]);
   res.json({ ok: true });
 });
 

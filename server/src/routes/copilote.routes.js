@@ -230,7 +230,7 @@ router.post('/apply-update', async (req, res) => {
     const setClauses = fields.map(f => `${f} = ?`).join(', ');
     const values = fields.map(f => updates[f]);
     await db.execute(
-      `UPDATE pilotage_state SET ${setClauses}, updated_at = datetime('now'), updated_by_user = 0 WHERE user_id = ?`,
+      `UPDATE pilotage_state SET ${setClauses}, updated_at = datetime('now'), updated_by_user = FALSE WHERE user_id = ?`,
       [...values, userId]
     );
   } else {

@@ -64,7 +64,7 @@ export function resolveOwner(db, tableName, recordId) {
  * Admin bypasses. Sync for raw SQLite db, async for adapter.
  */
 export function assertOwnership(user, db, tableName, recordId) {
-  if (user.role === ROLES.NOEMIE_ADMIN) return;
+  if (user.role === ROLES.NOEMIE_ADMIN) return Promise.resolve();
 
   if (_isRawSQLite(db)) {
     const ownerId = resolveOwner(db, tableName, recordId);

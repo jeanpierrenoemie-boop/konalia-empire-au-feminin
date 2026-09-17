@@ -156,7 +156,7 @@ function gateS8Sync(db, userId) {
 }
 function gateS9Sync(db, userId) {
   return evaluate([
-    { label: 'Au moins un contact contacte', met: _marketContactsCountSync(db, userId, ['contacted','conversation_started','interested','meeting_done','converted']) > 0 },
+    { label: 'Au moins un contact contacte', met: _marketContactsCountSync(db, userId, ['en_cours','converti']) > 0 },
   ], _getOverrideSync(db, userId, 9));
 }
 function gateS10Sync(db, userId) {
@@ -209,7 +209,7 @@ async function gateS8(db, userId) {
   return evaluate([{ label: 'Sprint 7 complete', met: hasMission7 }, { label: 'Preuve deposee etape D', met: hasProofD > 0 }, { label: 'Modele de revenus documente', met: hasRevenueDecision }], override);
 }
 async function gateS9(db, userId) {
-  const [contacted, override] = await Promise.all([_marketContactsCount(db, userId, ['contacted','conversation_started','interested','meeting_done','converted']), _getOverride(db, userId, 9)]);
+  const [contacted, override] = await Promise.all([_marketContactsCount(db, userId, ['en_cours','converti']), _getOverride(db, userId, 9)]);
   return evaluate([{ label: 'Au moins un contact contacte', met: contacted > 0 }], override);
 }
 async function gateS10(db, userId) {

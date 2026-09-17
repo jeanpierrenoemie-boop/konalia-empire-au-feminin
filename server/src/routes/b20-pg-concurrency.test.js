@@ -158,15 +158,13 @@ describeIf('BUILD 20.1 — PostgreSQL concurrency & isolation', () => {
       /* Two concurrent transactions attempting to consume the same token */
       const consumeToken = async () => {
         return db.transaction(async tx => {
-          await tx.execute(
-            "UPDATE password_resets SET used_at = datetime('now') WHERE token_hash = ? AND used_at IS NULL",
+          /* In PG, UPDATE ... WHERE used_at IS NULL blocks if another tx holds the row lock.
+             The second concurrent tx finds 0 rows after the first commits. */
+          const claimed = await tx.queryOne(
+            "UPDATE password_resets SET used_at = NOW() WHERE token_hash = ? AND used_at IS NULL RETURNING id",
             [hash]
           );
-          const consumed = await tx.queryOne(
-            'SELECT id FROM password_resets WHERE token_hash = ? AND used_at IS NOT NULL',
-            [hash]
-          );
-          if (!consumed) throw Object.assign(new Error('TOKEN_ALREADY_CONSUMED'), { code: 'CONSUMED' });
+          if (!claimed) throw Object.assign(new Error('TOKEN_ALREADY_CONSUMED'), { code: 'CONSUMED' });
           await tx.execute(`UPDATE users SET password_hash = 'newhash' WHERE id = ?`, [userId]);
           return 'success';
         });
@@ -214,7 +212,7 @@ describeIf('BUILD 20.1 — PostgreSQL concurrency & isolation', () => {
           await db.transaction(async tx => {
             await tx.execute(
               `INSERT INTO users (id, email, password_hash, role, tier, first_name, cohort_id, is_test)
-               VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'Pilote', ?, 0)`,
+               VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'Pilote', ?, FALSE)`,
               [userId, sharedEmail, 'fakehash', cohortId]
             );
             await tx.execute(
@@ -413,7 +411,7 @@ describeIf('BUILD 20.1 — PostgreSQL concurrency & isolation', () => {
 
     it('gateS9 returns VERT after adding a market contact', async () => {
       await db.execute(
-        `INSERT INTO market_contacts (id, user_id, name, status) VALUES (?, ?, 'Contact Test', 'contacted')`,
+        `INSERT INTO market_contacts (id, user_id, name, status) VALUES (?, ?, 'Contact Test', 'en_cours')`,
         [randomUUID(), userId]
       );
       const { evaluateGate } = await import('../gates.js');

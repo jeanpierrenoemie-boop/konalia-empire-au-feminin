@@ -213,7 +213,7 @@ router.post('/activate', async (req, res) => {
       /* Create user account */
       await tx.execute(`
         INSERT INTO users (id, email, password_hash, role, tier, first_name, cohort_id, is_test)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+        VALUES (?, ?, ?, ?, ?, ?, ?, FALSE)
       `, [userId, inv.email, passwordHash, role, tier, inv.first_name, inv.cohort_id]);
 
       /* Create enrollment */

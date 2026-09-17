@@ -217,7 +217,7 @@ describeIf('BUILD 20 — PostgreSQL critical path tests', () => {
       await db.transaction(async tx => {
         await tx.execute(
           `INSERT INTO users (id, email, password_hash, role, tier, first_name, cohort_id, is_test)
-           VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', ?, ?, 0)`,
+           VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', ?, ?, FALSE)`,
           [userId, `pgactivate+${invId.slice(0, 6)}@example.com`, 'fakehash', 'Pilote', cohortId]
         );
         await tx.execute(
@@ -269,7 +269,7 @@ describeIf('BUILD 20 — PostgreSQL critical path tests', () => {
         db.transaction(async tx => {
           await tx.execute(
             `INSERT INTO users (id, email, password_hash, role, tier, first_name, cohort_id, is_test)
-             VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'PartialUser', ?, 0)`,
+             VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'PartialUser', ?, FALSE)`,
             [userId, `pgpartial+${userId.slice(0, 6)}@example.com`, 'fakehash', cohortId]
           );
           throw new Error('activation error — should rollback');

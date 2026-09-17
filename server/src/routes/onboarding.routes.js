@@ -140,7 +140,7 @@ router.post('/complete', async (req, res) => {
       const f = sections.F ?? {};
       await tx.execute(`
         INSERT INTO pilotage_state (id, user_id, current_priority, priority_reason, next_action, updated_by_user)
-        VALUES (?, ?, ?, ?, ?, 1)
+        VALUES (?, ?, ?, ?, ?, TRUE)
       `, [
         randomUUID(),
         req.user.id,
@@ -173,12 +173,12 @@ router.post('/complete', async (req, res) => {
 
     if (existingProfile) {
       await tx.execute(
-        `UPDATE profiles SET onboarding_completed = 1, updated_at = datetime('now') WHERE user_id = ?`,
+        `UPDATE profiles SET onboarding_completed = TRUE, updated_at = datetime('now') WHERE user_id = ?`,
         [req.user.id]
       );
     } else {
       await tx.execute(`
-        INSERT INTO profiles (user_id, onboarding_completed) VALUES (?, 1)
+        INSERT INTO profiles (user_id, onboarding_completed) VALUES (?, TRUE)
       `, [req.user.id]);
     }
 
