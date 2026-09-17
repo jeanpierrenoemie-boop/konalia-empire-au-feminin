@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ParticipantLayout } from '../layouts/ParticipantLayout';
 import { AdminLayout } from '../layouts/AdminLayout';
+import { RequireAuth, RequireElite, RequireAdmin } from '../auth/RequireAuth';
+import { LoginPage } from '../pages/LoginPage';
 import { CockpitPage } from '../pages/participant/CockpitPage';
 import { ParcoursPage } from '../pages/participant/ParcoursPage';
 import { CopilotePage } from '../pages/participant/CopilotePage';
@@ -11,13 +13,12 @@ import { PreuvesPage } from '../pages/participant/PreuvesPage';
 import { ElitePage } from '../pages/participant/ElitePage';
 import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage';
 
-/* Participant demo context — will be replaced by auth in a future build */
-const DEMO_PARTICIPANT = { tier: 'STARTER' };
-
 export const router = createBrowserRouter([
+  { path: '/login', element: <LoginPage /> },
+
   {
     path: '/',
-    element: <ParticipantLayout participant={DEMO_PARTICIPANT} />,
+    element: <RequireAuth><ParticipantLayout /></RequireAuth>,
     children: [
       { index: true, element: <Navigate to="/cockpit" replace /> },
       { path: 'cockpit',    element: <CockpitPage />,    handle: { title: 'Mon Cockpit' } },
@@ -27,12 +28,17 @@ export const router = createBrowserRouter([
       { path: 'qg',         element: <QGPage />,         handle: { title: 'Le QG' } },
       { path: 'ressources', element: <RessourcesPage />, handle: { title: 'Mes Ressources' } },
       { path: 'preuves',    element: <PreuvesPage />,    handle: { title: 'Mes Preuves' } },
-      { path: 'elite',      element: <ElitePage />,      handle: { title: 'Mes Points ELITE' } },
+      {
+        path: 'elite',
+        element: <RequireElite><ElitePage /></RequireElite>,
+        handle: { title: 'Mes Points ELITE' },
+      },
     ],
   },
+
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: <RequireAdmin><AdminLayout /></RequireAdmin>,
     children: [
       { index: true, element: <AdminOverviewPage /> },
     ],

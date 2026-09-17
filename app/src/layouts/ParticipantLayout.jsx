@@ -3,13 +3,15 @@ import { Outlet, useMatches } from 'react-router-dom';
 import { ParticipantNav } from '../components/nav/ParticipantNav';
 import { MobileTopBar } from '../components/nav/MobileTopBar';
 import styles from './ParticipantLayout.module.css';
+// useAuth imported for future use (logout in nav)
+import { useIsElite } from '../auth/AuthContext';
 
-export function ParticipantLayout({ participant }) {
+export function ParticipantLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const matches = useMatches();
   const currentMatch = matches[matches.length - 1];
   const pageTitle = currentMatch?.handle?.title;
-  const isElite = participant?.tier === 'ELITE';
+  const isElite = useIsElite();
 
   return (
     <div className={styles.shell}>
