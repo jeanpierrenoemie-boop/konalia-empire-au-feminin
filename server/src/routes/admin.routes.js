@@ -402,4 +402,107 @@ router.patch('/sprint-content/:n', (req, res) => {
   res.json(row);
 });
 
+/* ── POST /api/admin/missions ────────────────────────────────── */
+router.post('/missions', (req, res) => {
+  const db = getDb();
+  const {
+    cohort_id = null,
+    cadre_step,
+    sprint_number = null,
+    title,
+    description = '',
+    mission_type = 'action',
+    is_required = 1,
+    sort_order = 0,
+  } = req.body ?? {};
+
+  if (!cadre_step || !['C','A','D','R','E'].includes(cadre_step)) {
+    return res.status(400).json({ error: 'cadre_step requis (C, A, D, R ou E)' });
+  }
+  if (!title || !title.trim()) {
+    return res.status(400).json({ error: 'title requis' });
+  }
+  const validTypes = ['action','reflection','market','proof','deliverable'];
+  if (!validTypes.includes(mission_type)) {
+    return res.status(400).json({ error: `mission_type invalide — valeurs: ${validTypes.join(', ')}` });
+  }
+
+  const id = randomUUID();
+  db.prepare(`
+    INSERT INTO missions (id, cohort_id, cadre_step, sprint_number, title, description, mission_type, is_required, sort_order, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, cohort_id, cadre_step, sprint_number, title.trim(), description ?? '', mission_type, is_required ? 1 : 0, sort_order, req.user.id);
+
+  writeAudit(db, {
+    actorId: req.user.id,
+    targetUserId: null,
+    eventType: 'mission_created',
+    tableName: 'missions',
+    afterState: { id, title, cadre_step, sprint_number },
+  });
+
+  const mission = db.prepare(`SELECT * FROM missions WHERE id = ?`).get(id);
+  res.status(201).json(mission);
+});
+
+/* ── GET /api/admin/submissions ─────────────────────────────── */
+router.get('/submissions', (req, res) => {
+  const db = getDb();
+  const { status = 'submitted', cohort_id } = req.query;
+
+  const submissions = cohort_id
+    ? db.prepare(`
+        SELECT ms.*, u.first_name, u.email,
+               m.title AS mission_title, m.sprint_number, m.cadre_step
+        FROM mission_submissions ms
+        JOIN users u ON u.id = ms.user_id
+        JOIN missions m ON m.id = ms.mission_id
+        WHERE ms.status = ? AND ms.cohort_id = ?
+        ORDER BY ms.created_at ASC
+      `).all(status, cohort_id)
+    : db.prepare(`
+        SELECT ms.*, u.first_name, u.email,
+               m.title AS mission_title, m.sprint_number, m.cadre_step
+        FROM mission_submissions ms
+        JOIN users u ON u.id = ms.user_id
+        JOIN missions m ON m.id = ms.mission_id
+        WHERE ms.status = ?
+        ORDER BY ms.created_at ASC
+      `).all(status);
+
+  res.json(submissions);
+});
+
+/* ── PATCH /api/admin/submissions/:id/review ─────────────────── */
+router.patch('/submissions/:id/review', (req, res) => {
+  const db = getDb();
+  const { id } = req.params;
+  const { decision, note } = req.body ?? {};
+
+  if (!decision || !['approved','rejected'].includes(decision)) {
+    return res.status(400).json({ error: 'decision doit être approved ou rejected' });
+  }
+
+  const submission = db.prepare(`SELECT * FROM mission_submissions WHERE id = ?`).get(id);
+  if (!submission) return res.status(404).json({ error: 'Soumission introuvable' });
+
+  db.prepare(`
+    UPDATE mission_submissions
+    SET status = ?, reviewer_note = ?, reviewed_by = ?, reviewed_at = datetime('now'), updated_at = datetime('now')
+    WHERE id = ?
+  `).run(decision, note ?? null, req.user.id, id);
+
+  const eventType = decision === 'approved' ? 'mission_validated' : 'mission_correction_requested';
+  writeAudit(db, {
+    actorId: req.user.id,
+    targetUserId: submission.user_id,
+    eventType,
+    tableName: 'mission_submissions',
+    afterState: { submission_id: id, decision, note },
+  });
+
+  const updated = db.prepare(`SELECT * FROM mission_submissions WHERE id = ?`).get(id);
+  res.json(updated);
+});
+
 export default router;

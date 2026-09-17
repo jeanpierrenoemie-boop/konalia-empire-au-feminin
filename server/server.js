@@ -18,6 +18,7 @@ import copiloteRoutes from './src/routes/copilote.routes.js';
 import marcheRoutes from './src/routes/marche.routes.js';
 import frictionsRoutes from './src/routes/frictions.routes.js';
 import notificationsRoutes from './src/routes/notifications.routes.js';
+import missionsRouter from './src/routes/missions.routes.js';
 
 export function createApp() {
   const app = express();
@@ -35,6 +36,7 @@ export function createApp() {
   app.use('/api/onboarding', onboardingRoutes);
   app.use('/api/cockpit', cockpitRoutes);
   app.use('/api/parcours', parcoursRoutes);
+  app.use('/api/parcours', missionsRouter);
   app.use('/api/passeport', passeportRoutes);
   app.use('/api/decisions', decisionsRoutes);
   app.use('/api/preuves', preuvesRoutes);
