@@ -325,4 +325,81 @@ router.get('/audit', (req, res) => {
   res.json(events);
 });
 
+/* ── GET /api/admin/sprint-content/:n ───────────────────────────────── */
+router.get('/sprint-content/:n', (req, res) => {
+  const db = getDb();
+  const n = parseInt(req.params.n, 10);
+  if (isNaN(n) || n < 1 || n > 12) return res.status(400).json({ error: 'Numéro de sprint invalide' });
+
+  const { cohort_id } = req.query;
+  const row = cohort_id
+    ? db.prepare(`SELECT * FROM sprint_content WHERE sprint_number = ? AND cohort_id = ?`).get(n, cohort_id)
+    : db.prepare(`SELECT * FROM sprint_content WHERE sprint_number = ? AND cohort_id IS NULL`).get(n);
+
+  res.json(row ?? null);
+});
+
+/* ── POST /api/admin/sprint-content/:n ──────────────────────────────── */
+router.post('/sprint-content/:n', (req, res) => {
+  const db = getDb();
+  const n = parseInt(req.params.n, 10);
+  if (isNaN(n) || n < 1 || n > 12) return res.status(400).json({ error: 'Numéro de sprint invalide' });
+
+  const { cohort_id = null, result, understand, mission, support, deliverable, unlock_reason } = req.body ?? {};
+
+  const existing = cohort_id
+    ? db.prepare(`SELECT id FROM sprint_content WHERE sprint_number = ? AND cohort_id = ?`).get(n, cohort_id)
+    : db.prepare(`SELECT id FROM sprint_content WHERE sprint_number = ? AND cohort_id IS NULL`).get(n);
+  if (existing) return res.status(409).json({ error: 'Contenu déjà existant pour ce sprint — utiliser PATCH pour modifier' });
+
+  const id = randomUUID();
+  db.prepare(`
+    INSERT INTO sprint_content (id, sprint_number, cohort_id, result, understand, mission, support, deliverable, unlock_reason)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, n, cohort_id, result ?? null, understand ?? null, mission ?? null, support ?? null, deliverable ?? null, unlock_reason ?? null);
+
+  writeAudit(db, {
+    actorId: req.user.id,
+    targetUserId: null,
+    eventType: 'sprint_content_created',
+    tableName: 'sprint_content',
+    afterState: { sprint_number: n, cohort_id },
+  });
+
+  const row = db.prepare(`SELECT * FROM sprint_content WHERE id = ?`).get(id);
+  res.status(201).json(row);
+});
+
+/* ── PATCH /api/admin/sprint-content/:n ─────────────────────────────── */
+router.patch('/sprint-content/:n', (req, res) => {
+  const db = getDb();
+  const n = parseInt(req.params.n, 10);
+  if (isNaN(n) || n < 1 || n > 12) return res.status(400).json({ error: 'Numéro de sprint invalide' });
+
+  const { cohort_id = null, ...fields } = req.body ?? {};
+  const ALLOWED = ['result', 'understand', 'mission', 'support', 'deliverable', 'unlock_reason'];
+  const updates = Object.fromEntries(Object.entries(fields).filter(([k]) => ALLOWED.includes(k)));
+  if (Object.keys(updates).length === 0) return res.status(400).json({ error: 'Aucun champ modifiable fourni' });
+
+  const existing = cohort_id
+    ? db.prepare(`SELECT id FROM sprint_content WHERE sprint_number = ? AND cohort_id = ?`).get(n, cohort_id)
+    : db.prepare(`SELECT id FROM sprint_content WHERE sprint_number = ? AND cohort_id IS NULL`).get(n);
+  if (!existing) return res.status(404).json({ error: 'Contenu introuvable pour ce sprint' });
+
+  const setClauses = Object.keys(updates).map(k => `${k} = ?`).join(', ');
+  db.prepare(`UPDATE sprint_content SET ${setClauses}, updated_at = datetime('now') WHERE id = ?`)
+    .run(...Object.values(updates), existing.id);
+
+  writeAudit(db, {
+    actorId: req.user.id,
+    targetUserId: null,
+    eventType: 'sprint_content_updated',
+    tableName: 'sprint_content',
+    afterState: { sprint_number: n, cohort_id, ...updates },
+  });
+
+  const row = db.prepare(`SELECT * FROM sprint_content WHERE id = ?`).get(existing.id);
+  res.json(row);
+});
+
 export default router;

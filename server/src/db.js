@@ -59,6 +59,7 @@ const MIGRATION_FILES = [
   '011_audit_event_types.sql',
   '012_frictions_v2.sql',
   '013_notifications.sql',
+  '014_sprint_content.sql',
 ];
 
 function runMigrations(db) {

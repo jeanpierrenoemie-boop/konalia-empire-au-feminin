@@ -30,6 +30,21 @@ router.get('/', requireAuth, (req, res) => {
   const passedMap = {};
   for (const row of passedRows) passedMap[row.sprint_number] = row;
 
+  /* Sprint content: cohort-specific rows take priority over global (cohort_id IS NULL) */
+  const cohortId = enrollment?.cohort_id ?? null;
+  const contentRows = db.prepare(`
+    SELECT sprint_number, result, understand, mission, support, deliverable, unlock_reason,
+           cohort_id IS NULL AS is_global
+    FROM sprint_content
+    WHERE cohort_id = ? OR cohort_id IS NULL
+    ORDER BY sprint_number, is_global ASC
+  `).all(cohortId ?? null);
+  const contentMap = {};
+  for (const row of contentRows) {
+    /* First seen wins per sprint_number (cohort-specific = is_global=0 sorts first) */
+    if (!contentMap[row.sprint_number]) contentMap[row.sprint_number] = row;
+  }
+
   const sprints = SPRINTS.map(sprint => {
     const passed = passedMap[sprint.number];
     const isCurrent = currentProgress?.sprint_number === sprint.number;
@@ -49,16 +64,18 @@ router.get('/', requireAuth, (req, res) => {
       gate = evaluateGate(db, userId, sprint.number + 1 <= 12 ? sprint.number + 1 : 'final');
     }
 
+    const content = contentMap[sprint.number];
+
     return {
       number: sprint.number,
       cadre_step: sprint.cadre_step,
       title: sprint.title,
-      result: sprint.result,
-      understand: sprint.understand,
-      mission: sprint.mission,
-      support: sprint.support,
-      deliverable: sprint.deliverable,
-      unlock_reason: sprint.unlock_reason,
+      result: content?.result ?? sprint.result,
+      understand: content?.understand ?? sprint.understand,
+      mission: content?.mission ?? sprint.mission,
+      support: content?.support ?? sprint.support,
+      deliverable: content?.deliverable ?? sprint.deliverable,
+      unlock_reason: content?.unlock_reason ?? sprint.unlock_reason,
       state,
       week_in_sprint: isCurrent ? (currentProgress.week_in_sprint ?? null) : null,
       unlocked_at: passed?.passed_at ?? (isCurrent ? currentProgress.unlocked_at : null) ?? null,
