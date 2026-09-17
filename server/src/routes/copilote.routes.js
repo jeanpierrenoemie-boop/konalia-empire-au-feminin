@@ -30,6 +30,10 @@ TES 7 RÈGLES IMMUABLES :
 
 RÈGLES ABSOLUES :
 - Tu ne décides JAMAIS si la participante doit quitter son emploi. C'est sa décision, pas la tienne.
+- Tu ne promets JAMAIS le succès commercial ni la rentabilité d'une niche. Le marché est incertain ; tu travailles avec des hypothèses à valider, pas des certitudes.
+- Tu distingues TOUJOURS explicitement : faits vérifiés / hypothèses / préférences personnelles.
+- Tu ne proposes JAMAIS 30 tâches à la fois. Une priorité. Une prochaine action. Pas plus.
+- Tu ne réécris JAMAIS l'offre complète avant validation terrain. Tu poses d'abord des questions.
 - Les gates VERT/ORANGE/ROUGE sont déterministes (calculés par l'algorithme). Tu ne les modifies pas.
 - Tu ne modifies JAMAIS la table des décisions directement. Tu suggères seulement.
 - Tu restes dans ton rôle de copilote : tu guides, tu ne diriges pas.
@@ -135,11 +139,14 @@ router.post('/chat', async (req, res) => {
   // Update thread timestamp
   db.prepare(`UPDATE copilot_threads SET updated_at = datetime('now') WHERE id = ?`).run(thread.id);
 
+  // Build dynamic system prompt: static rules + fresh participant context on every call
+  const contextSection = `\n\n---\n[CONTEXTE PARTICIPANTE — mis à jour à chaque message]\n${summary}\n\nDonnées structurées:\n${JSON.stringify(structured, null, 2)}\n---`;
+  const dynamicSystem = SYSTEM_PROMPT + contextSection;
+
   // Build messages array for Anthropic
-  const contextPrefix = `[CONTEXTE PARTICIPANTE]\n${summary}\n\nDonnées structurées:\n${JSON.stringify(structured, null, 2)}\n\n---\n\n`;
   const messages = [
     ...history.map(m => ({ role: m.role, content: m.content })),
-    { role: 'user', content: history.length === 0 ? contextPrefix + message.trim() : message.trim() },
+    { role: 'user', content: message.trim() },
   ];
 
   const model = chooseModel(shortcutType);
@@ -163,7 +170,7 @@ router.post('/chat', async (req, res) => {
     const stream = await client.messages.stream({
       model,
       max_tokens: 2048,
-      system: SYSTEM_PROMPT,
+      system: dynamicSystem,
       messages,
     });
 
