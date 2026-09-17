@@ -60,6 +60,7 @@ const MIGRATION_FILES = [
   '012_frictions_v2.sql',
   '013_notifications.sql',
   '014_sprint_content.sql',
+  '015_invitations.sql',
 ];
 
 function runMigrations(db) {

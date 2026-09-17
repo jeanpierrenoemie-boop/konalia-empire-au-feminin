@@ -375,6 +375,166 @@ function SubmissionsPanel() {
   );
 }
 
+/* ── Invitations panel ────────────────────────────────────────────── */
+const STATUS_FR = { pending: 'En attente', activated: 'Activée', expired: 'Expirée', revoked: 'Révoquée' };
+const STATUS_COLOR = { pending: '#2563eb', activated: '#16a34a', expired: '#9ca3af', revoked: '#dc2626' };
+
+function InvitationsPanel() {
+  const [invitations, setInvitations] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [cohorts, setCohorts] = useState([]);
+  const [form, setForm] = useState({ first_name: '', last_name: '', email: '', cohort_id: '', plan: 'STARTER' });
+  const [saving, setSaving] = useState(false);
+  const [formErr, setFormErr] = useState(null);
+  const [copyMsg, setCopyMsg] = useState({});
+
+  const load = useCallback(() => {
+    fetch(`${API}/api/invitations`, { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => setInvitations(Array.isArray(d) ? d : []))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    load();
+    fetch(`${API}/api/admin/cockpit`, { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => {
+        const seen = new Set();
+        const cs = (d.participants ?? []).map(p => ({ id: p.cohort_id, name: p.cohort_name }))
+          .filter(c => c.id && !seen.has(c.id) && seen.add(c.id));
+        setCohorts(cs);
+      })
+      .catch(() => {});
+  }, [load]);
+
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  async function handleCreate(e) {
+    e.preventDefault();
+    setSaving(true);
+    setFormErr(null);
+    const r = await fetch(`${API}/api/invitations`, {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    });
+    const body = await r.json().catch(() => ({}));
+    setSaving(false);
+    if (!r.ok) { setFormErr(body.error ?? 'Erreur'); return; }
+    setShowForm(false);
+    setForm({ first_name: '', last_name: '', email: '', cohort_id: '', plan: 'STARTER' });
+    setCopyMsg(m => ({ ...m, [body.id]: body.activation_url }));
+    load();
+  }
+
+  async function regenerate(id) {
+    const r = await fetch(`${API}/api/invitations/${id}/regenerate`, {
+      method: 'POST', credentials: 'include',
+    });
+    const body = await r.json().catch(() => ({}));
+    if (r.ok) {
+      setCopyMsg(m => ({ ...m, [id]: body.activation_url }));
+      load();
+    }
+  }
+
+  function copy(url, id) {
+    navigator.clipboard.writeText(url).then(() => {
+      setCopyMsg(m => ({ ...m, [`copied_${id}`]: true }));
+      setTimeout(() => setCopyMsg(m => { const n = { ...m }; delete n[`copied_${id}`]; return n; }), 2000);
+    });
+  }
+
+  return (
+    <div style={{ marginBottom: '24px', border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden' }}>
+      <div style={{ padding: '12px 16px', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+        <h2 style={{ margin: 0, fontSize: '15px', fontWeight: 600 }}>Inviter une participante</h2>
+        <button
+          style={{ padding: '5px 12px', fontSize: '13px', background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+          onClick={() => setShowForm(s => !s)}
+        >
+          {showForm ? 'Fermer' : '+ Nouvelle invitation'}
+        </button>
+      </div>
+
+      {showForm && (
+        <form onSubmit={handleCreate} style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '10px', borderBottom: '1px solid #eee' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <input placeholder="Prénom *" required value={form.first_name} onChange={e => set('first_name', e.target.value)}
+              style={{ padding: '7px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }} />
+            <input placeholder="Nom" value={form.last_name} onChange={e => set('last_name', e.target.value)}
+              style={{ padding: '7px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }} />
+          </div>
+          <input type="email" placeholder="Email *" required value={form.email} onChange={e => set('email', e.target.value)}
+            style={{ padding: '7px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <select required value={form.cohort_id} onChange={e => set('cohort_id', e.target.value)}
+              style={{ padding: '7px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}>
+              <option value="">Cohorte *</option>
+              {cohorts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+            <select value={form.plan} onChange={e => set('plan', e.target.value)}
+              style={{ padding: '7px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}>
+              <option value="STARTER">STARTER</option>
+              <option value="ELITE">ELITE</option>
+            </select>
+          </div>
+          {formErr && <p style={{ margin: 0, fontSize: '13px', color: '#dc2626' }}>{formErr}</p>}
+          <button type="submit" disabled={saving}
+            style={{ padding: '8px', background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: saving ? 'wait' : 'pointer' }}>
+            {saving ? 'Création…' : 'Créer l\'invitation'}
+          </button>
+        </form>
+      )}
+
+      {invitations.map(inv => (
+        <div key={inv.id} style={{ padding: '10px 16px', borderBottom: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+            <div>
+              <span style={{ fontWeight: 600, fontSize: '14px' }}>{inv.first_name} {inv.last_name}</span>
+              <span style={{ color: '#555', fontSize: '13px', marginLeft: '8px' }}>{inv.email}</span>
+              <span style={{ fontSize: '12px', color: '#888', marginLeft: '8px' }}>{inv.plan} · {inv.cohort_name}</span>
+            </div>
+            <span style={{ fontSize: '11px', fontWeight: 700, color: STATUS_COLOR[inv.status] ?? '#888',
+              background: `${STATUS_COLOR[inv.status] ?? '#888'}18`, padding: '2px 8px', borderRadius: '10px' }}>
+              {STATUS_FR[inv.status] ?? inv.status}
+            </span>
+          </div>
+          {inv.status !== 'activated' && (
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+              {copyMsg[inv.id] && (
+                <button
+                  style={{ fontSize: '12px', padding: '4px 10px', background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  onClick={() => copy(copyMsg[inv.id], inv.id)}
+                >
+                  {copyMsg[`copied_${inv.id}`] ? 'Copié ✓' : 'Copier le lien d\'invitation'}
+                </button>
+              )}
+              {inv.status !== 'activated' && (
+                <button
+                  style={{ fontSize: '12px', padding: '4px 10px', background: 'transparent', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer', color: '#555' }}
+                  onClick={() => regenerate(inv.id)}
+                >
+                  {inv.status === 'expired' || inv.status === 'revoked' ? 'Régénérer' : 'Nouveau lien'}
+                </button>
+              )}
+              {inv.expires_at && inv.status === 'pending' && (
+                <span style={{ fontSize: '11px', color: '#888' }}>
+                  Expire le {new Date(inv.expires_at).toLocaleDateString('fr-FR')}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      ))}
+      {invitations.length === 0 && !showForm && (
+        <p style={{ padding: '12px 16px', margin: 0, color: '#666', fontSize: '13px' }}>Aucune invitation créée.</p>
+      )}
+    </div>
+  );
+}
+
 export function AdminOverviewPage() {
   const { data, loading, error, reload } = useCockpit();
   const [selected, setSelected] = useState(null);
@@ -392,6 +552,7 @@ export function AdminOverviewPage() {
       </div>
 
       <SubmissionsPanel />
+      <InvitationsPanel />
 
       <div className={styles.layout}>
         <div className={styles.list}>

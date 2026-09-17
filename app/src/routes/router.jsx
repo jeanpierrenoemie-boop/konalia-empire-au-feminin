@@ -22,9 +22,11 @@ import { FicheConversation } from '../pages/participant/Marche/FicheConversation
 import { CarteSignaux } from '../pages/participant/Marche/CarteSignaux';
 import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage';
 import { FrictionsPage } from '../pages/admin/FrictionsPage';
+import { ActivationPage } from '../pages/ActivationPage';
 
 export const router = createBrowserRouter([
-  { path: '/login', element: <LoginPage /> },
+  { path: '/login',    element: <LoginPage /> },
+  { path: '/activate', element: <ActivationPage /> },
 
   /* Onboarding — authenticated but not yet onboarded */
   {

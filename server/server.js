@@ -19,6 +19,7 @@ import marcheRoutes from './src/routes/marche.routes.js';
 import frictionsRoutes from './src/routes/frictions.routes.js';
 import notificationsRoutes from './src/routes/notifications.routes.js';
 import missionsRouter from './src/routes/missions.routes.js';
+import invitationsRouter from './src/routes/invitations.routes.js';
 
 export function createApp() {
   const app = express();
@@ -48,6 +49,7 @@ export function createApp() {
   app.use('/api/admin', adminCockpitRoutes);
   app.use('/api/frictions', frictionsRoutes);
   app.use('/api/notifications', notificationsRoutes);
+  app.use('/api/invitations', invitationsRouter);
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
 
