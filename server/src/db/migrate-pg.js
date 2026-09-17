@@ -14,11 +14,9 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-async function main() {
-  const connectionString = process.env.DATABASE_URL;
+export async function runPgMigrations(connectionString) {
   if (!connectionString) {
-    console.error('ERROR: DATABASE_URL environment variable is required.');
-    process.exit(1);
+    throw new Error('runPgMigrations: connectionString is required');
   }
 
   const { Pool } = pg;
@@ -32,19 +30,19 @@ async function main() {
 
   const client = await pool.connect();
   try {
-    console.log('Running PostgreSQL schema migration…');
-    await client.query('BEGIN');
     await client.query(sql);
-    await client.query('COMMIT');
-    console.log('Migration complete.');
-  } catch (err) {
-    await client.query('ROLLBACK');
-    console.error('Migration failed:', err.message);
-    process.exit(1);
   } finally {
     client.release();
     await pool.end();
   }
 }
 
-main();
+/* CLI entrypoint */
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const url = process.env.DATABASE_URL;
+  if (!url) { console.error('ERROR: DATABASE_URL required'); process.exit(1); }
+  console.log('Running PostgreSQL schema migration…');
+  runPgMigrations(url)
+    .then(() => { console.log('Migration complete.'); process.exit(0); })
+    .catch(e => { console.error('Migration failed:', e.message); process.exit(1); });
+}
