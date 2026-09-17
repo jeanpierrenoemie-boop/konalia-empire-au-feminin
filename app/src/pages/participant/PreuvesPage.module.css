@@ -1,0 +1,301 @@
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: var(--space-1) 0 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.headerLink {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.15s, color 0.15s;
+}
+.headerLink:hover { color: var(--color-accent); border-color: var(--border-accent); }
+
+/* ── Proof sections ── */
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.section {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.section_vert   { border-left: 3px solid var(--status-vert-text); }
+.section_orange { border-left: 3px solid var(--status-orange-text, #c67c00); }
+.section_rouge  { border-left: 3px solid var(--border); }
+
+.sectionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface-1);
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  transition: background 0.15s;
+}
+.sectionHeader:hover { background: var(--surface-2); }
+
+.sectionNumber {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  min-width: 1.5rem;
+}
+
+.sectionName {
+  flex: 1;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.ring {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.ring_vert   { background: var(--status-vert-bg); color: var(--status-vert-text); }
+.ring_orange { background: var(--status-orange-bg, #fff8e1); color: var(--status-orange-text, #c67c00); }
+.ring_rouge  { background: var(--surface-2); color: var(--color-text-muted); }
+
+.chevron {
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+
+/* ── Section body ── */
+.sectionBody {
+  padding: var(--space-5);
+  border-top: 1px solid var(--border);
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.snapshot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rowLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.rowValue {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.subLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.decisionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.miniDecision {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  font-size: var(--text-sm);
+}
+
+.miniType {
+  font-size: 10px;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  font-weight: 600;
+  min-width: 4.5rem;
+  padding-top: 2px;
+}
+
+.countRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.count {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Stats row ── */
+.statsRow {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 3rem;
+}
+
+.statValue {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* ── Conversations ── */
+.convList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.convRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--space-2);
+}
+
+.convName { font-weight: 600; flex-shrink: 0; }
+.convTitle { flex: 1; color: var(--color-text-secondary); }
+.convDate { font-size: 11px; color: var(--color-text-muted); flex-shrink: 0; }
+
+/* ── Sprint badges ── */
+.sprintBadges {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.sprintBadge {
+  background: var(--status-vert-bg);
+  color: var(--status-vert-text);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.completionNote {
+  font-size: var(--text-xs);
+  color: var(--status-vert-text);
+  background: var(--status-vert-bg);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+}
+
+.emptyHint {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+/* ── Export block ── */
+.exportBlock {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.exportInfo { flex: 1; min-width: 200px; }
+
+.exportTitle {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-2);
+}
+
+.exportDesc {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.exportBtn {
+  background: var(--color-deep, #1a1a2e);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+  align-self: center;
+}
+.exportBtn:disabled { opacity: 0.6; cursor: wait; }
+.exportBtn:hover:not(:disabled) { opacity: 0.85; }
+
+@media (max-width: 600px) {
+  .sectionHeader { padding: var(--space-3) var(--space-4); }
+  .sectionBody { padding: var(--space-4); }
+  .statsRow { gap: var(--space-3); }
+  .exportBlock { flex-direction: column; }
+  .headerActions { flex-direction: column; gap: var(--space-2); }
+}

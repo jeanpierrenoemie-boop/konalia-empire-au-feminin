@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styles from './LastDecision.module.css';
 
 const TYPE_LABELS = {
@@ -20,7 +21,10 @@ export function LastDecision({ decision }) {
 
   return (
     <div className={styles.wrapper}>
-      <span className={styles.label}>Dernière décision validée</span>
+      <div className={styles.labelRow}>
+        <span className={styles.label}>Dernière décision validée</span>
+        <Link to="/decisions" className={styles.journalLink}>Journal des Décisions →</Link>
+      </div>
       <div className={styles.card}>
         <div className={styles.header}>
           <span className={styles.type}>{TYPE_LABELS[decision.decision_type] ?? decision.decision_type}</span>

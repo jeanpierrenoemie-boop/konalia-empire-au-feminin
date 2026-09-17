@@ -12,6 +12,8 @@ import { LabsPage } from '../pages/participant/LabsPage';
 import { QGPage } from '../pages/participant/QGPage';
 import { RessourcesPage } from '../pages/participant/RessourcesPage';
 import { PreuvesPage } from '../pages/participant/PreuvesPage';
+import { PasseportPage } from '../pages/participant/PasseportPage';
+import { DecisionsPage } from '../pages/participant/DecisionsPage';
 import { ElitePage } from '../pages/participant/ElitePage';
 import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage';
 
@@ -43,6 +45,8 @@ export const router = createBrowserRouter([
       { path: 'qg',         element: <QGPage />,         handle: { title: 'Le QG' } },
       { path: 'ressources', element: <RessourcesPage />, handle: { title: 'Mes Ressources' } },
       { path: 'preuves',    element: <PreuvesPage />,    handle: { title: 'Mes Preuves' } },
+      { path: 'passeport',  element: <PasseportPage />,  handle: { title: 'Passeport Projet' } },
+      { path: 'decisions',  element: <DecisionsPage />,  handle: { title: 'Journal des Décisions' } },
       {
         path: 'elite',
         element: <RequireElite><ElitePage /></RequireElite>,

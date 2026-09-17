@@ -7,6 +7,9 @@ import dataRoutes from './src/routes/data.routes.js';
 import onboardingRoutes from './src/routes/onboarding.routes.js';
 import cockpitRoutes from './src/routes/cockpit.routes.js';
 import parcoursRoutes from './src/routes/parcours.routes.js';
+import passeportRoutes from './src/routes/passeport.routes.js';
+import decisionsRoutes from './src/routes/decisions.routes.js';
+import preuvesRoutes from './src/routes/preuves.routes.js';
 
 export function createApp() {
   const app = express();
@@ -24,6 +27,9 @@ export function createApp() {
   app.use('/api/onboarding', onboardingRoutes);
   app.use('/api/cockpit', cockpitRoutes);
   app.use('/api/parcours', parcoursRoutes);
+  app.use('/api/passeport', passeportRoutes);
+  app.use('/api/decisions', decisionsRoutes);
+  app.use('/api/preuves', preuvesRoutes);
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
 
