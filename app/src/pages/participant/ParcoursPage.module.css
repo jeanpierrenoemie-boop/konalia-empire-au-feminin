@@ -316,6 +316,138 @@
   margin: 0;
 }
 
+/* ── Mission Panel ─────────────────────────────────────────────── */
+.missionPanel {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-4);
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.missionLoading { font-size: var(--text-sm); color: var(--text-secondary); margin: 0; }
+
+.missionItem {
+  background: var(--surface-2, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.missionHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.missionLabel {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.missionTitle { font-weight: 600; margin: 0; }
+.missionDesc  { font-size: var(--text-sm); color: var(--text-secondary); margin: 0; }
+
+.statusApproved {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: #16a34a;
+  background: #dcfce7;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .statusApproved { background: #14532d; color: #86efac; }
+}
+:root[data-theme="dark"] .statusApproved { background: #14532d; color: #86efac; }
+
+.statusSubmitted {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: #1d4ed8;
+  background: #dbeafe;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.statusRejected {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: #b45309;
+  background: #fef3c7;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.correctionNote {
+  font-size: var(--text-sm);
+  border-left: 3px solid #d97706;
+  padding-left: var(--space-3);
+  color: var(--text-primary);
+}
+
+.missionTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: var(--text-sm);
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text-primary);
+  resize: vertical;
+  min-height: 80px;
+}
+.missionTextarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.submitMissionBtn {
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-4);
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.submitMissionBtn:disabled { opacity: 0.6; cursor: wait; }
+.submitMissionBtn:hover:not(:disabled) { opacity: 0.9; }
+
+.submittedBox { display: flex; flex-direction: column; gap: var(--space-2); }
+.submittedContent {
+  font-size: var(--text-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: var(--space-3);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.resubmitBtn {
+  align-self: flex-start;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.resubmitBtn:hover { background: var(--surface); }
+
+.missionError { font-size: var(--text-xs); color: var(--status-rouge-text); margin: 0; }
+
 @media (max-width: 600px) {
   .phaseHeader { padding: var(--space-4); }
   .sprintHeader { padding: var(--space-3) var(--space-4); }

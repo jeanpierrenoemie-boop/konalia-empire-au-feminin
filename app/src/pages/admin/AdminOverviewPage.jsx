@@ -275,6 +275,106 @@ function InterventionForm({ userId }) {
 }
 
 /* ── Main page ────────────────────────────────────────────────────── */
+function SubmissionsPanel() {
+  const [submissions, setSubmissions] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(null);
+  const [note, setNote] = useState('');
+  const [acting, setActing] = useState(null);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    fetch(`${API}/api/admin/submissions?status=submitted`, { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => { setSubmissions(Array.isArray(data) ? data : []); setLoading(false); })
+      .catch(() => { setSubmissions([]); setLoading(false); });
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function handleReview(id, decision) {
+    setActing(id);
+    await fetch(`${API}/api/admin/submissions/${id}/review`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ decision, note: note.trim() || undefined }),
+    });
+    setNote('');
+    setExpanded(null);
+    setActing(null);
+    load();
+  }
+
+  if (loading) return <div style={{ padding: '12px', color: '#666' }}>Chargement des livrables…</div>;
+
+  const count = submissions?.length ?? 0;
+
+  return (
+    <div style={{ marginBottom: '24px', border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden' }}>
+      <div style={{ padding: '12px 16px', background: '#f5f5f5', display: 'flex', alignItems: 'center', gap: '10px', borderBottom: count > 0 ? '1px solid #e0e0e0' : 'none' }}>
+        <h2 style={{ margin: 0, fontSize: '15px', fontWeight: 600 }}>Livrables à valider</h2>
+        {count > 0 && (
+          <span style={{ background: '#c62828', color: '#fff', borderRadius: '12px', padding: '2px 8px', fontSize: '12px', fontWeight: 700 }}>
+            {count}
+          </span>
+        )}
+      </div>
+      {count === 0 && (
+        <p style={{ padding: '12px 16px', margin: 0, color: '#666', fontSize: '14px' }}>Aucun livrable en attente.</p>
+      )}
+      {submissions?.map(s => (
+        <div key={s.id} style={{ borderBottom: '1px solid #eee', padding: '12px 16px' }}>
+          <button
+            style={{ all: 'unset', cursor: 'pointer', display: 'block', width: '100%' }}
+            onClick={() => { setExpanded(expanded === s.id ? null : s.id); setNote(''); }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontWeight: 600 }}>{s.first_name}</span>
+                <span style={{ color: '#555', marginLeft: '8px', fontSize: '13px' }}>{s.mission_title}</span>
+                <span style={{ color: '#888', marginLeft: '8px', fontSize: '12px' }}>S{s.sprint_number} · {s.cadre_step}</span>
+              </div>
+              <span style={{ fontSize: '12px', color: '#888' }}>
+                {new Date(s.created_at).toLocaleDateString('fr-FR')}
+              </span>
+            </div>
+          </button>
+          {expanded === s.id && (
+            <div style={{ marginTop: '10px' }}>
+              <div style={{ background: '#fff', border: '1px solid #ddd', borderRadius: '4px', padding: '10px', fontSize: '13px', whiteSpace: 'pre-wrap', marginBottom: '10px' }}>
+                {s.content || <em>Pas de contenu</em>}
+              </div>
+              <textarea
+                style={{ width: '100%', minHeight: '60px', padding: '6px', fontSize: '13px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', resize: 'vertical' }}
+                placeholder="Note optionnelle pour la participante…"
+                value={note}
+                onChange={e => setNote(e.target.value)}
+              />
+              <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                <button
+                  style={{ padding: '6px 14px', background: '#2e7d32', color: '#fff', border: 'none', borderRadius: '4px', cursor: acting === s.id ? 'not-allowed' : 'pointer', fontSize: '13px' }}
+                  disabled={acting === s.id}
+                  onClick={() => handleReview(s.id, 'approved')}
+                >
+                  Valider
+                </button>
+                <button
+                  style={{ padding: '6px 14px', background: '#e65100', color: '#fff', border: 'none', borderRadius: '4px', cursor: acting === s.id ? 'not-allowed' : 'pointer', fontSize: '13px' }}
+                  disabled={acting === s.id}
+                  onClick={() => handleReview(s.id, 'rejected')}
+                >
+                  Demander correction
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function AdminOverviewPage() {
   const { data, loading, error, reload } = useCockpit();
   const [selected, setSelected] = useState(null);
@@ -290,6 +390,8 @@ export function AdminOverviewPage() {
         <h1 className={styles.title}>Cockpit Admin</h1>
         <p className={styles.subtitle}>{participants.length} participante{participants.length !== 1 ? 's' : ''}</p>
       </div>
+
+      <SubmissionsPanel />
 
       <div className={styles.layout}>
         <div className={styles.list}>
