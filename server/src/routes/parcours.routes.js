@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getDb, writeAudit } from '../db.js';
+import { getAdapter } from '../db/adapter.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { requireAdmin } from '../middleware/requireRole.js';
 import { SPRINTS, CADRE_PHASES } from '../curriculum.js';
@@ -9,43 +9,42 @@ import { evaluateGate } from '../gates.js';
 const router = Router();
 
 /* ── GET /api/parcours ──────────────────────────────────────── */
-router.get('/', requireAuth, (req, res) => {
-  const db = getDb();
+router.get('/', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
-  const enrollment = db.prepare(`
+  const enrollment = await db.queryOne(`
     SELECT e.cohort_id FROM enrollments e
     WHERE e.user_id = ? ORDER BY e.enrolled_at DESC LIMIT 1
-  `).get(userId);
+  `, [userId]);
 
-  const currentProgress = db.prepare(`
+  const currentProgress = await db.queryOne(`
     SELECT sprint_number, gate_status, week_in_sprint, unlocked_at
     FROM user_progress WHERE user_id = ? LIMIT 1
-  `).get(userId);
+  `, [userId]);
 
-  const passedRows = db.prepare(`
+  const passedRows = await db.queryAll(`
     SELECT sprint_number, passed_at, method FROM sprint_gate_log WHERE user_id = ?
-  `).all(userId);
+  `, [userId]);
 
   const passedMap = {};
   for (const row of passedRows) passedMap[row.sprint_number] = row;
 
   /* Sprint content: cohort-specific rows take priority over global (cohort_id IS NULL) */
   const cohortId = enrollment?.cohort_id ?? null;
-  const contentRows = db.prepare(`
+  const contentRows = await db.queryAll(`
     SELECT sprint_number, result, understand, mission, support, deliverable, unlock_reason,
            cohort_id IS NULL AS is_global
     FROM sprint_content
     WHERE cohort_id = ? OR cohort_id IS NULL
     ORDER BY sprint_number, is_global ASC
-  `).all(cohortId ?? null);
+  `, [cohortId ?? null]);
   const contentMap = {};
   for (const row of contentRows) {
-    /* First seen wins per sprint_number (cohort-specific = is_global=0 sorts first) */
     if (!contentMap[row.sprint_number]) contentMap[row.sprint_number] = row;
   }
 
-  const sprints = SPRINTS.map(sprint => {
+  const sprints = await Promise.all(SPRINTS.map(async sprint => {
     const passed = passedMap[sprint.number];
     const isCurrent = currentProgress?.sprint_number === sprint.number;
 
@@ -61,7 +60,7 @@ router.get('/', requireAuth, (req, res) => {
     /* Evaluate gate for the NEXT sprint that would be unlocked by completing this one */
     let gate = null;
     if (isCurrent) {
-      gate = evaluateGate(db, userId, sprint.number + 1 <= 12 ? sprint.number + 1 : 'final');
+      gate = await evaluateGate(db, userId, sprint.number + 1 <= 12 ? sprint.number + 1 : 'final');
     }
 
     const content = contentMap[sprint.number];
@@ -81,7 +80,7 @@ router.get('/', requireAuth, (req, res) => {
       unlocked_at: passed?.passed_at ?? (isCurrent ? currentProgress.unlocked_at : null) ?? null,
       gate,
     };
-  });
+  }));
 
   const currentSprint = sprints.find(s => s.state === 'in_progress' || s.state === 'submitted')
     ?? sprints.find(s => s.state !== 'locked' && s.state !== 'passed')
@@ -113,8 +112,8 @@ router.get('/', requireAuth, (req, res) => {
 
 /* ── POST /api/parcours/gate/:n/pass ────────────────────────── */
 /* Participant self-validates when gate is VERT */
-router.post('/gate/:n/pass', requireAuth, (req, res) => {
-  const db = getDb();
+router.post('/gate/:n/pass', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
   const sprintNumber = parseInt(req.params.n, 10);
 
@@ -122,21 +121,21 @@ router.post('/gate/:n/pass', requireAuth, (req, res) => {
     return res.status(400).json({ error: 'Numéro de sprint invalide' });
   }
 
-  const progress = db.prepare(`SELECT * FROM user_progress WHERE user_id = ? LIMIT 1`).get(userId);
+  const progress = await db.queryOne(`SELECT * FROM user_progress WHERE user_id = ? LIMIT 1`, [userId]);
   if (!progress) return res.status(400).json({ error: 'Aucune progression trouvée' });
   if (progress.sprint_number !== sprintNumber) {
     return res.status(400).json({ error: 'Ce sprint n\'est pas le sprint actif' });
   }
 
   /* Already passed? */
-  const alreadyPassed = db.prepare(`
+  const alreadyPassed = await db.queryOne(`
     SELECT 1 FROM sprint_gate_log WHERE user_id = ? AND sprint_number = ?
-  `).get(userId, sprintNumber);
+  `, [userId, sprintNumber]);
   if (alreadyPassed) return res.status(409).json({ error: 'Sprint déjà validé' });
 
   /* Evaluate gate for the next sprint */
   const nextSprint = sprintNumber < 12 ? sprintNumber + 1 : 'final';
-  const gate = evaluateGate(db, userId, nextSprint);
+  const gate = await evaluateGate(db, userId, nextSprint);
   if (!gate) return res.status(400).json({ error: 'Aucune porte à valider pour ce sprint' });
 
   if (gate.status === 'ROUGE') {
@@ -147,50 +146,50 @@ router.post('/gate/:n/pass', requireAuth, (req, res) => {
   }
 
   /* VERT or ORANGE (admin-overridden) → pass */
-  const cohort = db.prepare(`
+  const cohort = await db.queryOne(`
     SELECT cohort_id FROM enrollments WHERE user_id = ? ORDER BY enrolled_at DESC LIMIT 1
-  `).get(userId);
+  `, [userId]);
 
-  db.transaction(() => {
-    db.prepare(`
+  await db.transaction(async tx => {
+    await tx.execute(`
       INSERT INTO sprint_gate_log (id, user_id, cohort_id, sprint_number, cadre_step, passed_by, method)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(
+    `, [
       randomUUID(), userId, cohort?.cohort_id ?? null,
       sprintNumber, progress.cadre_step, userId, 'self'
-    );
+    ]);
 
     if (sprintNumber < 12) {
       const nextSprintData = SPRINTS.find(s => s.number === sprintNumber + 1);
-      db.prepare(`
+      await tx.execute(`
         UPDATE user_progress SET sprint_number = ?, cadre_step = ?, gate_status = 'in_progress',
           week_in_sprint = 1, unlocked_at = datetime('now'), updated_at = datetime('now')
         WHERE user_id = ?
-      `).run(sprintNumber + 1, nextSprintData?.cadre_step ?? progress.cadre_step, userId);
+      `, [sprintNumber + 1, nextSprintData?.cadre_step ?? progress.cadre_step, userId]);
     } else {
-      db.prepare(`
+      await tx.execute(`
         UPDATE user_progress SET gate_status = 'passed', gate_passed_at = datetime('now'),
           updated_at = datetime('now')
         WHERE user_id = ?
-      `).run(userId);
+      `, [userId]);
     }
 
-    writeAudit(db, {
+    await tx.writeAudit({
       actorId: userId,
       targetUserId: userId,
       eventType: 'gate_manual_pass',
       tableName: 'sprint_gate_log',
       afterState: { sprint_number: sprintNumber, method: 'self', gate_status: gate.status },
     });
-  })();
+  });
 
   res.json({ ok: true, passedSprint: sprintNumber, nextSprint: sprintNumber < 12 ? sprintNumber + 1 : null });
 });
 
 /* ── POST /api/parcours/gate/:n/override ────────────────────── */
 /* Admin-only manual override with mandatory reason */
-router.post('/gate/:n/override', requireAuth, requireAdmin, (req, res) => {
-  const db = getDb();
+router.post('/gate/:n/override', requireAuth, requireAdmin, async (req, res) => {
+  const db = getAdapter();
   const adminId = req.user.id;
   const sprintNumber = parseInt(req.params.n, 10);
 
@@ -207,47 +206,51 @@ router.post('/gate/:n/override', requireAuth, requireAdmin, (req, res) => {
     return res.status(400).json({ error: 'exception_type doit être VERT ou ORANGE' });
   }
 
-  const targetUser = db.prepare(`SELECT id FROM users WHERE id = ?`).get(target_user_id);
+  const targetUser = await db.queryOne(`SELECT id FROM users WHERE id = ?`, [target_user_id]);
   if (!targetUser) return res.status(404).json({ error: 'Utilisatrice introuvable' });
 
-  const progress = db.prepare(`SELECT * FROM user_progress WHERE user_id = ? LIMIT 1`).get(target_user_id);
+  const progress = await db.queryOne(`SELECT * FROM user_progress WHERE user_id = ? LIMIT 1`, [target_user_id]);
   if (!progress) return res.status(400).json({ error: 'Aucune progression trouvée pour cette utilisatrice' });
 
-  const alreadyPassed = db.prepare(`
+  const alreadyPassed = await db.queryOne(`
     SELECT 1 FROM sprint_gate_log WHERE user_id = ? AND sprint_number = ?
-  `).get(target_user_id, sprintNumber);
+  `, [target_user_id, sprintNumber]);
   if (alreadyPassed) return res.status(409).json({ error: 'Sprint déjà validé' });
 
-  const cohort = db.prepare(`
+  const cohort = await db.queryOne(`
     SELECT cohort_id FROM enrollments WHERE user_id = ? ORDER BY enrolled_at DESC LIMIT 1
-  `).get(target_user_id);
+  `, [target_user_id]);
 
-  db.transaction(() => {
-    /* Record override (idempotent — UNIQUE constraint) */
-    db.prepare(`
-      INSERT OR REPLACE INTO gate_overrides (id, user_id, sprint_number, override_by, reason, exception_type)
+  await db.transaction(async tx => {
+    /* Record override (idempotent — ON CONFLICT) */
+    await tx.execute(`
+      INSERT INTO gate_overrides (id, user_id, sprint_number, override_by, reason, exception_type)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(randomUUID(), target_user_id, sprintNumber, adminId, reason.trim(), exception_type);
+      ON CONFLICT (user_id, sprint_number) DO UPDATE SET
+        id = excluded.id, override_by = excluded.override_by,
+        reason = excluded.reason, exception_type = excluded.exception_type
+    `, [randomUUID(), target_user_id, sprintNumber, adminId, reason.trim(), exception_type]);
 
     /* Pass the gate */
-    db.prepare(`
-      INSERT OR IGNORE INTO sprint_gate_log (id, user_id, cohort_id, sprint_number, cadre_step, passed_by, method)
+    await tx.execute(`
+      INSERT INTO sprint_gate_log (id, user_id, cohort_id, sprint_number, cadre_step, passed_by, method)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(
+      ON CONFLICT DO NOTHING
+    `, [
       randomUUID(), target_user_id, cohort?.cohort_id ?? null,
       sprintNumber, progress.cadre_step, adminId, 'admin_override'
-    );
+    ]);
 
     if (progress.sprint_number === sprintNumber && sprintNumber < 12) {
       const nextSprintData = SPRINTS.find(s => s.number === sprintNumber + 1);
-      db.prepare(`
+      await tx.execute(`
         UPDATE user_progress SET sprint_number = ?, cadre_step = ?, gate_status = 'in_progress',
           week_in_sprint = 1, unlocked_at = datetime('now'), updated_at = datetime('now')
         WHERE user_id = ?
-      `).run(sprintNumber + 1, nextSprintData?.cadre_step ?? progress.cadre_step, target_user_id);
+      `, [sprintNumber + 1, nextSprintData?.cadre_step ?? progress.cadre_step, target_user_id]);
     }
 
-    writeAudit(db, {
+    await tx.writeAudit({
       actorId: adminId,
       targetUserId: target_user_id,
       eventType: 'gate_manual_pass',
@@ -255,7 +258,7 @@ router.post('/gate/:n/override', requireAuth, requireAdmin, (req, res) => {
       afterState: { sprint_number: sprintNumber, exception_type, reason: reason.trim() },
       reason: reason.trim(),
     });
-  })();
+  });
 
   res.json({ ok: true, overriddenSprint: sprintNumber, exception_type });
 });

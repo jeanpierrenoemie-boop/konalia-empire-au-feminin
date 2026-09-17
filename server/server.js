@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import { initAdapter } from './src/db/adapter.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -67,6 +68,20 @@ export function createApp() {
 }
 
 if (process.env.NODE_ENV !== 'test') {
+  const driver = process.env.DB_DRIVER ?? 'sqlite';
+  if (driver === 'postgres') {
+    if (!process.env.DATABASE_URL) {
+      console.error('FATAL: DB_DRIVER=postgres requires DATABASE_URL');
+      process.exit(1);
+    }
+    await initAdapter({ driver: 'postgres', connectionString: process.env.DATABASE_URL });
+    console.log('DB adapter: PostgreSQL');
+  } else {
+    const dbPath = process.env.DB_PATH ?? './data/rc.db';
+    await initAdapter({ driver: 'sqlite', filename: dbPath });
+    console.log(`DB adapter: SQLite (${dbPath})`);
+  }
+
   const app = createApp();
   const port = process.env.PORT ?? 4000;
   app.listen(port, () => console.log(`RC server on :${port}`));

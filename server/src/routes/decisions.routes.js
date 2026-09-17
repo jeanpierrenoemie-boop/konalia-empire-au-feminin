@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getDb, writeAudit } from '../db.js';
+import { getAdapter } from '../db/adapter.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 
 const router = Router();
@@ -8,11 +8,11 @@ const router = Router();
 const DECISION_TYPES = ['project', 'pivot', 'persona', 'revenue', 'go_nogo', 'scope', 'other'];
 
 /* ── GET /api/decisions ── */
-router.get('/', requireAuth, (req, res) => {
-  const db = getDb();
+router.get('/', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
-  const decisions = db.prepare(`
+  const decisions = await db.queryAll(`
     SELECT d.*,
       s.title AS superseded_by_title,
       p.title AS supersedes_title
@@ -21,9 +21,8 @@ router.get('/', requireAuth, (req, res) => {
     LEFT JOIN decisions p ON p.id = d.supersedes_id
     WHERE d.user_id = ?
     ORDER BY d.created_at DESC
-  `).all(userId);
+  `, [userId]);
 
-  /* Group: active first, then superseded/archived */
   const active    = decisions.filter(d => d.status === 'active');
   const historical = decisions.filter(d => d.status !== 'active');
 
@@ -31,18 +30,18 @@ router.get('/', requireAuth, (req, res) => {
 });
 
 /* ── GET /api/decisions/:id ── */
-router.get('/:id', requireAuth, (req, res) => {
-  const db = getDb();
+router.get('/:id', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
-  const decision = db.prepare(`SELECT * FROM decisions WHERE id = ? AND user_id = ?`).get(req.params.id, userId);
+  const decision = await db.queryOne(`SELECT * FROM decisions WHERE id = ? AND user_id = ?`, [req.params.id, userId]);
   if (!decision) return res.status(404).json({ error: 'Décision introuvable' });
   res.json(decision);
 });
 
 /* ── POST /api/decisions ── new strategic decision */
-router.post('/', requireAuth, (req, res) => {
-  const db = getDb();
+router.post('/', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
   const { decision_type, title, context, rationale, facts_used, hypotheses, reopening_condition } = req.body;
@@ -55,15 +54,15 @@ router.post('/', requireAuth, (req, res) => {
   }
 
   const id = randomUUID();
-  db.prepare(`
+  await db.execute(`
     INSERT INTO decisions (id, user_id, decision_type, title, context, rationale,
       facts_used, hypotheses, reopening_condition, status)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
-  `).run(id, userId, decision_type, title.trim(),
+  `, [id, userId, decision_type, title.trim(),
     context ?? '', rationale ?? '',
-    facts_used ?? null, hypotheses ?? null, reopening_condition ?? null);
+    facts_used ?? null, hypotheses ?? null, reopening_condition ?? null]);
 
-  writeAudit(db, {
+  await db.writeAudit({
     actorId: userId,
     targetUserId: userId,
     eventType: 'strategic_decision_change',
@@ -72,17 +71,16 @@ router.post('/', requireAuth, (req, res) => {
     afterState: { decision_type, title: title.trim(), status: 'active' },
   });
 
-  const created = db.prepare(`SELECT * FROM decisions WHERE id = ?`).get(id);
-  res.status(201).json(created);
+  const created = await db.queryOne(`SELECT * FROM decisions WHERE id = ?`, [id]);
+  return res.status(201).json(created);
 });
 
 /* ── POST /api/decisions/:id/supersede ── replace with new decision */
-/* A validated decision stays active until explicitly changed with reason + new evidence. */
-router.post('/:id/supersede', requireAuth, (req, res) => {
-  const db = getDb();
+router.post('/:id/supersede', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
-  const old = db.prepare(`SELECT * FROM decisions WHERE id = ? AND user_id = ?`).get(req.params.id, userId);
+  const old = await db.queryOne(`SELECT * FROM decisions WHERE id = ? AND user_id = ?`, [req.params.id, userId]);
   if (!old) return res.status(404).json({ error: 'Décision introuvable' });
   if (old.status !== 'active') return res.status(409).json({ error: 'Seule une décision active peut être remplacée' });
 
@@ -97,22 +95,21 @@ router.post('/:id/supersede', requireAuth, (req, res) => {
 
   const newId = randomUUID();
 
-  db.transaction(() => {
-    db.prepare(`
+  await db.transaction(async tx => {
+    await tx.execute(`
       INSERT INTO decisions (id, user_id, decision_type, title, context, rationale,
         facts_used, hypotheses, reopening_condition, supersedes_id, status)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
-    `).run(newId, userId, old.decision_type, title.trim(),
+    `, [newId, userId, old.decision_type, title.trim(),
       context ?? old.context ?? '',
       rationale.trim(),
       facts_used ?? null, hypotheses ?? null, reopening_condition ?? null,
-      old.id);
+      old.id]);
 
-    /* Narrow status-only update — content of old decision is untouched */
-    db.prepare(`UPDATE decisions SET status = 'superseded' WHERE id = ? AND user_id = ?`)
-      .run(old.id, userId);
+    await tx.execute(`UPDATE decisions SET status = 'superseded' WHERE id = ? AND user_id = ?`,
+      [old.id, userId]);
 
-    writeAudit(db, {
+    await tx.writeAudit({
       actorId: userId,
       targetUserId: userId,
       eventType: 'strategic_decision_change',
@@ -122,18 +119,18 @@ router.post('/:id/supersede', requireAuth, (req, res) => {
       afterState: { id: newId, title: title.trim(), supersedes_id: old.id, status: 'active' },
       reason: rationale.trim(),
     });
-  })();
+  });
 
-  const created = db.prepare(`SELECT * FROM decisions WHERE id = ?`).get(newId);
-  res.status(201).json({ new: created, superseded_id: old.id });
+  const created = await db.queryOne(`SELECT * FROM decisions WHERE id = ?`, [newId]);
+  return res.status(201).json({ new: created, superseded_id: old.id });
 });
 
 /* ── POST /api/decisions/:id/archive ── */
-router.post('/:id/archive', requireAuth, (req, res) => {
-  const db = getDb();
+router.post('/:id/archive', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
-  const decision = db.prepare(`SELECT * FROM decisions WHERE id = ? AND user_id = ?`).get(req.params.id, userId);
+  const decision = await db.queryOne(`SELECT * FROM decisions WHERE id = ? AND user_id = ?`, [req.params.id, userId]);
   if (!decision) return res.status(404).json({ error: 'Décision introuvable' });
   if (decision.status === 'archived') return res.status(409).json({ error: 'Déjà archivée' });
 
@@ -142,10 +139,10 @@ router.post('/:id/archive', requireAuth, (req, res) => {
     return res.status(400).json({ error: 'Raison d\'archivage requise' });
   }
 
-  db.prepare(`UPDATE decisions SET status = 'archived' WHERE id = ? AND user_id = ?`)
-    .run(decision.id, userId);
+  await db.execute(`UPDATE decisions SET status = 'archived' WHERE id = ? AND user_id = ?`,
+    [decision.id, userId]);
 
-  writeAudit(db, {
+  await db.writeAudit({
     actorId: userId,
     targetUserId: userId,
     eventType: 'strategic_decision_change',

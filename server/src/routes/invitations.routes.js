@@ -4,7 +4,7 @@
  */
 import { Router } from 'express';
 import { randomUUID, randomBytes, createHash } from 'crypto';
-import { getDb, writeAudit } from '../db.js';
+import { getAdapter } from '../db/adapter.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { requireAdmin } from '../middleware/requireRole.js';
 import { hashPassword } from '../auth.js';
@@ -48,30 +48,32 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     return res.status(400).json({ error: 'Adresse email invalide' });
   }
 
-  const db = getDb();
+  const db = getAdapter();
 
-  const cohort = db.prepare(`SELECT id FROM cohorts WHERE id = ?`).get(cohort_id);
+  const cohort = await db.queryOne(`SELECT id FROM cohorts WHERE id = ?`, [cohort_id]);
   if (!cohort) return res.status(400).json({ error: 'Cohorte introuvable' });
 
   /* Email already taken by an active account */
-  const existing = db.prepare(`SELECT id FROM users WHERE email = ? COLLATE NOCASE`).get(email.trim());
+  const existing = await db.queryOne(`SELECT id FROM users WHERE email = ? COLLATE NOCASE`, [email.trim()]);
   if (existing) return res.status(409).json({ error: 'Un compte avec cet email existe déjà' });
 
   /* Cancel any pending invitation for this email */
-  db.prepare(`UPDATE invitations SET status = 'revoked', updated_at = datetime('now') WHERE email = ? COLLATE NOCASE AND status = 'pending'`)
-    .run(email.trim());
+  await db.execute(
+    `UPDATE invitations SET status = 'revoked', updated_at = datetime('now') WHERE email = ? COLLATE NOCASE AND status = 'pending'`,
+    [email.trim()]
+  );
 
   const raw   = generateToken();
   const hash  = hashToken(raw);
   const id    = randomUUID();
   const exp   = expiresAt();
 
-  db.prepare(`
+  await db.execute(`
     INSERT INTO invitations (id, email, first_name, last_name, cohort_id, plan, token_hash, expires_at, created_by)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(id, email.trim().toLowerCase(), first_name.trim(), last_name.trim(), cohort_id, plan, hash, exp, req.user.id);
+  `, [id, email.trim().toLowerCase(), first_name.trim(), last_name.trim(), cohort_id, plan, hash, exp, req.user.id]);
 
-  writeAudit(db, {
+  await db.writeAudit({
     actorId: req.user.id,
     targetUserId: null,
     eventType: 'participant_invited',
@@ -79,9 +81,9 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     afterState: { invitation_id: id, email: email.trim(), plan, cohort_id },
   });
 
-  const invitation = db.prepare(`SELECT * FROM invitations WHERE id = ?`).get(id);
+  const invitation = await db.queryOne(`SELECT * FROM invitations WHERE id = ?`, [id]);
 
-  res.status(201).json({
+  return res.status(201).json({
     ...invitation,
     token_hash: undefined,          /* never expose */
     activation_url: activationUrl(raw), /* shown once */
@@ -89,15 +91,15 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
 });
 
 /* ── GET /api/invitations (admin) ───────────────────────────────── */
-router.get('/', requireAuth, requireAdmin, (req, res) => {
-  const db = getDb();
+router.get('/', requireAuth, requireAdmin, async (req, res) => {
+  const db = getAdapter();
   const { cohort_id, status } = req.query;
 
   /* Auto-expire pending invitations past their expiry date */
-  db.prepare(`
+  await db.execute(`
     UPDATE invitations SET status = 'expired', updated_at = datetime('now')
     WHERE status = 'pending' AND expires_at < datetime('now')
-  `).run();
+  `, []);
 
   let sql = `
     SELECT i.id, i.email, i.first_name, i.last_name, i.cohort_id, i.plan,
@@ -112,13 +114,13 @@ router.get('/', requireAuth, requireAdmin, (req, res) => {
   if (status)    { sql += ` AND i.status = ?`;    params.push(status); }
   sql += ` ORDER BY i.created_at DESC`;
 
-  res.json(db.prepare(sql).all(...params));
+  return res.json(await db.queryAll(sql, params));
 });
 
 /* ── POST /api/invitations/:id/regenerate (admin) ───────────────── */
-router.post('/:id/regenerate', requireAuth, requireAdmin, (req, res) => {
-  const db = getDb();
-  const inv = db.prepare(`SELECT * FROM invitations WHERE id = ?`).get(req.params.id);
+router.post('/:id/regenerate', requireAuth, requireAdmin, async (req, res) => {
+  const db = getAdapter();
+  const inv = await db.queryOne(`SELECT * FROM invitations WHERE id = ?`, [req.params.id]);
   if (!inv) return res.status(404).json({ error: 'Invitation introuvable' });
   if (inv.status === 'activated') return res.status(409).json({ error: 'Invitation déjà activée' });
 
@@ -126,12 +128,12 @@ router.post('/:id/regenerate', requireAuth, requireAdmin, (req, res) => {
   const hash = hashToken(raw);
   const exp  = expiresAt();
 
-  db.prepare(`
+  await db.execute(`
     UPDATE invitations SET token_hash = ?, status = 'pending', expires_at = ?, updated_at = datetime('now')
     WHERE id = ?
-  `).run(hash, exp, inv.id);
+  `, [hash, exp, inv.id]);
 
-  writeAudit(db, {
+  await db.writeAudit({
     actorId: req.user.id,
     targetUserId: null,
     eventType: 'invitation_regenerated',
@@ -139,29 +141,32 @@ router.post('/:id/regenerate', requireAuth, requireAdmin, (req, res) => {
     afterState: { invitation_id: inv.id, email: inv.email },
   });
 
-  const updated = db.prepare(`SELECT * FROM invitations WHERE id = ?`).get(inv.id);
-  res.json({ ...updated, token_hash: undefined, activation_url: activationUrl(raw) });
+  const updated = await db.queryOne(`SELECT * FROM invitations WHERE id = ?`, [inv.id]);
+  return res.json({ ...updated, token_hash: undefined, activation_url: activationUrl(raw) });
 });
 
 /* ── GET /api/invitations/check?token=xxx (public) ─────────────── */
-router.get('/check', (req, res) => {
+router.get('/check', async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).json({ error: 'Token manquant' });
 
-  const db = getDb();
+  const db = getAdapter();
   const hash = hashToken(token);
 
   /* Auto-expire first */
-  db.prepare(`UPDATE invitations SET status='expired', updated_at=datetime('now') WHERE status='pending' AND expires_at < datetime('now')`).run();
+  await db.execute(
+    `UPDATE invitations SET status='expired', updated_at=datetime('now') WHERE status='pending' AND expires_at < datetime('now')`,
+    []
+  );
 
-  const inv = db.prepare(`SELECT * FROM invitations WHERE token_hash = ?`).get(hash);
+  const inv = await db.queryOne(`SELECT * FROM invitations WHERE token_hash = ?`, [hash]);
 
   if (!inv)                     return res.status(404).json({ error: 'Invitation introuvable' });
   if (inv.status === 'activated') return res.status(409).json({ error: 'Invitation déjà utilisée' });
   if (inv.status !== 'pending') return res.status(410).json({ error: 'Invitation expirée ou révoquée' });
 
   /* Return invitation metadata (no sensitive fields) */
-  res.json({
+  return res.json({
     valid: true,
     first_name: inv.first_name,
     last_name:  inv.last_name,
@@ -181,18 +186,21 @@ router.post('/activate', async (req, res) => {
     return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
   }
 
-  const db = getDb();
+  const db = getAdapter();
   const hash = hashToken(token);
 
-  db.prepare(`UPDATE invitations SET status='expired', updated_at=datetime('now') WHERE status='pending' AND expires_at < datetime('now')`).run();
+  await db.execute(
+    `UPDATE invitations SET status='expired', updated_at=datetime('now') WHERE status='pending' AND expires_at < datetime('now')`,
+    []
+  );
 
-  const inv = db.prepare(`SELECT * FROM invitations WHERE token_hash = ?`).get(hash);
+  const inv = await db.queryOne(`SELECT * FROM invitations WHERE token_hash = ?`, [hash]);
   if (!inv)                       return res.status(404).json({ error: 'Invitation introuvable' });
   if (inv.status === 'activated') return res.status(409).json({ error: 'Invitation déjà utilisée' });
   if (inv.status !== 'pending')   return res.status(410).json({ error: 'Invitation expirée ou révoquée' });
 
   /* Double-check email not taken (race condition guard) */
-  const taken = db.prepare(`SELECT id FROM users WHERE email = ? COLLATE NOCASE`).get(inv.email);
+  const taken = await db.queryOne(`SELECT id FROM users WHERE email = ? COLLATE NOCASE`, [inv.email]);
   if (taken) return res.status(409).json({ error: 'Un compte avec cet email existe déjà' });
 
   const passwordHash = await hashPassword(password);
@@ -200,41 +208,41 @@ router.post('/activate', async (req, res) => {
   const role = inv.plan === 'ELITE' ? 'PARTICIPANTE_ELITE' : 'PARTICIPANTE_STARTER';
   const tier = inv.plan;
 
-  db.transaction(() => {
+  await db.transaction(async tx => {
     /* Create user account */
-    db.prepare(`
+    await tx.execute(`
       INSERT INTO users (id, email, password_hash, role, tier, first_name, cohort_id, is_test)
       VALUES (?, ?, ?, ?, ?, ?, ?, 0)
-    `).run(userId, inv.email, passwordHash, role, tier, inv.first_name, inv.cohort_id);
+    `, [userId, inv.email, passwordHash, role, tier, inv.first_name, inv.cohort_id]);
 
     /* Create enrollment */
-    db.prepare(`
+    await tx.execute(`
       INSERT INTO enrollments (id, user_id, cohort_id, plan, status)
       VALUES (?, ?, ?, ?, 'active')
-    `).run(randomUUID(), userId, inv.cohort_id, inv.plan);
+    `, [randomUUID(), userId, inv.cohort_id, inv.plan]);
 
     /* Initialize progression at sprint 1 */
-    db.prepare(`
+    await tx.execute(`
       INSERT INTO user_progress (id, user_id, cohort_id, cadre_step, sprint_number, week_in_sprint, gate_status, unlocked_at)
       VALUES (?, ?, ?, 'C', 1, 1, 'in_progress', datetime('now'))
-    `).run(randomUUID(), userId, inv.cohort_id);
+    `, [randomUUID(), userId, inv.cohort_id]);
 
     /* Mark invitation as activated */
-    db.prepare(`
+    await tx.execute(`
       UPDATE invitations SET status = 'activated', activated_at = datetime('now'), user_id = ?, updated_at = datetime('now')
       WHERE id = ?
-    `).run(userId, inv.id);
+    `, [userId, inv.id]);
 
-    writeAudit(db, {
+    await tx.writeAudit({
       actorId: userId,
       targetUserId: userId,
       eventType: 'participant_activated',
       tableName: 'invitations',
       afterState: { invitation_id: inv.id, plan: inv.plan, cohort_id: inv.cohort_id },
     });
-  })();
+  });
 
-  res.json({ ok: true, email: inv.email });
+  return res.json({ ok: true, email: inv.email });
 });
 
 export default router;

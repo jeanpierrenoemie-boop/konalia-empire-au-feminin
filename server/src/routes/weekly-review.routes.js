@@ -1,26 +1,27 @@
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getDb, writeAudit } from '../db.js';
+import { getAdapter } from '../db/adapter.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 
 const router = Router();
 router.use(requireAuth);
 
 /* ── GET /api/weekly-review/current ─────────────────────────── */
-router.get('/current', (req, res) => {
-  const db = getDb();
+router.get('/current', async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
-  const progress = db.prepare(
-    `SELECT sprint_number, week_in_sprint, cohort_id FROM user_progress WHERE user_id = ? LIMIT 1`
-  ).get(userId);
+  const progress = await db.queryOne(
+    `SELECT sprint_number, week_in_sprint, cohort_id FROM user_progress WHERE user_id = ? LIMIT 1`,
+    [userId]
+  );
 
   if (!progress) return res.status(404).json({ error: 'Aucune progression trouvée' });
 
-  const review = db.prepare(`
+  const review = await db.queryOne(`
     SELECT * FROM weekly_reviews
     WHERE user_id = ? AND sprint_number = ? AND week_number = ?
-  `).get(userId, progress.sprint_number, progress.week_in_sprint);
+  `, [userId, progress.sprint_number, progress.week_in_sprint]);
 
   return res.json({
     sprint_number: progress.sprint_number,
@@ -31,24 +32,26 @@ router.get('/current', (req, res) => {
 });
 
 /* ── GET /api/weekly-review ──────────────────────────────────── */
-router.get('/', (req, res) => {
-  const db = getDb();
-  const reviews = db.prepare(
-    `SELECT * FROM weekly_reviews WHERE user_id = ? ORDER BY sprint_number DESC, week_number DESC`
-  ).all(req.user.id);
+router.get('/', async (req, res) => {
+  const db = getAdapter();
+  const reviews = await db.queryAll(
+    `SELECT * FROM weekly_reviews WHERE user_id = ? ORDER BY sprint_number DESC, week_number DESC`,
+    [req.user.id]
+  );
   return res.json(reviews);
 });
 
 /* ── POST /api/weekly-review ─────────────────────────────────── */
-router.post('/', (req, res) => {
-  const db = getDb();
+router.post('/', async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
   const { wins = '', blockers = '', next_week_focus = '', energy_level = null } = req.body ?? {};
 
-  const progress = db.prepare(
-    `SELECT sprint_number, week_in_sprint, cohort_id FROM user_progress WHERE user_id = ? LIMIT 1`
-  ).get(userId);
+  const progress = await db.queryOne(
+    `SELECT sprint_number, week_in_sprint, cohort_id FROM user_progress WHERE user_id = ? LIMIT 1`,
+    [userId]
+  );
 
   if (!progress) return res.status(400).json({ error: 'Aucune progression trouvée' });
 
@@ -61,48 +64,49 @@ router.post('/', (req, res) => {
 
   const { sprint_number, week_in_sprint: week_number, cohort_id } = progress;
 
-  const existing = db.prepare(
-    `SELECT id, status FROM weekly_reviews WHERE user_id = ? AND sprint_number = ? AND week_number = ?`
-  ).get(userId, sprint_number, week_number);
+  const existing = await db.queryOne(
+    `SELECT id, status FROM weekly_reviews WHERE user_id = ? AND sprint_number = ? AND week_number = ?`,
+    [userId, sprint_number, week_number]
+  );
 
   if (existing?.status === 'submitted') {
     return res.status(409).json({ error: 'Cette revue a déjà été soumise' });
   }
 
   if (existing) {
-    db.prepare(`
+    await db.execute(`
       UPDATE weekly_reviews SET wins = ?, blockers = ?, next_week_focus = ?, energy_level = ?,
         updated_at = datetime('now')
       WHERE id = ?
-    `).run(wins, blockers, next_week_focus, energy_level ?? null, existing.id);
-    const updated = db.prepare('SELECT * FROM weekly_reviews WHERE id = ?').get(existing.id);
+    `, [wins, blockers, next_week_focus, energy_level ?? null, existing.id]);
+    const updated = await db.queryOne('SELECT * FROM weekly_reviews WHERE id = ?', [existing.id]);
     return res.json(updated);
   }
 
   const id = randomUUID();
-  db.prepare(`
+  await db.execute(`
     INSERT INTO weekly_reviews (id, user_id, cohort_id, sprint_number, week_number,
       wins, blockers, next_week_focus, energy_level, status)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft')
-  `).run(id, userId, cohort_id, sprint_number, week_number, wins, blockers, next_week_focus, energy_level ?? null);
+  `, [id, userId, cohort_id, sprint_number, week_number, wins, blockers, next_week_focus, energy_level ?? null]);
 
-  return res.status(201).json(db.prepare('SELECT * FROM weekly_reviews WHERE id = ?').get(id));
+  return res.status(201).json(await db.queryOne('SELECT * FROM weekly_reviews WHERE id = ?', [id]));
 });
 
 /* ── POST /api/weekly-review/:id/submit ──────────────────────── */
-router.post('/:id/submit', (req, res) => {
-  const db = getDb();
+router.post('/:id/submit', async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
   const { id } = req.params;
 
-  const review = db.prepare('SELECT * FROM weekly_reviews WHERE id = ? AND user_id = ?').get(id, userId);
+  const review = await db.queryOne('SELECT * FROM weekly_reviews WHERE id = ? AND user_id = ?', [id, userId]);
 
   if (!review) return res.status(404).json({ error: 'Revue introuvable' });
   if (review.status === 'submitted') return res.status(409).json({ error: 'Déjà soumise' });
 
-  db.prepare(`UPDATE weekly_reviews SET status = 'submitted', updated_at = datetime('now') WHERE id = ?`).run(id);
+  await db.execute(`UPDATE weekly_reviews SET status = 'submitted', updated_at = datetime('now') WHERE id = ?`, [id]);
 
-  writeAudit(db, {
+  await db.writeAudit({
     actorId: userId,
     eventType: 'weekly_review_submitted',
     targetUserId: userId,
@@ -111,7 +115,7 @@ router.post('/:id/submit', (req, res) => {
     afterState: { sprint_number: review.sprint_number, week_number: review.week_number },
   });
 
-  return res.json(db.prepare('SELECT * FROM weekly_reviews WHERE id = ?').get(id));
+  return res.json(await db.queryOne('SELECT * FROM weekly_reviews WHERE id = ?', [id]));
 });
 
 export default router;

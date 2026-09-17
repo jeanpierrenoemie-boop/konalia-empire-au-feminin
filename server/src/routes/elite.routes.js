@@ -1,11 +1,9 @@
 /**
  * Elite routes — Points ELITE and Revue Prioritaire
- * Only accessible to PARTICIPANTE_ELITE and NOEMIE_ADMIN.
- * Starter participants never reach these endpoints.
  */
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getDb, writeAudit, notify } from '../db.js';
+import { getAdapter } from '../db/adapter.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { requireAdmin, requireElite } from '../middleware/requireRole.js';
 
@@ -19,34 +17,37 @@ const POINT_TITLES = {
 };
 
 /* ── GET /api/elite — own elite summary ─────────────────────────── */
-router.get('/', requireElite, (req, res) => {
-  const db = getDb();
+router.get('/', requireElite, async (req, res) => {
+  const db = getAdapter();
   const uid = req.user.id;
 
-  const sessions = db.prepare(
-    `SELECT * FROM elite_sessions WHERE user_id = ? ORDER BY point_number, scheduled_at`
-  ).all(uid);
+  const sessions = await db.queryAll(
+    `SELECT * FROM elite_sessions WHERE user_id = ? ORDER BY point_number, scheduled_at`,
+    [uid]
+  );
 
-  const revues = db.prepare(
-    `SELECT * FROM elite_revues WHERE user_id = ? ORDER BY scheduled_at DESC`
-  ).all(uid);
+  const revues = await db.queryAll(
+    `SELECT * FROM elite_revues WHERE user_id = ? ORDER BY scheduled_at DESC`,
+    [uid]
+  );
 
-  const points = db.prepare(
-    `SELECT * FROM elite_points WHERE user_id = ? ORDER BY created_at DESC`
-  ).all(uid);
+  const points = await db.queryAll(
+    `SELECT * FROM elite_points WHERE user_id = ? ORDER BY created_at DESC`,
+    [uid]
+  );
 
   const totalPoints = points.reduce((s, r) => s + r.points, 0);
 
   res.json({ sessions, revues, points, total_points: totalPoints });
 });
 
-/* ── ADMIN: GET /api/elite/admin/overview — all elite participants ─ */
-router.get('/admin/overview', requireAdmin, (req, res) => {
-  const db = getDb();
+/* ── ADMIN: GET /api/elite/admin/overview ─ */
+router.get('/admin/overview', requireAdmin, async (req, res) => {
+  const db = getAdapter();
   const { cohort_id } = req.query;
 
   const users = cohort_id
-    ? db.prepare(`
+    ? await db.queryAll(`
         SELECT u.id, u.first_name, u.email, u.tier,
                c.name AS cohort_name, up.cadre_step, up.sprint_number
         FROM users u
@@ -54,8 +55,8 @@ router.get('/admin/overview', requireAdmin, (req, res) => {
         JOIN cohorts c ON c.id = e.cohort_id
         LEFT JOIN user_progress up ON up.user_id = u.id AND up.cohort_id = e.cohort_id
         WHERE u.tier = 'ELITE'
-      `).all(cohort_id)
-    : db.prepare(`
+      `, [cohort_id])
+    : await db.queryAll(`
         SELECT u.id, u.first_name, u.email, u.tier,
                c.name AS cohort_name, up.cadre_step, up.sprint_number
         FROM users u
@@ -63,14 +64,14 @@ router.get('/admin/overview', requireAdmin, (req, res) => {
         JOIN cohorts c ON c.id = e.cohort_id
         LEFT JOIN user_progress up ON up.user_id = u.id AND up.cohort_id = e.cohort_id
         WHERE u.tier = 'ELITE'
-      `).all();
+      `, []);
 
   res.json(users);
 });
 
-/* ── ADMIN: POST /api/elite/admin/sessions — schedule elite session ─ */
-router.post('/admin/sessions', requireAdmin, (req, res) => {
-  const db = getDb();
+/* ── ADMIN: POST /api/elite/admin/sessions ─ */
+router.post('/admin/sessions', requireAdmin, async (req, res) => {
+  const db = getAdapter();
   const { user_id, cohort_id, point_number, scheduled_at } = req.body ?? {};
 
   if (!user_id || !cohort_id || !point_number) {
@@ -80,7 +81,7 @@ router.post('/admin/sessions', requireAdmin, (req, res) => {
     return res.status(400).json({ error: 'point_number doit être 1, 2 ou 3' });
   }
 
-  const target = db.prepare(`SELECT tier FROM users WHERE id = ?`).get(user_id);
+  const target = await db.queryOne(`SELECT tier FROM users WHERE id = ?`, [user_id]);
   if (!target) return res.status(404).json({ error: 'Participant introuvable' });
   if (target.tier !== 'ELITE') {
     return res.status(400).json({ error: 'Ce participant n\'est pas ELITE' });
@@ -88,12 +89,12 @@ router.post('/admin/sessions', requireAdmin, (req, res) => {
 
   const id = randomUUID();
   const num = Number(point_number);
-  db.prepare(`
+  await db.execute(`
     INSERT INTO elite_sessions (id, cohort_id, user_id, point_number, title, scheduled_at, created_by)
     VALUES (?,?,?,?,?,?,?)
-  `).run(id, cohort_id, user_id, num, POINT_TITLES[num], scheduled_at ?? null, req.user.id);
+  `, [id, cohort_id, user_id, num, POINT_TITLES[num], scheduled_at ?? null, req.user.id]);
 
-  writeAudit(db, {
+  await db.writeAudit({
     actorId: req.user.id,
     targetUserId: user_id,
     eventType: 'elite_session_scheduled',
@@ -102,19 +103,19 @@ router.post('/admin/sessions', requireAdmin, (req, res) => {
     afterState: { point_number: num, scheduled_at },
   });
 
-  notify(db, {
+  await db.notify({
     userId: user_id,
     type: 'elite_appointment',
     title: `Point ELITE #${num} planifié — ${POINT_TITLES[num]}`,
     body: scheduled_at ? `Prévu le ${new Date(scheduled_at).toLocaleDateString('fr-FR')}` : null,
   });
-  res.status(201).json(db.prepare(`SELECT * FROM elite_sessions WHERE id = ?`).get(id));
+  return res.status(201).json(await db.queryOne(`SELECT * FROM elite_sessions WHERE id = ?`, [id]));
 });
 
-/* ── ADMIN: PATCH /api/elite/admin/sessions/:id — record/update ─── */
-router.patch('/admin/sessions/:id', requireAdmin, (req, res) => {
-  const db = getDb();
-  const session = db.prepare(`SELECT * FROM elite_sessions WHERE id = ?`).get(req.params.id);
+/* ── ADMIN: PATCH /api/elite/admin/sessions/:id ─ */
+router.patch('/admin/sessions/:id', requireAdmin, async (req, res) => {
+  const db = getAdapter();
+  const session = await db.queryOne(`SELECT * FROM elite_sessions WHERE id = ?`, [req.params.id]);
   if (!session) return res.status(404).json({ error: 'Session introuvable' });
 
   const { status, notes, scheduled_at } = req.body ?? {};
@@ -128,11 +129,11 @@ router.patch('/admin/sessions/:id', requireAdmin, (req, res) => {
   }
 
   const setClauses = Object.keys(updates).map(k => `${k} = ?`).join(', ');
-  db.prepare(`UPDATE elite_sessions SET ${setClauses}, updated_at = ? WHERE id = ?`)
-    .run(...Object.values(updates), new Date().toISOString(), req.params.id);
+  await db.execute(`UPDATE elite_sessions SET ${setClauses}, updated_at = ? WHERE id = ?`,
+    [...Object.values(updates), new Date().toISOString(), req.params.id]);
 
   if (status === 'done') {
-    writeAudit(db, {
+    await db.writeAudit({
       actorId: req.user.id,
       targetUserId: session.user_id,
       eventType: 'elite_session_done',
@@ -142,37 +143,37 @@ router.patch('/admin/sessions/:id', requireAdmin, (req, res) => {
     });
   }
 
-  res.json(db.prepare(`SELECT * FROM elite_sessions WHERE id = ?`).get(req.params.id));
+  return res.json(await db.queryOne(`SELECT * FROM elite_sessions WHERE id = ?`, [req.params.id]));
 });
 
-/* ── ADMIN: POST /api/elite/admin/revues ─────────────────────────── */
-router.post('/admin/revues', requireAdmin, (req, res) => {
-  const db = getDb();
+/* ── ADMIN: POST /api/elite/admin/revues ─ */
+router.post('/admin/revues', requireAdmin, async (req, res) => {
+  const db = getAdapter();
   const { user_id, scheduled_at } = req.body ?? {};
 
   if (!user_id || !scheduled_at) {
     return res.status(400).json({ error: 'user_id et scheduled_at requis' });
   }
 
-  const target = db.prepare(`SELECT tier FROM users WHERE id = ?`).get(user_id);
+  const target = await db.queryOne(`SELECT tier FROM users WHERE id = ?`, [user_id]);
   if (!target) return res.status(404).json({ error: 'Participant introuvable' });
   if (target.tier !== 'ELITE') {
     return res.status(400).json({ error: 'Ce participant n\'est pas ELITE' });
   }
 
   const id = randomUUID();
-  db.prepare(`
+  await db.execute(`
     INSERT INTO elite_revues (id, user_id, scheduled_at, created_by)
     VALUES (?,?,?,?)
-  `).run(id, user_id, scheduled_at, req.user.id);
+  `, [id, user_id, scheduled_at, req.user.id]);
 
-  res.status(201).json(db.prepare(`SELECT * FROM elite_revues WHERE id = ?`).get(id));
+  return res.status(201).json(await db.queryOne(`SELECT * FROM elite_revues WHERE id = ?`, [id]));
 });
 
-/* ── ADMIN: PATCH /api/elite/admin/revues/:id ────────────────────── */
-router.patch('/admin/revues/:id', requireAdmin, (req, res) => {
-  const db = getDb();
-  const revue = db.prepare(`SELECT * FROM elite_revues WHERE id = ?`).get(req.params.id);
+/* ── ADMIN: PATCH /api/elite/admin/revues/:id ─ */
+router.patch('/admin/revues/:id', requireAdmin, async (req, res) => {
+  const db = getAdapter();
+  const revue = await db.queryOne(`SELECT * FROM elite_revues WHERE id = ?`, [req.params.id]);
   if (!revue) return res.status(404).json({ error: 'Revue introuvable' });
 
   const { status, notes } = req.body ?? {};
@@ -185,35 +186,35 @@ router.patch('/admin/revues/:id', requireAdmin, (req, res) => {
   }
 
   const setClauses = Object.keys(updates).map(k => `${k} = ?`).join(', ');
-  db.prepare(`UPDATE elite_revues SET ${setClauses} WHERE id = ?`)
-    .run(...Object.values(updates), req.params.id);
+  await db.execute(`UPDATE elite_revues SET ${setClauses} WHERE id = ?`,
+    [...Object.values(updates), req.params.id]);
 
-  res.json(db.prepare(`SELECT * FROM elite_revues WHERE id = ?`).get(req.params.id));
+  return res.json(await db.queryOne(`SELECT * FROM elite_revues WHERE id = ?`, [req.params.id]));
 });
 
-/* ── ADMIN: POST /api/elite/admin/grant-points ───────────────────── */
-router.post('/admin/grant-points', requireAdmin, (req, res) => {
-  const db = getDb();
+/* ── ADMIN: POST /api/elite/admin/grant-points ─ */
+router.post('/admin/grant-points', requireAdmin, async (req, res) => {
+  const db = getAdapter();
   const { user_id, points, reason, source_type } = req.body ?? {};
 
   if (!user_id || !points || !reason) {
     return res.status(400).json({ error: 'user_id, points et reason requis' });
   }
 
-  const target = db.prepare(`SELECT tier FROM users WHERE id = ?`).get(user_id);
+  const target = await db.queryOne(`SELECT tier FROM users WHERE id = ?`, [user_id]);
   if (!target) return res.status(404).json({ error: 'Participant introuvable' });
   if (target.tier !== 'ELITE') {
     return res.status(400).json({ error: 'Ce participant n\'est pas ELITE' });
   }
 
   const id = randomUUID();
-  db.prepare(`
+  await db.execute(`
     INSERT INTO elite_points (id, user_id, points, reason, source_type, granted_by)
     VALUES (?,?,?,?,?,?)
-  `).run(id, user_id, Number(points), reason,
-    source_type ?? 'manual', req.user.id);
+  `, [id, user_id, Number(points), reason,
+    source_type ?? 'manual', req.user.id]);
 
-  writeAudit(db, {
+  await db.writeAudit({
     actorId: req.user.id,
     targetUserId: user_id,
     eventType: 'elite_points_grant',
@@ -222,7 +223,7 @@ router.post('/admin/grant-points', requireAdmin, (req, res) => {
     afterState: { points: Number(points), reason },
   });
 
-  res.status(201).json(db.prepare(`SELECT * FROM elite_points WHERE id = ?`).get(id));
+  return res.status(201).json(await db.queryOne(`SELECT * FROM elite_points WHERE id = ?`, [id]));
 });
 
 export default router;

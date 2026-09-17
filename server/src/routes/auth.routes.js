@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { randomBytes, createHash } from 'crypto';
-import { getDb, writeAudit } from '../db.js';
+import { getAdapter } from '../db/adapter.js';
 import { verifyPassword, hashPassword, signToken, cookieOptions } from '../auth.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { denyTestInProduction } from '../middleware/requireRole.js';
@@ -22,10 +22,11 @@ router.post('/login', loginLimiter, async (req, res) => {
     return res.status(400).json({ error: 'Email et mot de passe requis' });
   }
 
-  const db = getDb();
-  const user = db.prepare(
-    'SELECT * FROM users WHERE email = ? COLLATE NOCASE'
-  ).get(email.trim());
+  const db = getAdapter();
+  const user = await db.queryOne(
+    'SELECT * FROM users WHERE email = ? COLLATE NOCASE',
+    [email.trim()]
+  );
 
   if (!user) {
     return res.status(401).json({ error: 'Identifiants incorrects' });
@@ -40,7 +41,7 @@ router.post('/login', loginLimiter, async (req, res) => {
     return res.status(401).json({ error: 'Identifiants incorrects' });
   }
 
-  db.prepare("UPDATE users SET last_login = datetime('now') WHERE id = ?").run(user.id);
+  await db.execute("UPDATE users SET last_login = datetime('now') WHERE id = ?", [user.id]);
 
   const token = signToken({ sub: user.id });
 
@@ -77,8 +78,11 @@ router.post('/request-reset', resetLimiter, async (req, res) => {
     return res.json({ message: GENERIC_RESET_MSG });
   }
 
-  const db = getDb();
-  const user = db.prepare('SELECT id FROM users WHERE email = ? COLLATE NOCASE').get(email.trim());
+  const db = getAdapter();
+  const user = await db.queryOne(
+    'SELECT id FROM users WHERE email = ? COLLATE NOCASE',
+    [email.trim()]
+  );
 
   if (!user) return res.json({ message: GENERIC_RESET_MSG });
 
@@ -87,14 +91,17 @@ router.post('/request-reset', resetLimiter, async (req, res) => {
   const expiresAt = new Date(Date.now() + RESET_EXPIRES_HOURS * 3_600_000)
     .toISOString().replace('T', ' ').slice(0, 19);
 
-  db.prepare("UPDATE password_resets SET used_at = datetime('now') WHERE user_id = ? AND used_at IS NULL")
-    .run(user.id);
+  await db.execute(
+    "UPDATE password_resets SET used_at = datetime('now') WHERE user_id = ? AND used_at IS NULL",
+    [user.id]
+  );
 
-  db.prepare(
-    `INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES (?, ?, ?)`
-  ).run(user.id, hash, expiresAt);
+  await db.execute(
+    `INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES (?, ?, ?)`,
+    [user.id, hash, expiresAt]
+  );
 
-  writeAudit(db, {
+  await db.writeAudit({
     actorId: user.id,
     eventType: 'password_reset_requested',
     targetUserId: user.id,
@@ -106,18 +113,18 @@ router.post('/request-reset', resetLimiter, async (req, res) => {
 });
 
 /* ── GET /auth/reset-check?token=... ─────────────────────────── */
-router.get('/reset-check', (req, res) => {
+router.get('/reset-check', async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).json({ error: 'Token manquant' });
 
-  const db = getDb();
+  const db = getAdapter();
   const hash = hashToken(token);
-  const reset = db.prepare(`
+  const reset = await db.queryOne(`
     SELECT pr.id, pr.expires_at, pr.used_at, u.email, u.first_name
     FROM password_resets pr
     JOIN users u ON u.id = pr.user_id
     WHERE pr.token_hash = ?
-  `).get(hash);
+  `, [hash]);
 
   if (!reset) return res.status(404).json({ error: 'Lien invalide ou expiré' });
   if (reset.used_at) return res.status(409).json({ error: 'Ce lien a déjà été utilisé' });
@@ -137,9 +144,9 @@ router.post('/reset-password', async (req, res) => {
     return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
   }
 
-  const db = getDb();
+  const db = getAdapter();
   const hash = hashToken(token);
-  const reset = db.prepare('SELECT * FROM password_resets WHERE token_hash = ?').get(hash);
+  const reset = await db.queryOne('SELECT * FROM password_resets WHERE token_hash = ?', [hash]);
 
   if (!reset) return res.status(404).json({ error: 'Lien invalide' });
   if (reset.used_at) return res.status(409).json({ error: 'Ce lien a déjà été utilisé' });
@@ -147,10 +154,10 @@ router.post('/reset-password', async (req, res) => {
 
   const passwordHash = await hashPassword(password);
 
-  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, reset.user_id);
-  db.prepare("UPDATE password_resets SET used_at = datetime('now') WHERE token_hash = ?").run(hash);
+  await db.execute('UPDATE users SET password_hash = ? WHERE id = ?', [passwordHash, reset.user_id]);
+  await db.execute("UPDATE password_resets SET used_at = datetime('now') WHERE token_hash = ?", [hash]);
 
-  writeAudit(db, {
+  await db.writeAudit({
     actorId: reset.user_id,
     eventType: 'password_reset_completed',
     targetUserId: reset.user_id,

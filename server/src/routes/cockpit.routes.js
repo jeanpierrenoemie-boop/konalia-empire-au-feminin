@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDb } from '../db.js';
+import { getAdapter } from '../db/adapter.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { denyTestInProduction } from '../middleware/requireRole.js';
 
@@ -10,26 +10,27 @@ router.use(requireAuth, denyTestInProduction);
    Returns all data needed to answer the 5 cockpit questions.
    All rows are scoped to req.user.id — no cross-user leakage.
 ───────────────────────────────────────────────────────────────── */
-router.get('/', (req, res) => {
-  const db = getDb();
+router.get('/', async (req, res) => {
+  const db = getAdapter();
   const uid = req.user.id;
 
   /* 1. Current progress */
-  const progress = db.prepare(`
+  const progress = await db.queryOne(`
     SELECT up.*, c.name AS cohort_name
     FROM user_progress up
     LEFT JOIN cohorts c ON c.id = up.cohort_id
     WHERE up.user_id = ?
     LIMIT 1
-  `).get(uid);
+  `, [uid]);
 
   /* 2. Pilotage state */
-  const pilotage = db.prepare(
-    'SELECT * FROM pilotage_state WHERE user_id = ?'
-  ).get(uid);
+  const pilotage = await db.queryOne(
+    'SELECT * FROM pilotage_state WHERE user_id = ?',
+    [uid]
+  );
 
   /* 3. Current mission (active submission or first unsubmitted mission) */
-  const currentMission = progress ? db.prepare(`
+  const currentMission = progress ? await db.queryOne(`
     SELECT m.id, m.title, m.description, m.mission_type, m.cadre_step, m.sprint_number,
            ms.status AS submission_status, ms.id AS submission_id
     FROM missions m
@@ -39,15 +40,15 @@ router.get('/', (req, res) => {
       AND (ms.status IS NULL OR ms.status IN ('draft','submitted'))
     ORDER BY m.sort_order ASC
     LIMIT 1
-  `).get(uid, progress.cohort_id, progress.cadre_step) : null;
+  `, [uid, progress.cohort_id, progress.cadre_step]) : null;
 
   /* 4. Proofs — count by type */
-  const proofCounts = db.prepare(`
+  const proofCounts = await db.queryAll(`
     SELECT proof_type, COUNT(*) as count
     FROM proofs
     WHERE user_id = ?
     GROUP BY proof_type
-  `).all(uid);
+  `, [uid]);
 
   const PROOF_TYPES = ['screenshot', 'note', 'link', 'conversation', 'signal'];
   const proofs = PROOF_TYPES.map(t => ({
@@ -57,30 +58,30 @@ router.get('/', (req, res) => {
   const totalProofs = proofs.reduce((s, p) => s + p.count, 0);
 
   /* 5. Last validated decision (most recent) */
-  const lastDecision = db.prepare(`
+  const lastDecision = await db.queryOne(`
     SELECT id, decision_type, title, rationale, created_at
     FROM decisions
     WHERE user_id = ?
     ORDER BY created_at DESC
     LIMIT 1
-  `).get(uid);
+  `, [uid]);
 
   /* 6. Last market action (contact or conversation, most recent) */
-  const lastContact = db.prepare(`
+  const lastContact = await db.queryOne(`
     SELECT name, status, created_at, 'contact' AS kind
     FROM market_contacts
     WHERE user_id = ?
     ORDER BY created_at DESC
     LIMIT 1
-  `).get(uid);
+  `, [uid]);
 
-  const lastConversation = db.prepare(`
+  const lastConversation = await db.queryOne(`
     SELECT title, format, date_occurred AS created_at, 'conversation' AS kind
     FROM market_conversations
     WHERE user_id = ?
     ORDER BY created_at DESC
     LIMIT 1
-  `).get(uid);
+  `, [uid]);
 
   let lastMarketAction = null;
   if (lastContact && lastConversation) {
@@ -91,31 +92,31 @@ router.get('/', (req, res) => {
   }
 
   /* 7. Parking ideas counts — PAS MAINTENANT block */
-  const parkingRows = db.prepare(`
+  const parkingRows = await db.queryAll(`
     SELECT dispersion_status, COUNT(*) AS n
     FROM parking_ideas WHERE user_id = ?
     GROUP BY dispersion_status
-  `).all(uid);
+  `, [uid]);
 
   const parkingByStatus = {};
   for (const row of parkingRows) parkingByStatus[row.dispersion_status ?? 'PARKING'] = row.n;
 
-  /* Legacy rows (no dispersion_status) count as PARKING */
   const parkingCount = (parkingByStatus['PARKING'] ?? 0)
     + (parkingByStatus['TESTER_PLUS_TARD'] ?? 0)
     + (parkingByStatus['null'] ?? 0);
   const agirMaintenantCount = parkingByStatus['AGIR_MAINTENANT'] ?? 0;
 
   /* 8. Project passport */
-  const passport = db.prepare(`
+  const passport = await db.queryOne(`
     SELECT project_name, stage, vision
     FROM project_passport WHERE user_id = ?
-  `).get(uid);
+  `, [uid]);
 
   /* 9. Support requests open */
-  const openSupport = db.prepare(
-    `SELECT COUNT(*) as count FROM support_requests WHERE user_id = ? AND status = 'open'`
-  ).get(uid);
+  const openSupport = await db.queryOne(
+    `SELECT COUNT(*) as count FROM support_requests WHERE user_id = ? AND status = 'open'`,
+    [uid]
+  );
 
   return res.json({
     progress: progress ?? null,

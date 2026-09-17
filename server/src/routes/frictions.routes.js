@@ -4,7 +4,7 @@
  */
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getDb, writeAudit, notify } from '../db.js';
+import { getAdapter } from '../db/adapter.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { requireAdmin } from '../middleware/requireRole.js';
 
@@ -19,8 +19,8 @@ const VALID_SEVERITIES = ['VERT','ORANGE','ROUGE'];
 const VALID_DECISIONS  = ['GARDER','AJUSTER','SUPPRIMER','OBSERVER'];
 
 /* ── POST /api/frictions — participant reports a blocker ──────────── */
-router.post('/', (req, res) => {
-  const db = getDb();
+router.post('/', async (req, res) => {
+  const db = getAdapter();
   const { category, friction, severity = 'VERT' } = req.body ?? {};
 
   if (!category || !friction?.trim()) {
@@ -34,30 +34,30 @@ router.post('/', (req, res) => {
   }
 
   const id = randomUUID();
-  db.prepare(`
+  await db.execute(`
     INSERT INTO pilot_frictions (id, user_id, friction, category, severity)
     VALUES (?,?,?,?,?)
-  `).run(id, req.user.id, friction.trim(), category, severity);
+  `, [id, req.user.id, friction.trim(), category, severity]);
 
-  res.status(201).json(db.prepare(`SELECT * FROM pilot_frictions WHERE id = ?`).get(id));
+  res.status(201).json(await db.queryOne(`SELECT * FROM pilot_frictions WHERE id = ?`, [id]));
 });
 
 /* ── GET /api/frictions — participant views own frictions ─────────── */
-router.get('/', (req, res) => {
-  const db = getDb();
-  const frictions = db.prepare(`
+router.get('/', async (req, res) => {
+  const db = getAdapter();
+  const frictions = await db.queryAll(`
     SELECT * FROM pilot_frictions
     WHERE user_id = ?
     ORDER BY reported_at DESC
-  `).all(req.user.id);
+  `, [req.user.id]);
   res.json(frictions);
 });
 
 /* ── Admin endpoints ──────────────────────────────────────────────── */
 
 /* GET /api/frictions/admin — all frictions, optional filters */
-router.get('/admin', requireAdmin, (req, res) => {
-  const db = getDb();
+router.get('/admin', requireAdmin, async (req, res) => {
+  const db = getAdapter();
   const { status, severity, category } = req.query;
 
   let sql = `
@@ -74,13 +74,13 @@ router.get('/admin', requireAdmin, (req, res) => {
 
   sql += ' ORDER BY CASE pf.severity WHEN \'ROUGE\' THEN 0 WHEN \'ORANGE\' THEN 1 ELSE 2 END, pf.reported_at DESC';
 
-  res.json(db.prepare(sql).all(...params));
+  res.json(await db.queryAll(sql, params));
 });
 
 /* PATCH /api/frictions/admin/:id — admin reviews a friction */
-router.patch('/admin/:id', requireAdmin, (req, res) => {
-  const db = getDb();
-  const friction = db.prepare(`SELECT * FROM pilot_frictions WHERE id = ?`).get(req.params.id);
+router.patch('/admin/:id', requireAdmin, async (req, res) => {
+  const db = getAdapter();
+  const friction = await db.queryOne(`SELECT * FROM pilot_frictions WHERE id = ?`, [req.params.id]);
   if (!friction) return res.status(404).json({ error: 'Friction introuvable' });
 
   const { decision, admin_response, status } = req.body ?? {};
@@ -105,11 +105,13 @@ router.patch('/admin/:id', requireAdmin, (req, res) => {
   }
 
   const setClauses = Object.keys(updates).map(k => `${k} = ?`).join(', ');
-  db.prepare(`UPDATE pilot_frictions SET ${setClauses} WHERE id = ?`)
-    .run(...Object.values(updates), req.params.id);
+  await db.execute(
+    `UPDATE pilot_frictions SET ${setClauses} WHERE id = ?`,
+    [...Object.values(updates), req.params.id]
+  );
 
   if (decision) {
-    writeAudit(db, {
+    await db.writeAudit({
       actorId: req.user.id,
       targetUserId: friction.user_id,
       eventType: 'friction_review',
@@ -119,7 +121,7 @@ router.patch('/admin/:id', requireAdmin, (req, res) => {
     });
   }
   if (admin_response !== undefined && admin_response?.trim()) {
-    notify(db, {
+    await db.notify({
       userId: friction.user_id,
       type: 'support_response',
       title: 'Réponse à ton signalement',
@@ -127,7 +129,7 @@ router.patch('/admin/:id', requireAdmin, (req, res) => {
     });
   }
 
-  res.json(db.prepare(`SELECT * FROM pilot_frictions WHERE id = ?`).get(req.params.id));
+  res.json(await db.queryOne(`SELECT * FROM pilot_frictions WHERE id = ?`, [req.params.id]));
 });
 
 export default router;

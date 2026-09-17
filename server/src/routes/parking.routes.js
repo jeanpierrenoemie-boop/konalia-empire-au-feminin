@@ -1,15 +1,9 @@
 /**
  * Parking à Idées — STOP DISPERSION
- *
- * Governance:
- *  - The 7 evaluation questions are stored verbatim — no inference.
- *  - dispersion_status is ALWAYS set explicitly by the participant.
- *  - This module never reads or writes the decisions table.
- *  - No code path here can change an active strategic Direction.
  */
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getDb, writeAudit } from '../db.js';
+import { getAdapter } from '../db/adapter.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 
 const router = Router();
@@ -17,11 +11,11 @@ const router = Router();
 const DISPERSION_STATUSES = ['AGIR_MAINTENANT', 'TESTER_PLUS_TARD', 'PARKING', 'ABANDONNER'];
 
 /* ── GET /api/parking ── */
-router.get('/', requireAuth, (req, res) => {
-  const db = getDb();
+router.get('/', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
-  const ideas = db.prepare(`
+  const ideas = await db.queryAll(`
     SELECT * FROM parking_ideas
     WHERE user_id = ?
     ORDER BY
@@ -33,7 +27,7 @@ router.get('/', requireAuth, (req, res) => {
         ELSE 5
       END,
       created_at DESC
-  `).all(userId);
+  `, [userId]);
 
   const grouped = {
     agir_maintenant:  ideas.filter(i => i.dispersion_status === 'AGIR_MAINTENANT'),
@@ -46,8 +40,8 @@ router.get('/', requireAuth, (req, res) => {
 });
 
 /* ── POST /api/parking ── new idea with 7-question evaluation */
-router.post('/', requireAuth, (req, res) => {
-  const db = getDb();
+router.post('/', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
   const {
@@ -74,7 +68,7 @@ router.post('/', requireAuth, (req, res) => {
   }
 
   const id = randomUUID();
-  db.prepare(`
+  await db.execute(`
     INSERT INTO parking_ideas (
       id, user_id, title, description, category, status,
       dispersion_status,
@@ -82,7 +76,7 @@ router.post('/', requireAuth, (req, res) => {
       necessaire_maintenant, que_remplace, quel_cout, option_plus_simple,
       status_changed_at
     ) VALUES (?, ?, ?, ?, ?, 'parked', ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
-  `).run(
+  `, [
     id, userId,
     title.trim(),
     description ?? '',
@@ -95,9 +89,9 @@ router.post('/', requireAuth, (req, res) => {
     que_remplace ?? null,
     quel_cout ?? null,
     option_plus_simple ?? null,
-  );
+  ]);
 
-  writeAudit(db, {
+  await db.writeAudit({
     actorId: userId,
     targetUserId: userId,
     eventType: 'data_access',
@@ -106,17 +100,17 @@ router.post('/', requireAuth, (req, res) => {
     afterState: { title: title.trim(), dispersion_status },
   });
 
-  const created = db.prepare(`SELECT * FROM parking_ideas WHERE id = ?`).get(id);
-  res.status(201).json(created);
+  const created = await db.queryOne(`SELECT * FROM parking_ideas WHERE id = ?`, [id]);
+  return res.status(201).json(created);
 });
 
 /* ── PUT /api/parking/:id/status ── change dispersion status */
-router.put('/:id/status', requireAuth, (req, res) => {
-  const db = getDb();
+router.put('/:id/status', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
-  const idea = db.prepare(`SELECT * FROM parking_ideas WHERE id = ? AND user_id = ?`)
-    .get(req.params.id, userId);
+  const idea = await db.queryOne(`SELECT * FROM parking_ideas WHERE id = ? AND user_id = ?`,
+    [req.params.id, userId]);
   if (!idea) return res.status(404).json({ error: 'Idée introuvable' });
 
   const { dispersion_status, reason } = req.body;
@@ -124,18 +118,14 @@ router.put('/:id/status', requireAuth, (req, res) => {
     return res.status(400).json({ error: `dispersion_status invalide. Valeurs : ${DISPERSION_STATUSES.join(', ')}` });
   }
 
-  /* Guard: an AGIR_MAINTENANT idea can only be acted on as an independent action —
-     it never creates or modifies a strategic decision. The participant must go
-     to Journal des Décisions themselves if a decision is warranted. */
-
-  db.prepare(`
+  await db.execute(`
     UPDATE parking_ideas
     SET dispersion_status = ?, status_reason = ?, status_changed_at = datetime('now'),
         updated_at = datetime('now')
     WHERE id = ? AND user_id = ?
-  `).run(dispersion_status, reason ?? null, idea.id, userId);
+  `, [dispersion_status, reason ?? null, idea.id, userId]);
 
-  writeAudit(db, {
+  await db.writeAudit({
     actorId: userId,
     targetUserId: userId,
     eventType: 'data_access',
@@ -145,17 +135,16 @@ router.put('/:id/status', requireAuth, (req, res) => {
     afterState: { dispersion_status, reason },
   });
 
-  const updated = db.prepare(`SELECT * FROM parking_ideas WHERE id = ?`).get(idea.id);
-  res.json(updated);
+  return res.json(await db.queryOne(`SELECT * FROM parking_ideas WHERE id = ?`, [idea.id]));
 });
 
 /* ── PUT /api/parking/:id ── update questions on an existing idea */
-router.put('/:id', requireAuth, (req, res) => {
-  const db = getDb();
+router.put('/:id', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
-  const idea = db.prepare(`SELECT * FROM parking_ideas WHERE id = ? AND user_id = ?`)
-    .get(req.params.id, userId);
+  const idea = await db.queryOne(`SELECT * FROM parking_ideas WHERE id = ? AND user_id = ?`,
+    [req.params.id, userId]);
   if (!idea) return res.status(404).json({ error: 'Idée introuvable' });
 
   const ALLOWED = [
@@ -178,11 +167,10 @@ router.put('/:id', requireAuth, (req, res) => {
   }
 
   const setClauses = Object.keys(updates).map(k => `${k} = ?`).join(', ');
-  db.prepare(`UPDATE parking_ideas SET ${setClauses}, updated_at = datetime('now') WHERE id = ? AND user_id = ?`)
-    .run(...Object.values(updates), idea.id, userId);
+  await db.execute(`UPDATE parking_ideas SET ${setClauses}, updated_at = datetime('now') WHERE id = ? AND user_id = ?`,
+    [...Object.values(updates), idea.id, userId]);
 
-  const updated = db.prepare(`SELECT * FROM parking_ideas WHERE id = ?`).get(idea.id);
-  res.json(updated);
+  return res.json(await db.queryOne(`SELECT * FROM parking_ideas WHERE id = ?`, [idea.id]));
 });
 
 export default router;

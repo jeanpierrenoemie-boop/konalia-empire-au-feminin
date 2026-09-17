@@ -1,27 +1,27 @@
 import { Router } from 'express';
-import { getDb } from '../db.js';
+import { getAdapter } from '../db/adapter.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 
 const router = Router();
 
 /* ── GET /api/preuves ── 5 structured proof sections */
-router.get('/', requireAuth, (req, res) => {
-  const db = getDb();
+router.get('/', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
-  res.json(buildPreuves(db, userId));
+  res.json(await buildPreuves(db, userId));
 });
 
 /* ── GET /api/dossier ── full structured export (no PDF in V1) */
-router.get('/dossier', requireAuth, (req, res) => {
-  const db = getDb();
+router.get('/dossier', requireAuth, async (req, res) => {
+  const db = getAdapter();
   const userId = req.user.id;
 
-  const user = db.prepare(`SELECT first_name, email FROM users WHERE id = ?`).get(userId);
-  const passport = db.prepare(`SELECT * FROM project_passport WHERE user_id = ?`).get(userId);
-  const decisions = db.prepare(`SELECT * FROM decisions WHERE user_id = ? ORDER BY created_at DESC`).all(userId);
-  const progress = db.prepare(`SELECT * FROM user_progress WHERE user_id = ? LIMIT 1`).get(userId);
-  const passedSprints = db.prepare(`SELECT sprint_number, passed_at, method FROM sprint_gate_log WHERE user_id = ? ORDER BY sprint_number`).all(userId);
+  const user = await db.queryOne(`SELECT first_name, email FROM users WHERE id = ?`, [userId]);
+  const passport = await db.queryOne(`SELECT * FROM project_passport WHERE user_id = ?`, [userId]);
+  const decisions = await db.queryAll(`SELECT * FROM decisions WHERE user_id = ? ORDER BY created_at DESC`, [userId]);
+  const progress = await db.queryOne(`SELECT * FROM user_progress WHERE user_id = ? LIMIT 1`, [userId]);
+  const passedSprints = await db.queryAll(`SELECT sprint_number, passed_at, method FROM sprint_gate_log WHERE user_id = ? ORDER BY sprint_number`, [userId]);
 
   res.json({
     meta: {
@@ -30,7 +30,7 @@ router.get('/dossier', requireAuth, (req, res) => {
       participant: { name: user?.first_name ?? null, email: user?.email ?? null },
     },
     passeport: passport ?? null,
-    preuves: buildPreuves(db, userId),
+    preuves: await buildPreuves(db, userId),
     decisions: {
       active: decisions.filter(d => d.status === 'active'),
       historical: decisions.filter(d => d.status !== 'active'),
@@ -43,29 +43,29 @@ router.get('/dossier', requireAuth, (req, res) => {
 });
 
 /* ── Builder ── */
-function buildPreuves(db, userId) {
+async function buildPreuves(db, userId) {
   return {
-    '01_ma_direction': buildDirection(db, userId),
-    '02_mon_offre_test': buildOffreTest(db, userId),
-    '03_mon_rapport_terrain': buildRapportTerrain(db, userId),
-    '04_mon_bilan_controle': buildBilanControle(db, userId),
-    '05_mon_plan_continuite': buildPlanContinuite(db, userId),
+    '01_ma_direction': await buildDirection(db, userId),
+    '02_mon_offre_test': await buildOffreTest(db, userId),
+    '03_mon_rapport_terrain': await buildRapportTerrain(db, userId),
+    '04_mon_bilan_controle': await buildBilanControle(db, userId),
+    '05_mon_plan_continuite': await buildPlanContinuite(db, userId),
   };
 }
 
-/* 01 Ma Direction — strategic orientation proof */
-function buildDirection(db, userId) {
-  const passport = db.prepare(`
+/* 01 Ma Direction */
+async function buildDirection(db, userId) {
+  const passport = await db.queryOne(`
     SELECT project_name, vision, target_persona, core_problem FROM project_passport WHERE user_id = ?
-  `).get(userId);
+  `, [userId]);
 
-  const decisions = db.prepare(`
+  const decisions = await db.queryAll(`
     SELECT id, decision_type, title, rationale, facts_used, hypotheses, created_at
     FROM decisions
     WHERE user_id = ? AND status = 'active'
       AND decision_type IN ('project','persona','scope','pivot')
     ORDER BY created_at DESC
-  `).all(userId);
+  `, [userId]);
 
   const completeness = computeSectionCompleteness([
     passport?.project_name, passport?.vision, passport?.target_persona, passport?.core_problem,
@@ -80,34 +80,34 @@ function buildDirection(db, userId) {
   };
 }
 
-/* 02 Mon Offre Test — offer and revenue model proof */
-function buildOffreTest(db, userId) {
-  const passport = db.prepare(`
+/* 02 Mon Offre Test */
+async function buildOffreTest(db, userId) {
+  const passport = await db.queryOne(`
     SELECT proposed_solution, revenue_model FROM project_passport WHERE user_id = ?
-  `).get(userId);
+  `, [userId]);
 
-  const decisions = db.prepare(`
+  const decisions = await db.queryAll(`
     SELECT id, decision_type, title, rationale, facts_used, created_at
     FROM decisions
     WHERE user_id = ? AND status = 'active'
       AND decision_type IN ('revenue','project')
     ORDER BY created_at DESC
-  `).all(userId);
+  `, [userId]);
 
-  const proofs = db.prepare(`
+  const proofs = await db.queryAll(`
     SELECT id, proof_type, title, content, url, created_at
     FROM proofs WHERE user_id = ? AND cadre_step = 'D'
     ORDER BY created_at DESC
-  `).all(userId);
+  `, [userId]);
 
-  const missionSubmissions = db.prepare(`
+  const missionSubmissions = await db.queryAll(`
     SELECT ms.id, ms.status, ms.content, ms.reviewed_at, m.title AS mission_title, m.sprint_number
     FROM mission_submissions ms
     JOIN missions m ON m.id = ms.mission_id
     WHERE ms.user_id = ? AND m.cadre_step = 'D'
       AND ms.status IN ('submitted','reviewed','approved')
     ORDER BY ms.created_at DESC
-  `).all(userId);
+  `, [userId]);
 
   const completeness = computeSectionCompleteness([
     passport?.proposed_solution,
@@ -126,13 +126,13 @@ function buildOffreTest(db, userId) {
   };
 }
 
-/* 03 Mon Rapport Terrain — market field report */
-function buildRapportTerrain(db, userId) {
-  const contactStats = db.prepare(`
+/* 03 Mon Rapport Terrain */
+async function buildRapportTerrain(db, userId) {
+  const contactStats = await db.queryAll(`
     SELECT status, COUNT(*) AS n FROM market_contacts WHERE user_id = ? GROUP BY status
-  `).all(userId);
+  `, [userId]);
 
-  const conversations = db.prepare(`
+  const conversations = await db.queryAll(`
     SELECT mc.id, mc.title, mc.summary, mc.date_occurred, mc.format,
       c.name AS contact_name, c.status AS contact_status
     FROM market_conversations mc
@@ -140,14 +140,14 @@ function buildRapportTerrain(db, userId) {
     WHERE mc.user_id = ?
     ORDER BY mc.date_occurred DESC
     LIMIT 20
-  `).all(userId);
+  `, [userId]);
 
-  const signalStats = db.prepare(`
+  const signalStats = await db.queryAll(`
     SELECT signal_type, strength, COUNT(*) AS n
     FROM market_signals WHERE user_id = ?
     GROUP BY signal_type, strength
     ORDER BY signal_type
-  `).all(userId);
+  `, [userId]);
 
   const totalContacts = contactStats.reduce((s, r) => s + r.n, 0);
   const activeContacts = contactStats
@@ -169,26 +169,26 @@ function buildRapportTerrain(db, userId) {
   };
 }
 
-/* 04 Mon Bilan de Contrôle — progress and decisions audit */
-function buildBilanControle(db, userId) {
-  const progress = db.prepare(`SELECT * FROM user_progress WHERE user_id = ? LIMIT 1`).get(userId);
+/* 04 Mon Bilan de Contrôle */
+async function buildBilanControle(db, userId) {
+  const progress = await db.queryOne(`SELECT * FROM user_progress WHERE user_id = ? LIMIT 1`, [userId]);
 
-  const passedSprints = db.prepare(`
+  const passedSprints = await db.queryAll(`
     SELECT sprint_number, cadre_step, passed_at, method
     FROM sprint_gate_log WHERE user_id = ? ORDER BY sprint_number
-  `).all(userId);
+  `, [userId]);
 
-  const weeklyReviews = db.prepare(`
+  const weeklyReviews = await db.queryAll(`
     SELECT sprint_number, week_number, wins, blockers, energy_level, status, created_at
     FROM weekly_reviews WHERE user_id = ? AND status = 'submitted'
     ORDER BY sprint_number, week_number
-  `).all(userId);
+  `, [userId]);
 
-  const goNoGoDecisions = db.prepare(`
+  const goNoGoDecisions = await db.queryAll(`
     SELECT id, title, rationale, facts_used, status, created_at
     FROM decisions WHERE user_id = ? AND decision_type = 'go_nogo'
     ORDER BY created_at DESC
-  `).all(userId);
+  `, [userId]);
 
   const completeness = computeSectionCompleteness([
     passedSprints.length > 0,
@@ -207,30 +207,30 @@ function buildBilanControle(db, userId) {
   };
 }
 
-/* 05 Mon Plan de Continuité 90 — 90-day continuity plan */
-function buildPlanContinuite(db, userId) {
-  const passport = db.prepare(`
+/* 05 Mon Plan de Continuité 90 */
+async function buildPlanContinuite(db, userId) {
+  const passport = await db.queryOne(`
     SELECT vision FROM project_passport WHERE user_id = ?
-  `).get(userId);
+  `, [userId]);
 
-  const pilotage = db.prepare(`
+  const pilotage = await db.queryOne(`
     SELECT current_priority, next_action, duration_estimate, not_priority_now
     FROM pilotage_state WHERE user_id = ? LIMIT 1
-  `).get(userId);
+  `, [userId]);
 
-  const finalDecisions = db.prepare(`
+  const finalDecisions = await db.queryAll(`
     SELECT id, decision_type, title, rationale, facts_used, reopening_condition, created_at
     FROM decisions WHERE user_id = ? AND status = 'active'
     ORDER BY created_at DESC
-  `).all(userId);
+  `, [userId]);
 
-  const sprint12Submission = db.prepare(`
+  const sprint12Submission = await db.queryOne(`
     SELECT ms.content, ms.status, ms.created_at
     FROM mission_submissions ms
     JOIN missions m ON m.id = ms.mission_id
     WHERE ms.user_id = ? AND m.sprint_number = 12
     ORDER BY ms.created_at DESC LIMIT 1
-  `).get(userId);
+  `, [userId]);
 
   const completeness = computeSectionCompleteness([
     passport?.vision,

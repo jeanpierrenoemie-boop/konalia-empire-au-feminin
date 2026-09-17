@@ -1,21 +1,22 @@
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getDb } from '../db.js';
+import { getAdapter } from '../db/adapter.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 
 const router = Router();
 router.use(requireAuth);
 
 /* ── Phase gate middleware ──────────────────────────────────────────────────── */
-function requireMarchePhase(req, res, next) {
-  const db = getDb();
+async function requireMarchePhase(req, res, next) {
+  const db = getAdapter();
   const uid = req.user.id;
 
   if (req.user.role === 'NOEMIE_ADMIN') return next();
 
-  const progress = db.prepare(
-    `SELECT cadre_step FROM user_progress WHERE user_id = ? LIMIT 1`
-  ).get(uid);
+  const progress = await db.queryOne(
+    `SELECT cadre_step FROM user_progress WHERE user_id = ? LIMIT 1`,
+    [uid]
+  );
 
   const step = progress?.cadre_step;
   if (step === 'R' || step === 'E') return next();
@@ -49,29 +50,31 @@ function signalCeiling(signals) {
 }
 
 /* ── GET /api/marche/contacts ───────────────────────────────────────────────── */
-router.get('/contacts', (req, res) => {
-  const db = getDb();
+router.get('/contacts', async (req, res) => {
+  const db = getAdapter();
   const uid = req.user.id;
 
-  const contacts = db.prepare(
-    `SELECT * FROM market_contacts WHERE user_id = ? ORDER BY updated_at DESC`
-  ).all(uid);
+  const contacts = await db.queryAll(
+    `SELECT * FROM market_contacts WHERE user_id = ? ORDER BY updated_at DESC`,
+    [uid]
+  );
 
-  const result = contacts.map(c => {
-    const signals = db.prepare(
+  const result = await Promise.all(contacts.map(async c => {
+    const signals = await db.queryAll(
       `SELECT signal_type, strength FROM market_signals
        WHERE user_id = ? AND contact_id = ?
-       ORDER BY created_at DESC LIMIT 10`
-    ).all(uid, c.id);
+       ORDER BY created_at DESC LIMIT 10`,
+      [uid, c.id]
+    );
     return { ...c, signal_ceiling: signalCeiling(signals), last_signal_count: signals.length };
-  });
+  }));
 
   return res.json(result);
 });
 
 /* ── POST /api/marche/contacts ──────────────────────────────────────────────── */
-router.post('/contacts', (req, res) => {
-  const db = getDb();
+router.post('/contacts', async (req, res) => {
+  const db = getAdapter();
   const uid = req.user.id;
   const { name, source, circle } = req.body;
 
@@ -87,50 +90,55 @@ router.post('/contacts', (req, res) => {
   const id = randomUUID();
   const now = new Date().toISOString();
 
-  db.prepare(`
+  await db.execute(`
     INSERT INTO market_contacts (id, user_id, name, source, circle, status, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, 'prospect', ?, ?)
-  `).run(id, uid, name.trim(), source ?? null, circle ?? null, now, now);
+  `, [id, uid, name.trim(), source ?? null, circle ?? null, now, now]);
 
-  const contact = db.prepare(`SELECT * FROM market_contacts WHERE id = ?`).get(id);
+  const contact = await db.queryOne(`SELECT * FROM market_contacts WHERE id = ?`, [id]);
   return res.status(201).json(contact);
 });
 
 /* ── GET /api/marche/contacts/:id ────────────────────────────────────────────── */
-router.get('/contacts/:id', (req, res) => {
-  const db = getDb();
+router.get('/contacts/:id', async (req, res) => {
+  const db = getAdapter();
   const uid = req.user.id;
 
-  const contact = db.prepare(
-    `SELECT * FROM market_contacts WHERE id = ? AND user_id = ?`
-  ).get(req.params.id, uid);
+  const contact = await db.queryOne(
+    `SELECT * FROM market_contacts WHERE id = ? AND user_id = ?`,
+    [req.params.id, uid]
+  );
 
   if (!contact) return res.status(404).json({ error: 'Contact introuvable' });
 
-  const conversations = db.prepare(
-    `SELECT mc.*, COUNT(ms.id) AS signal_count
-     FROM market_conversations mc
-     LEFT JOIN market_signals ms ON ms.conversation_id = mc.id
-     WHERE mc.contact_id = ? AND mc.user_id = ?
-     GROUP BY mc.id
-     ORDER BY mc.date_occurred DESC`
-  ).all(req.params.id, uid);
-
-  const signals = db.prepare(
-    `SELECT * FROM market_signals WHERE contact_id = ? AND user_id = ? ORDER BY created_at DESC`
-  ).all(req.params.id, uid);
+  const [conversations, signals] = await Promise.all([
+    db.queryAll(
+      `SELECT mc.*, COUNT(ms.id) AS signal_count
+       FROM market_conversations mc
+       LEFT JOIN market_signals ms ON ms.conversation_id = mc.id
+       WHERE mc.contact_id = ? AND mc.user_id = ?
+       GROUP BY mc.id
+       ORDER BY mc.date_occurred DESC`,
+      [req.params.id, uid]
+    ),
+    db.queryAll(
+      `SELECT * FROM market_signals WHERE contact_id = ? AND user_id = ? ORDER BY created_at DESC`,
+      [req.params.id, uid]
+    ),
+  ]);
 
   return res.json({ ...contact, conversations, signals, signal_ceiling: signalCeiling(signals) });
 });
 
 /* ── PUT /api/marche/contacts/:id ────────────────────────────────────────────── */
-router.put('/contacts/:id', (req, res) => {
-  const db = getDb();
+router.put('/contacts/:id', async (req, res) => {
+  const db = getAdapter();
   const uid = req.user.id;
 
-  const contact = db.prepare(
-    `SELECT id FROM market_contacts WHERE id = ? AND user_id = ?`
-  ).get(req.params.id, uid);
+  const contact = await db.queryOne(
+    `SELECT id FROM market_contacts WHERE id = ? AND user_id = ?`,
+    [req.params.id, uid]
+  );
   if (!contact) return res.status(404).json({ error: 'Contact introuvable' });
 
   const VALID_STATUSES = ['prospect', 'en_cours', 'converti', 'pause', 'abandonne'];
@@ -161,15 +169,15 @@ router.put('/contacts/:id', (req, res) => {
   vals.push(new Date().toISOString());
   vals.push(req.params.id);
 
-  db.prepare(`UPDATE market_contacts SET ${fields.join(', ')} WHERE id = ?`).run(...vals);
+  await db.execute(`UPDATE market_contacts SET ${fields.join(', ')} WHERE id = ?`, vals);
 
-  const updated = db.prepare(`SELECT * FROM market_contacts WHERE id = ?`).get(req.params.id);
+  const updated = await db.queryOne(`SELECT * FROM market_contacts WHERE id = ?`, [req.params.id]);
   return res.json(updated);
 });
 
 /* ── GET /api/marche/conversations ──────────────────────────────────────────── */
-router.get('/conversations', (req, res) => {
-  const db = getDb();
+router.get('/conversations', async (req, res) => {
+  const db = getAdapter();
   const uid = req.user.id;
   const { contact_id } = req.query;
 
@@ -181,20 +189,23 @@ router.get('/conversations', (req, res) => {
 
   if (contact_id) {
     // verify ownership
-    const c = db.prepare(`SELECT id FROM market_contacts WHERE id = ? AND user_id = ?`).get(contact_id, uid);
+    const c = await db.queryOne(
+      `SELECT id FROM market_contacts WHERE id = ? AND user_id = ?`,
+      [contact_id, uid]
+    );
     if (!c) return res.status(404).json({ error: 'Contact introuvable' });
     query += ` AND mc.contact_id = ?`;
     params.push(contact_id);
   }
 
   query += ` GROUP BY mc.id ORDER BY mc.date_occurred DESC`;
-  const rows = db.prepare(query).all(...params);
+  const rows = await db.queryAll(query, params);
   return res.json(rows);
 });
 
 /* ── POST /api/marche/conversations ─────────────────────────────────────────── */
-router.post('/conversations', (req, res) => {
-  const db = getDb();
+router.post('/conversations', async (req, res) => {
+  const db = getAdapter();
   const uid = req.user.id;
   const { contact_id, date, summary, transcript, title } = req.body;
 
@@ -202,52 +213,55 @@ router.post('/conversations', (req, res) => {
   if (!date)       return res.status(400).json({ error: 'date est requis' });
   if (!summary)    return res.status(400).json({ error: 'summary est requis' });
 
-  const contact = db.prepare(
-    `SELECT id FROM market_contacts WHERE id = ? AND user_id = ?`
-  ).get(contact_id, uid);
+  const contact = await db.queryOne(
+    `SELECT id FROM market_contacts WHERE id = ? AND user_id = ?`,
+    [contact_id, uid]
+  );
   if (!contact) return res.status(404).json({ error: 'Contact introuvable' });
 
   const id = randomUUID();
   const now = new Date().toISOString();
   const convTitle = title ?? `Conversation du ${date}`;
 
-  db.prepare(`
+  await db.execute(`
     INSERT INTO market_conversations
       (id, user_id, contact_id, title, summary, date_occurred, transcript, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(id, uid, contact_id, convTitle, summary, date, transcript ?? null, now, now);
+  `, [id, uid, contact_id, convTitle, summary, date, transcript ?? null, now, now]);
 
   // update contact last_contact_date
-  db.prepare(`
+  await db.execute(`
     UPDATE market_contacts
     SET last_contact_date = ?, updated_at = ?
     WHERE id = ? AND user_id = ?
-  `).run(date, now, contact_id, uid);
+  `, [date, now, contact_id, uid]);
 
-  const conv = db.prepare(`SELECT * FROM market_conversations WHERE id = ?`).get(id);
+  const conv = await db.queryOne(`SELECT * FROM market_conversations WHERE id = ?`, [id]);
   return res.status(201).json(conv);
 });
 
 /* ── GET /api/marche/conversations/:id ──────────────────────────────────────── */
-router.get('/conversations/:id', (req, res) => {
-  const db = getDb();
+router.get('/conversations/:id', async (req, res) => {
+  const db = getAdapter();
   const uid = req.user.id;
 
-  const conv = db.prepare(
-    `SELECT * FROM market_conversations WHERE id = ? AND user_id = ?`
-  ).get(req.params.id, uid);
+  const conv = await db.queryOne(
+    `SELECT * FROM market_conversations WHERE id = ? AND user_id = ?`,
+    [req.params.id, uid]
+  );
   if (!conv) return res.status(404).json({ error: 'Conversation introuvable' });
 
-  const signals = db.prepare(
-    `SELECT * FROM market_signals WHERE conversation_id = ? AND user_id = ? ORDER BY created_at ASC`
-  ).all(req.params.id, uid);
+  const signals = await db.queryAll(
+    `SELECT * FROM market_signals WHERE conversation_id = ? AND user_id = ? ORDER BY created_at ASC`,
+    [req.params.id, uid]
+  );
 
   return res.json({ ...conv, signals });
 });
 
 /* ── POST /api/marche/signals ────────────────────────────────────────────────── */
-router.post('/signals', (req, res) => {
-  const db = getDb();
+router.post('/signals', async (req, res) => {
+  const db = getAdapter();
   const uid = req.user.id;
   const { conversation_id, signal_type, content, strength } = req.body;
 
@@ -259,9 +273,10 @@ router.post('/signals', (req, res) => {
     return res.status(400).json({ error: `signal_type invalide. Valeurs: ${SIGNAL_LEVELS.join(', ')}` });
   }
 
-  const conv = db.prepare(
-    `SELECT id, contact_id FROM market_conversations WHERE id = ? AND user_id = ?`
-  ).get(conversation_id, uid);
+  const conv = await db.queryOne(
+    `SELECT id, contact_id FROM market_conversations WHERE id = ? AND user_id = ?`,
+    [conversation_id, uid]
+  );
   if (!conv) return res.status(404).json({ error: 'Conversation introuvable' });
 
   const strengthVal = strength ? parseInt(strength, 10) : 2;
@@ -272,13 +287,13 @@ router.post('/signals', (req, res) => {
   const id = randomUUID();
   const now = new Date().toISOString();
 
-  db.prepare(`
+  await db.execute(`
     INSERT INTO market_signals
       (id, user_id, conversation_id, contact_id, signal_type, content, strength, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(id, uid, conversation_id, conv.contact_id ?? null, signal_type, content, strengthVal, now);
+  `, [id, uid, conversation_id, conv.contact_id ?? null, signal_type, content, strengthVal, now]);
 
-  const signal = db.prepare(`SELECT * FROM market_signals WHERE id = ?`).get(id);
+  const signal = await db.queryOne(`SELECT * FROM market_signals WHERE id = ?`, [id]);
   return res.status(201).json(signal);
 });
 
@@ -286,31 +301,34 @@ router.post('/signals', (req, res) => {
    Signal map: per contact, highest signal level + count per level.
    NEVER auto-upgrades politesse to engagement.
 ───────────────────────────────────────────────────────────────────────────── */
-router.get('/carte', (req, res) => {
-  const db = getDb();
+router.get('/carte', async (req, res) => {
+  const db = getAdapter();
   const uid = req.user.id;
 
-  const contacts = db.prepare(
-    `SELECT * FROM market_contacts WHERE user_id = ? ORDER BY updated_at DESC`
-  ).all(uid);
+  const contacts = await db.queryAll(
+    `SELECT * FROM market_contacts WHERE user_id = ? ORDER BY updated_at DESC`,
+    [uid]
+  );
 
   const signal_matrix = {};
-  const contactsResult = contacts.map(c => {
-    const signals = db.prepare(
+  const contactsResult = await Promise.all(contacts.map(async c => {
+    const signals = await db.queryAll(
       `SELECT signal_type, COUNT(*) AS cnt
        FROM market_signals
        WHERE user_id = ? AND contact_id = ?
-       GROUP BY signal_type`
-    ).all(uid, c.id);
+       GROUP BY signal_type`,
+      [uid, c.id]
+    );
 
     const levelCounts = {};
     for (const level of SIGNAL_LEVELS) levelCounts[level] = 0;
     for (const s of signals) levelCounts[s.signal_type] = s.cnt;
 
     // Compute ceiling from actual signals only — never inferred
-    const allSignals = db.prepare(
-      `SELECT signal_type FROM market_signals WHERE user_id = ? AND contact_id = ?`
-    ).all(uid, c.id);
+    const allSignals = await db.queryAll(
+      `SELECT signal_type FROM market_signals WHERE user_id = ? AND contact_id = ?`,
+      [uid, c.id]
+    );
     const ceiling = signalCeiling(allSignals);
 
     signal_matrix[c.id] = levelCounts;
@@ -328,7 +346,7 @@ router.get('/carte', (req, res) => {
       demand_validated: c.commercial_intent === 'engagement' ? false
         : c.commercial_intent !== null && (allSignals.some(s => s.signal_type === 'engagement' || s.signal_type === 'intention_commerciale')),
     };
-  });
+  }));
 
   // Summary stats
   const totalContacts = contacts.length;
