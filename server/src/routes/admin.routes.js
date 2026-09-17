@@ -283,8 +283,9 @@ router.get('/frictions', (req, res) => {
     SELECT pf.*, u.first_name, u.email
     FROM pilot_frictions pf
     JOIN users u ON u.id = pf.user_id
-    WHERE pf.resolved = 0
-    ORDER BY pf.reported_at DESC
+    WHERE pf.status != 'resolved'
+    ORDER BY CASE pf.severity WHEN 'ROUGE' THEN 0 WHEN 'ORANGE' THEN 1 ELSE 2 END,
+             pf.reported_at DESC
   `).all();
   res.json(frictions);
 });

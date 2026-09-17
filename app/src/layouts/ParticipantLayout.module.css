@@ -3,6 +3,40 @@
   min-height: 100dvh;
 }
 
+/* ── Floating report button ───────────────────────────────────────── */
+.signalerFab {
+  position: fixed;
+  bottom: var(--space-5);
+  right: var(--space-5);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+.signalerFab:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+  box-shadow: 0 6px 20px rgba(0,0,0,.16);
+}
+
+.fabIcon { font-size: var(--text-base); }
+.fabLabel { white-space: nowrap; }
+
+@media (max-width: 600px) {
+  .fabLabel { display: none; }
+  .signalerFab { padding: var(--space-3); border-radius: 50%; }
+}
+
 .main {
   flex: 1;
   margin-left: var(--nav-width-desktop);

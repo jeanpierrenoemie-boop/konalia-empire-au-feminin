@@ -19,6 +19,7 @@ export function AdminLayout() {
           <a href="/admin/preuves" className={styles.item}>Preuves</a>
           <a href="/admin/labs" className={styles.item}>Labs</a>
           <a href="/admin/ressources" className={styles.item}>Ressources</a>
+          <a href="/admin/frictions" className={styles.item}>Frictions</a>
         </nav>
       </aside>
       <main className={styles.main}>

@@ -16,6 +16,7 @@ import eliteRoutes from './src/routes/elite.routes.js';
 import adminCockpitRoutes from './src/routes/admin.routes.js';
 import copiloteRoutes from './src/routes/copilote.routes.js';
 import marcheRoutes from './src/routes/marche.routes.js';
+import frictionsRoutes from './src/routes/frictions.routes.js';
 
 export function createApp() {
   const app = express();
@@ -42,6 +43,7 @@ export function createApp() {
   app.use('/api/labs', labsRoutes);
   app.use('/api/elite', eliteRoutes);
   app.use('/api/admin', adminCockpitRoutes);
+  app.use('/api/frictions', frictionsRoutes);
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
 

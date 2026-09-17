@@ -21,6 +21,7 @@ import { ContactPage } from '../pages/participant/Marche/ContactPage';
 import { FicheConversation } from '../pages/participant/Marche/FicheConversation';
 import { CarteSignaux } from '../pages/participant/Marche/CarteSignaux';
 import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage';
+import { FrictionsPage } from '../pages/admin/FrictionsPage';
 
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
@@ -70,6 +71,7 @@ export const router = createBrowserRouter([
     element: <RequireAdmin><AdminLayout /></RequireAdmin>,
     children: [
       { index: true, element: <AdminOverviewPage /> },
+      { path: 'frictions', element: <FrictionsPage /> },
     ],
   },
 ]);

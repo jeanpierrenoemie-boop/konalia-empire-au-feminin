@@ -227,7 +227,7 @@ describe('GET /api/admin/frictions', () => {
   it('returns unresolved frictions', async () => {
     const db = getDb();
     db.prepare(`INSERT INTO pilot_frictions (id,user_id,friction,category) VALUES (?,?,?,?)`)
-      .run(randomUUID(), participantId, 'Texte du sprint 3 confus', 'content');
+      .run(randomUUID(), participantId, 'Texte du sprint 3 confus', 'comprehension');
 
     const res = await request(app)
       .get('/api/admin/frictions')
