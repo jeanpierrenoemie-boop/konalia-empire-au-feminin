@@ -2,7 +2,9 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ParticipantLayout } from '../layouts/ParticipantLayout';
 import { AdminLayout } from '../layouts/AdminLayout';
 import { RequireAuth, RequireElite, RequireAdmin } from '../auth/RequireAuth';
+import { RequireOnboarded } from '../auth/RequireOnboarded';
 import { LoginPage } from '../pages/LoginPage';
+import { OnboardingPage } from '../pages/onboarding/OnboardingPage';
 import { CockpitPage } from '../pages/participant/CockpitPage';
 import { ParcoursPage } from '../pages/participant/ParcoursPage';
 import { CopilotePage } from '../pages/participant/CopilotePage';
@@ -16,9 +18,22 @@ import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage';
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
 
+  /* Onboarding — authenticated but not yet onboarded */
+  {
+    path: '/onboarding',
+    element: <RequireAuth><OnboardingPage /></RequireAuth>,
+  },
+
+  /* Main app — authenticated + onboarded */
   {
     path: '/',
-    element: <RequireAuth><ParticipantLayout /></RequireAuth>,
+    element: (
+      <RequireAuth>
+        <RequireOnboarded>
+          <ParticipantLayout />
+        </RequireOnboarded>
+      </RequireAuth>
+    ),
     children: [
       { index: true, element: <Navigate to="/cockpit" replace /> },
       { path: 'cockpit',    element: <CockpitPage />,    handle: { title: 'Mon Cockpit' } },

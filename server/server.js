@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import authRoutes from './src/routes/auth.routes.js';
 import dataRoutes from './src/routes/data.routes.js';
+import onboardingRoutes from './src/routes/onboarding.routes.js';
 
 export function createApp() {
   const app = express();
@@ -18,6 +19,7 @@ export function createApp() {
 
   app.use('/auth', authRoutes);
   app.use('/api', dataRoutes);
+  app.use('/api/onboarding', onboardingRoutes);
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
 
