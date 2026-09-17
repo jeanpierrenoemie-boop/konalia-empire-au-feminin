@@ -88,7 +88,7 @@ beforeAll(async () => {
       'Me concentrer sur les coachs indépendants', 'Segment le plus accessible',
       'Entretiens avec 5 personnes du segment', 'Supposé: budget moyen 200€/mois');
   db.prepare(`INSERT INTO market_signals (id,user_id,signal_type,content,strength) VALUES (?,?,?,?,?)`)
-    .run(randomUUID(), userId1, 'insight', 'Prospect A: intéressée mais veut voir une démo', 2);
+    .run(randomUUID(), userId1, 'interet_solution', 'Prospect A: intéressée mais veut voir une démo', 2);
 
   const [r1, r2] = await Promise.all([
     request(app).post('/auth/login').send({ email: 'marie@beh.test', password: 'pass' }),

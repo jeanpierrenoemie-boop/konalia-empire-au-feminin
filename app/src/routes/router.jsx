@@ -16,6 +16,10 @@ import { PasseportPage } from '../pages/participant/PasseportPage';
 import { DecisionsPage } from '../pages/participant/DecisionsPage';
 import { ParkingPage } from '../pages/participant/ParkingPage';
 import { ElitePage } from '../pages/participant/ElitePage';
+import { MarchePage } from '../pages/participant/MarchePage';
+import { ContactPage } from '../pages/participant/Marche/ContactPage';
+import { FicheConversation } from '../pages/participant/Marche/FicheConversation';
+import { CarteSignaux } from '../pages/participant/Marche/CarteSignaux';
 import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage';
 
 export const router = createBrowserRouter([
@@ -54,6 +58,10 @@ export const router = createBrowserRouter([
         element: <RequireElite><ElitePage /></RequireElite>,
         handle: { title: 'Mes Points ELITE' },
       },
+      { path: 'marche/carte',                          element: <CarteSignaux /> },
+      { path: 'marche',                                element: <MarchePage /> },
+      { path: 'marche/:contactId',                     element: <ContactPage /> },
+      { path: 'marche/:contactId/conversation/:convId', element: <FicheConversation /> },
     ],
   },
 

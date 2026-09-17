@@ -52,6 +52,8 @@ const MIGRATION_FILES = [
   '004_gate_overrides.sql',
   '005_decisions_v2.sql',
   '006_parking_dispersion.sql',
+  '007_copilote_v2.sql',
+  '008_marche.sql',
 ];
 
 function runMigrations(db) {

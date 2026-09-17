@@ -56,6 +56,53 @@ export function buildCopiloteContext(db, userId, shortcutType = 'general') {
      ORDER BY created_at DESC LIMIT 5`
   ).all(userId);
 
+  // ── market CRM data ─────────────────────────────────────────────────────────
+  const SIGNAL_LEVELS_ORDER = [
+    'politesse','probleme_exprime','comportement_passe',
+    'interet_solution','intention_commerciale','engagement',
+  ];
+
+  const marketContacts = db.prepare(
+    `SELECT id, name, status, circle, commercial_intent, next_action, last_contact_date
+     FROM market_contacts WHERE user_id = ? ORDER BY updated_at DESC`
+  ).all(userId);
+
+  const marketContactsWithCeiling = marketContacts.map(c => {
+    const sigs = db.prepare(
+      `SELECT signal_type FROM market_signals WHERE user_id = ? AND contact_id = ?`
+    ).all(userId, c.id);
+    let maxIdx = -1;
+    for (const s of sigs) {
+      const idx = SIGNAL_LEVELS_ORDER.indexOf(s.signal_type);
+      if (idx > maxIdx) maxIdx = idx;
+    }
+    return { ...c, signal_ceiling: maxIdx >= 0 ? SIGNAL_LEVELS_ORDER[maxIdx] : null };
+  });
+
+  const recentConversations5 = db.prepare(
+    `SELECT mc.id, mc.title, mc.date_occurred, mc.summary,
+            co.name AS contact_name
+     FROM market_conversations mc
+     LEFT JOIN market_contacts co ON co.id = mc.contact_id
+     WHERE mc.user_id = ?
+     ORDER BY mc.date_occurred DESC LIMIT 5`
+  ).all(userId);
+
+  const recentMarketSignals5 = db.prepare(
+    `SELECT ms.id, ms.signal_type, ms.content, ms.strength, ms.created_at,
+            co.name AS contact_name
+     FROM market_signals ms
+     LEFT JOIN market_contacts co ON co.id = ms.contact_id
+     WHERE ms.user_id = ?
+     ORDER BY ms.created_at DESC LIMIT 5`
+  ).all(userId);
+
+  const market_summary = {
+    contacts: marketContactsWithCeiling,
+    recent_conversations: recentConversations5,
+    recent_signals: recentMarketSignals5,
+  };
+
   const parkingAgir = db.prepare(
     `SELECT id, title, description, category
      FROM parking_ideas
@@ -85,6 +132,7 @@ export function buildCopiloteContext(db, userId, shortcutType = 'general') {
         recent_signals: recentSignals3,
         parking_agir_maintenant: parkingAgir,
         passport: passport ?? null,
+        market_summary,
       };
       break;
 
@@ -100,12 +148,14 @@ export function buildCopiloteContext(db, userId, shortcutType = 'general') {
       structured = {
         passport: passport ?? null,
         recent_signals: recentSignals3,
+        market_summary,
       };
       break;
 
     case 'analyse_retours':
       structured = {
         recent_signals: recentSignals5,
+        market_summary,
       };
       break;
 
@@ -139,6 +189,7 @@ export function buildCopiloteContext(db, userId, shortcutType = 'general') {
         recent_signals: recentSignals3,
         passport: passport ?? null,
         parking_agir_count: parkingAgir.length,
+        market_summary,
       };
       break;
   }

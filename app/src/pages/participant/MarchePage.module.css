@@ -1,0 +1,135 @@
+:root {
+  --marche-bg: #ffffff;
+  --marche-card-bg: #f9fafb;
+  --marche-border: #e5e7eb;
+  --marche-text: #111827;
+  --marche-muted: #6b7280;
+  --marche-primary: #6366f1;
+  --marche-primary-hover: #4f46e5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --marche-bg: #0f172a;
+    --marche-card-bg: #1e293b;
+    --marche-border: #334155;
+    --marche-text: #f1f5f9;
+    --marche-muted: #94a3b8;
+    --marche-primary: #818cf8;
+    --marche-primary-hover: #6366f1;
+  }
+}
+
+:root[data-theme="dark"] {
+  --marche-bg: #0f172a;
+  --marche-card-bg: #1e293b;
+  --marche-border: #334155;
+  --marche-text: #f1f5f9;
+  --marche-muted: #94a3b8;
+  --marche-primary: #818cf8;
+  --marche-primary-hover: #6366f1;
+}
+
+.locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--marche-muted);
+}
+
+.lockedIcon { font-size: 3rem; margin-bottom: 1rem; }
+.locked h2  { color: var(--marche-text); margin-bottom: 0.5rem; }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.title    { font-size: 1.5rem; font-weight: 700; color: var(--marche-text); margin: 0; }
+.subtitle { color: var(--marche-muted); font-size: 0.875rem; margin: 0.25rem 0 0; }
+
+.headerActions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.btnPrimary {
+  background: var(--marche-primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.btnPrimary:hover { background: var(--marche-primary-hover); }
+
+.btnSecondary {
+  background: transparent;
+  color: var(--marche-primary);
+  border: 1px solid var(--marche-primary);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.newForm {
+  background: var(--marche-card-bg);
+  border: 1px solid var(--marche-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.newFormTitle { margin: 0 0 1rem; font-size: 1rem; font-weight: 600; }
+.field { margin-bottom: 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.field label { font-size: 0.8rem; color: var(--marche-muted); }
+.field input, .field select, .field textarea {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--marche-border);
+  border-radius: 4px;
+  background: var(--marche-bg);
+  color: var(--marche-text);
+  font-size: 0.875rem;
+}
+.formError { color: #ef4444; font-size: 0.8rem; margin-bottom: 0.5rem; }
+.formActions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+
+.empty { text-align: center; padding: 2rem; color: var(--marche-muted); }
+.emptyHint { font-size: 0.85rem; margin-top: 0.5rem; }
+
+.contactList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.contactCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: var(--marche-card-bg);
+  border: 1px solid var(--marche-border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--marche-text);
+  transition: border-color 0.15s;
+}
+.contactCard:hover { border-color: var(--marche-primary); }
+
+.contactMain { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.contactName  { font-weight: 600; }
+.circleTag    { font-size: 0.75rem; color: var(--marche-muted); background: var(--marche-border); padding: 0.1rem 0.4rem; border-radius: 4px; }
+
+.contactMeta  { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.nextAction   { font-size: 0.8rem; color: var(--marche-muted); font-style: italic; }
+.lastDate     { font-size: 0.75rem; color: var(--marche-muted); }
+
+.ceilingChip  { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 10px; color: #fff; font-weight: 600; white-space: nowrap; }
+.ceilingNone  { font-size: 0.75rem; color: var(--marche-muted); }

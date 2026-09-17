@@ -1,0 +1,51 @@
+:root {
+  --cs-bg: #ffffff; --cs-card: #f9fafb; --cs-border: #e5e7eb;
+  --cs-text: #111827; --cs-muted: #6b7280; --cs-primary: #6366f1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --cs-bg: #0f172a; --cs-card: #1e293b; --cs-border: #334155;
+    --cs-text: #f1f5f9; --cs-muted: #94a3b8; --cs-primary: #818cf8;
+  }
+}
+:root[data-theme="dark"] {
+  --cs-bg: #0f172a; --cs-card: #1e293b; --cs-border: #334155;
+  --cs-text: #f1f5f9; --cs-muted: #94a3b8; --cs-primary: #818cf8;
+}
+
+.header     { margin-bottom: 1.25rem; }
+.breadcrumb { font-size: 0.8rem; color: var(--cs-muted); margin-bottom: 0.25rem; }
+.breadcrumb a { color: var(--cs-primary); text-decoration: none; }
+.title      { font-size: 1.5rem; font-weight: 700; margin: 0; }
+
+.summaryRow { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.stat       { display: flex; flex-direction: column; align-items: center; background: var(--cs-card); border: 1px solid var(--cs-border); border-radius: 8px; padding: 0.75rem 1.25rem; min-width: 100px; }
+.statNum    { font-size: 2rem; font-weight: 700; color: var(--cs-primary); line-height: 1; }
+.statLabel  { font-size: 0.75rem; color: var(--cs-muted); text-align: center; margin-top: 0.25rem; }
+
+.integrityNote { background: #fef9c3; border-left: 3px solid #ca8a04; padding: 0.6rem 0.9rem; border-radius: 4px; font-size: 0.82rem; margin-bottom: 1.25rem; color: #713f12; }
+
+.empty { color: var(--cs-muted); }
+.empty a { color: var(--cs-primary); }
+
+.tableWrapper { overflow-x: auto; }
+.table { border-collapse: collapse; width: 100%; font-size: 0.82rem; }
+
+.thContact  { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 2px solid var(--cs-border); white-space: nowrap; min-width: 130px; }
+.thCeiling  { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 2px solid var(--cs-border); white-space: nowrap; min-width: 120px; }
+.th         { text-align: center; padding: 0.5rem 0.5rem; border-bottom: 2px solid var(--cs-border); white-space: nowrap; font-size: 0.75rem; min-width: 70px; }
+
+.tdContact { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--cs-border); vertical-align: middle; }
+.contactLink { text-decoration: none; color: var(--cs-primary); font-weight: 500; display: block; }
+.statusTag  { font-size: 0.7rem; color: var(--cs-muted); }
+.tdCeiling  { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--cs-border); vertical-align: middle; }
+.cell       { text-align: center; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--cs-border); vertical-align: middle; }
+.cellBadge  { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; color: #fff; font-weight: 700; font-size: 0.75rem; }
+
+.ceilingChip { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 10px; color: #fff; font-weight: 600; white-space: nowrap; }
+
+.legend      { margin-top: 1.5rem; }
+.legendTitle { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cs-muted); margin: 0 0 0.5rem; font-weight: 600; }
+.legendList  { list-style: none; margin: 0; padding: 0; display: flex; gap: 1rem; flex-wrap: wrap; }
+.legendItem  { display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: var(--cs-muted); }
+.legendDot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
