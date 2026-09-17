@@ -4,6 +4,7 @@ import { getAdapter } from '../db/adapter.js';
 import { verifyPassword, hashPassword, signToken, cookieOptions } from '../auth.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { denyTestInProduction } from '../middleware/requireRole.js';
+import { isTestForbidden } from '../config/env.js';
 import { loginLimiter, resetLimiter } from '../middleware/rateLimiter.js';
 
 const router = Router();
@@ -32,8 +33,8 @@ router.post('/login', loginLimiter, async (req, res) => {
     return res.status(401).json({ error: 'Identifiants incorrects' });
   }
 
-  if (process.env.NODE_ENV === 'production' && user.is_test) {
-    return res.status(403).json({ error: 'Comptes de test non autorisés en production' });
+  if (isTestForbidden() && user.is_test) {
+    return res.status(403).json({ error: 'Comptes de test non autorisés en pilot/production' });
   }
 
   const valid = await verifyPassword(password, user.password_hash);
@@ -146,24 +147,49 @@ router.post('/reset-password', async (req, res) => {
 
   const db = getAdapter();
   const hash = hashToken(token);
-  const reset = await db.queryOne('SELECT * FROM password_resets WHERE token_hash = ?', [hash]);
 
+  /* Initial read — fail fast on obviously invalid tokens before acquiring any lock */
+  const reset = await db.queryOne('SELECT * FROM password_resets WHERE token_hash = ?', [hash]);
   if (!reset) return res.status(404).json({ error: 'Lien invalide' });
   if (reset.used_at) return res.status(409).json({ error: 'Ce lien a déjà été utilisé' });
   if (new Date(reset.expires_at + 'Z') < new Date()) return res.status(410).json({ error: 'Ce lien a expiré' });
 
   const passwordHash = await hashPassword(password);
+  let alreadyConsumed = false;
 
-  await db.execute('UPDATE users SET password_hash = ? WHERE id = ?', [passwordHash, reset.user_id]);
-  await db.execute("UPDATE password_resets SET used_at = datetime('now') WHERE token_hash = ?", [hash]);
-
-  await db.writeAudit({
-    actorId: reset.user_id,
-    eventType: 'password_reset_completed',
-    targetUserId: reset.user_id,
-    tableName: 'password_resets',
-    afterState: { reset_id: reset.id },
-  });
+  try {
+    await db.transaction(async tx => {
+      /* Atomic consumption: UPDATE only if still unused. In PG this row-locks the record,
+       * so a concurrent request blocks until this transaction commits, then finds used_at SET
+       * and the subsequent SELECT returns nothing, causing a controlled 409. */
+      await tx.execute(
+        "UPDATE password_resets SET used_at = datetime('now') WHERE token_hash = ? AND used_at IS NULL",
+        [hash]
+      );
+      /* Verify OUR transaction consumed the token (SELECT sees our own write inside the tx) */
+      const consumed = await tx.queryOne(
+        'SELECT id FROM password_resets WHERE token_hash = ? AND used_at IS NOT NULL',
+        [hash]
+      );
+      if (!consumed) {
+        alreadyConsumed = true;
+        throw new Error('TOKEN_ALREADY_CONSUMED');
+      }
+      await tx.execute('UPDATE users SET password_hash = ? WHERE id = ?', [passwordHash, reset.user_id]);
+      await tx.writeAudit({
+        actorId: reset.user_id,
+        eventType: 'password_reset_completed',
+        targetUserId: reset.user_id,
+        tableName: 'password_resets',
+        afterState: { reset_id: reset.id },
+      });
+    });
+  } catch (err) {
+    if (alreadyConsumed) {
+      return res.status(409).json({ error: 'Ce lien a déjà été utilisé' });
+    }
+    throw err;
+  }
 
   return res.json({ ok: true });
 });

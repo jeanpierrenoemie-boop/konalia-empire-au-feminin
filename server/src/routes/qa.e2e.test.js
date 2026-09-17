@@ -583,19 +583,21 @@ describe('16. Security — Cross-user data isolation', () => {
 
 // ─── 17. SECURITY — Test vs Production isolation ──────────────────────────────
 describe('17. Security — Test accounts blocked in production', () => {
-  it('is_test=1 user Sarah is blocked when NODE_ENV=production', async () => {
-    process.env.NODE_ENV = 'production';
-    const prodApp = createApp();
-    const r = await request(prodApp).post('/auth/login').send({ email: SARAH_EMAIL, password: PASS });
-    process.env.NODE_ENV = 'test';
+  it('is_test=1 user Sarah is blocked when APP_ENV=pilot', async () => {
+    const origAppEnv = process.env.APP_ENV;
+    process.env.APP_ENV = 'pilot';
+    const pilotApp = createApp();
+    const r = await request(pilotApp).post('/auth/login').send({ email: SARAH_EMAIL, password: PASS });
+    if (origAppEnv === undefined) delete process.env.APP_ENV; else process.env.APP_ENV = origAppEnv;
     expect(r.status).toBe(403);
   });
 
-  it('Non-test admin is NOT blocked in production', async () => {
-    process.env.NODE_ENV = 'production';
-    const prodApp = createApp();
-    const r = await request(prodApp).post('/auth/login').send({ email: ADMIN_EMAIL, password: PASS });
-    process.env.NODE_ENV = 'test';
+  it('Non-test admin is NOT blocked in pilot', async () => {
+    const origAppEnv = process.env.APP_ENV;
+    process.env.APP_ENV = 'pilot';
+    const pilotApp = createApp();
+    const r = await request(pilotApp).post('/auth/login').send({ email: ADMIN_EMAIL, password: PASS });
+    if (origAppEnv === undefined) delete process.env.APP_ENV; else process.env.APP_ENV = origAppEnv;
     expect(r.status).toBe(200);
   });
 });

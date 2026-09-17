@@ -1,4 +1,5 @@
 import { ROLES } from '../db.js';
+import { isTestForbidden } from '../config/env.js';
 
 /**
  * requireRole(...roles) — server-side role enforcement.
@@ -32,8 +33,8 @@ export function requireAdmin(req, res, next) {
 }
 
 export function denyTestInProduction(req, res, next) {
-  if (process.env.NODE_ENV === 'production' && req.user?.is_test) {
-    return res.status(403).json({ error: 'Comptes de test non autorisés en production' });
+  if (isTestForbidden() && req.user?.is_test) {
+    return res.status(403).json({ error: 'Comptes de test non autorisés en pilot/production' });
   }
   next();
 }

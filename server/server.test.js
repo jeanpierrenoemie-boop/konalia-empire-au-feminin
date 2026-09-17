@@ -265,33 +265,37 @@ describe('Cohort content access', () => {
    5. TEST USER ISOLATION
    ══════════════════════════════════════ */
 describe('Test user isolation', () => {
-  it('test user login is blocked in production environment', async () => {
-    const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
+  function restoreAppEnv(orig) {
+    if (orig === undefined) delete process.env.APP_ENV; else process.env.APP_ENV = orig;
+  }
+
+  it('test user login is blocked in pilot environment', async () => {
+    const orig = process.env.APP_ENV;
+    process.env.APP_ENV = 'pilot';
     const res = await request(app).post('/auth/login').send({
       email: USERS.starter.email, password: USERS.starter.password,
     });
+    restoreAppEnv(orig);
     expect(res.status).toBe(403);
-    process.env.NODE_ENV = originalEnv;
   });
 
-  it('non-test admin login works in production environment', async () => {
-    const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
+  it('non-test admin login works in pilot environment', async () => {
+    const orig = process.env.APP_ENV;
+    process.env.APP_ENV = 'pilot';
     const res = await request(app).post('/auth/login').send({
       email: USERS.admin.email, password: USERS.admin.password,
     });
+    restoreAppEnv(orig);
     expect(res.status).toBe(200);
-    process.env.NODE_ENV = originalEnv;
   });
 
-  it('test user session is denied /auth/me in production', async () => {
+  it('test user session is denied /auth/me in pilot', async () => {
     const cookie = await loginAs('starter');
-    const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
+    const orig = process.env.APP_ENV;
+    process.env.APP_ENV = 'pilot';
     const res = await request(app).get('/auth/me').set('Cookie', cookie);
+    restoreAppEnv(orig);
     expect(res.status).toBe(403);
-    process.env.NODE_ENV = originalEnv;
   });
 });
 

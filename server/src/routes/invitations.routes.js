@@ -208,39 +208,47 @@ router.post('/activate', async (req, res) => {
   const role = inv.plan === 'ELITE' ? 'PARTICIPANTE_ELITE' : 'PARTICIPANTE_STARTER';
   const tier = inv.plan;
 
-  await db.transaction(async tx => {
-    /* Create user account */
-    await tx.execute(`
-      INSERT INTO users (id, email, password_hash, role, tier, first_name, cohort_id, is_test)
-      VALUES (?, ?, ?, ?, ?, ?, ?, 0)
-    `, [userId, inv.email, passwordHash, role, tier, inv.first_name, inv.cohort_id]);
+  try {
+    await db.transaction(async tx => {
+      /* Create user account */
+      await tx.execute(`
+        INSERT INTO users (id, email, password_hash, role, tier, first_name, cohort_id, is_test)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+      `, [userId, inv.email, passwordHash, role, tier, inv.first_name, inv.cohort_id]);
 
-    /* Create enrollment */
-    await tx.execute(`
-      INSERT INTO enrollments (id, user_id, cohort_id, plan, status)
-      VALUES (?, ?, ?, ?, 'active')
-    `, [randomUUID(), userId, inv.cohort_id, inv.plan]);
+      /* Create enrollment */
+      await tx.execute(`
+        INSERT INTO enrollments (id, user_id, cohort_id, plan, status)
+        VALUES (?, ?, ?, ?, 'active')
+      `, [randomUUID(), userId, inv.cohort_id, inv.plan]);
 
-    /* Initialize progression at sprint 1 */
-    await tx.execute(`
-      INSERT INTO user_progress (id, user_id, cohort_id, cadre_step, sprint_number, week_in_sprint, gate_status, unlocked_at)
-      VALUES (?, ?, ?, 'C', 1, 1, 'in_progress', datetime('now'))
-    `, [randomUUID(), userId, inv.cohort_id]);
+      /* Initialize progression at sprint 1 */
+      await tx.execute(`
+        INSERT INTO user_progress (id, user_id, cohort_id, cadre_step, sprint_number, week_in_sprint, gate_status, unlocked_at)
+        VALUES (?, ?, ?, 'C', 1, 1, 'in_progress', datetime('now'))
+      `, [randomUUID(), userId, inv.cohort_id]);
 
-    /* Mark invitation as activated */
-    await tx.execute(`
-      UPDATE invitations SET status = 'activated', activated_at = datetime('now'), user_id = ?, updated_at = datetime('now')
-      WHERE id = ?
-    `, [userId, inv.id]);
+      /* Mark invitation as activated */
+      await tx.execute(`
+        UPDATE invitations SET status = 'activated', activated_at = datetime('now'), user_id = ?, updated_at = datetime('now')
+        WHERE id = ?
+      `, [userId, inv.id]);
 
-    await tx.writeAudit({
-      actorId: userId,
-      targetUserId: userId,
-      eventType: 'participant_activated',
-      tableName: 'invitations',
-      afterState: { invitation_id: inv.id, plan: inv.plan, cohort_id: inv.cohort_id },
+      await tx.writeAudit({
+        actorId: userId,
+        targetUserId: userId,
+        eventType: 'participant_activated',
+        tableName: 'invitations',
+        afterState: { invitation_id: inv.id, plan: inv.plan, cohort_id: inv.cohort_id },
+      });
     });
-  });
+  } catch (err) {
+    /* PG unique-violation (email already taken by concurrent activation) → 409, not 500 */
+    if (err.code === '23505' || (err.message && err.message.includes('UNIQUE constraint failed'))) {
+      return res.status(409).json({ error: 'Un compte avec cet email existe déjà' });
+    }
+    throw err;
+  }
 
   return res.json({ ok: true, email: inv.email });
 });

@@ -7,9 +7,10 @@ import 'dotenv/config';
 import { randomUUID } from 'crypto';
 import { hashPassword } from '../auth.js';
 import { getDb } from '../db.js';
+import { isSeedForbidden } from '../config/env.js';
 
-if (process.env.NODE_ENV === 'production') {
-  console.error('REFUSING to seed test fixtures in production.');
+if (isSeedForbidden()) {
+  console.error(`REFUSING to seed test fixtures in APP_ENV=${process.env.APP_ENV ?? 'development'} (pilot/production).`);
   process.exit(1);
 }
 
