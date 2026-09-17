@@ -336,11 +336,11 @@ describe('Audit events', () => {
     expect(cols).not.toContain('updated_at');
   });
 
-  it('audit_events CHECK constraint rejects invalid event_type', () => {
+  it('audit_events accepts any event_type string (migration 011 removed CHECK)', () => {
     expect(() => {
       db.prepare(`INSERT INTO audit_events (id, actor_id, event_type) VALUES (?, ?, ?)`)
-        .run(randomUUID(), adminId, 'invalid_type');
-    }).toThrow();
+        .run(randomUUID(), adminId, 'gate_override');
+    }).not.toThrow();
   });
 });
 

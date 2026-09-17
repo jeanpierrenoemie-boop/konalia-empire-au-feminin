@@ -11,6 +11,9 @@ import passeportRoutes from './src/routes/passeport.routes.js';
 import decisionsRoutes from './src/routes/decisions.routes.js';
 import preuvesRoutes from './src/routes/preuves.routes.js';
 import parkingRoutes from './src/routes/parking.routes.js';
+import labsRoutes from './src/routes/labs.routes.js';
+import eliteRoutes from './src/routes/elite.routes.js';
+import adminCockpitRoutes from './src/routes/admin.routes.js';
 import copiloteRoutes from './src/routes/copilote.routes.js';
 import marcheRoutes from './src/routes/marche.routes.js';
 
@@ -36,6 +39,9 @@ export function createApp() {
   app.use('/api/parking', parkingRoutes);
   app.use('/api/copilote', copiloteRoutes);
   app.use('/api/marche', marcheRoutes);
+  app.use('/api/labs', labsRoutes);
+  app.use('/api/elite', eliteRoutes);
+  app.use('/api/admin', adminCockpitRoutes);
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
 

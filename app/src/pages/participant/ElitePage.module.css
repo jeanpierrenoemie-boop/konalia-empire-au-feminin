@@ -1,0 +1,132 @@
+.page {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-bottom: var(--space-12);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: var(--text-3xl);
+  font-weight: 300;
+  color: var(--color-text-primary);
+}
+
+.eliteBadge {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: .1em;
+  color: #7c3aed;
+  background: #f5f3ff;
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid #ddd6fe;
+}
+
+@media (prefers-color-scheme: dark) {
+  .eliteBadge { background: #2e1065; color: #c4b5fd; border-color: #4c1d95; }
+}
+
+.scoreBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-6);
+}
+
+.scoreLabel { font-size: var(--text-sm); color: var(--color-text-secondary); }
+.scoreValue { font-size: var(--text-3xl); font-weight: 700; color: #7c3aed; }
+
+.section { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.sectionTitle {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.points {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-3);
+}
+
+.pointCard {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.pointDone { border-color: #7c3aed; background: #f5f3ff; }
+@media (prefers-color-scheme: dark) {
+  .pointDone { background: #1e1030; border-color: #6d28d9; }
+}
+
+.pointNumber {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-border);
+  min-width: 2rem;
+}
+.pointDone .pointNumber { color: #7c3aed; }
+
+.pointBody { display: flex; flex-direction: column; gap: 2px; }
+
+.pointTitle { font-size: var(--text-sm); font-weight: 600; color: var(--color-text-primary); }
+.pointDate  { font-size: var(--text-xs); color: var(--color-text-muted); }
+.pointNotes { font-size: var(--text-xs); color: var(--color-text-secondary); margin-top: var(--space-1); }
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cardTitle { font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); }
+.revueDate  { font-size: var(--text-sm); color: var(--color-text-secondary); }
+.revueNotes { font-size: var(--text-sm); color: var(--color-text-muted); }
+
+.pointHistory {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pointHistoryItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.pointHistoryPoints {
+  font-weight: 700;
+  color: #7c3aed;
+  min-width: 40px;
+}
+
+.pointHistoryReason { font-size: var(--text-sm); color: var(--color-text-secondary); }

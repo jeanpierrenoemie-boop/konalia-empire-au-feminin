@@ -54,6 +54,9 @@ const MIGRATION_FILES = [
   '006_parking_dispersion.sql',
   '007_copilote_v2.sql',
   '008_marche.sql',
+  '009_labs.sql',
+  '010_admin_cockpit.sql',
+  '011_audit_event_types.sql',
 ];
 
 function runMigrations(db) {
