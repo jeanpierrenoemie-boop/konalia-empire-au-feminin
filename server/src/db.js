@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import { readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -18,6 +19,15 @@ export const TIERS = Object.freeze({
   TEST:    'TEST',
 });
 
+/* Tables that are INSERT-only (no UPDATE/DELETE allowed via ORM) */
+export const IMMUTABLE_TABLES = Object.freeze([
+  'decisions',
+  'market_signals',
+  'elite_points',
+  'copilot_messages',
+  'audit_events',
+]);
+
 let _db = null;
 
 export function getDb(dbPath) {
@@ -26,49 +36,55 @@ export function getDb(dbPath) {
   _db = new Database(resolved);
   _db.pragma('journal_mode = WAL');
   _db.pragma('foreign_keys = ON');
-  applyMigrations(_db);
+  runMigrations(_db);
   return _db;
 }
 
 export function resetDb() {
+  if (_db) { try { _db.close(); } catch {} }
   _db = null;
 }
 
-function applyMigrations(db) {
+const MIGRATION_FILES = [
+  '001_bootstrap.sql',
+  '002_v1_model.sql',
+];
+
+function runMigrations(db) {
   db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-      id          TEXT PRIMARY KEY,
-      email       TEXT NOT NULL UNIQUE COLLATE NOCASE,
-      password_hash TEXT NOT NULL,
-      role        TEXT NOT NULL CHECK(role IN (
-        'PARTICIPANTE_STARTER','PARTICIPANTE_ELITE','NOEMIE_ADMIN','TEST_QA'
-      )),
-      tier        TEXT NOT NULL CHECK(tier IN ('STARTER','ELITE','ADMIN','TEST')),
-      first_name  TEXT NOT NULL,
-      cohort_id   TEXT,
-      is_test     INTEGER NOT NULL DEFAULT 0 CHECK(is_test IN (0,1)),
-      created_at  TEXT NOT NULL DEFAULT (datetime('now')),
-      last_login  TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS participant_data (
-      id            TEXT PRIMARY KEY,
-      owner_id      TEXT NOT NULL REFERENCES users(id),
-      data_type     TEXT NOT NULL,
-      content       TEXT NOT NULL DEFAULT '{}',
-      created_at    TEXT NOT NULL DEFAULT (datetime('now')),
-      updated_at    TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE TABLE IF NOT EXISTS cohort_content (
-      id          TEXT PRIMARY KEY,
-      cohort_id   TEXT NOT NULL,
-      content_key TEXT NOT NULL,
-      content     TEXT NOT NULL DEFAULT '{}',
-      created_at  TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE INDEX IF NOT EXISTS idx_participant_data_owner ON participant_data(owner_id);
-    CREATE INDEX IF NOT EXISTS idx_cohort_content_cohort ON cohort_content(cohort_id);
+    CREATE TABLE IF NOT EXISTS schema_migrations (
+      version    TEXT PRIMARY KEY,
+      applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )
   `);
+
+  const applied = new Set(
+    db.prepare('SELECT version FROM schema_migrations').all().map(r => r.version)
+  );
+
+  const migrationsDir = path.join(__dirname, 'migrations');
+
+  for (const file of MIGRATION_FILES) {
+    if (applied.has(file)) continue;
+    const sql = readFileSync(path.join(migrationsDir, file), 'utf8');
+    db.exec(sql);
+    db.prepare('INSERT INTO schema_migrations (version) VALUES (?)').run(file);
+  }
+}
+
+/* ── Audit helper ── */
+import { randomUUID } from 'crypto';
+
+export function writeAudit(db, { actorId, targetUserId = null, eventType, tableName = null,
+  recordId = null, beforeState = null, afterState = null, reason = null }) {
+  db.prepare(`
+    INSERT INTO audit_events
+      (id, actor_id, target_user_id, event_type, table_name, record_id, before_state, after_state, reason)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    randomUUID(), actorId, targetUserId, eventType, tableName, recordId,
+    beforeState ? JSON.stringify(beforeState) : null,
+    afterState  ? JSON.stringify(afterState)  : null,
+    reason
+  );
 }
