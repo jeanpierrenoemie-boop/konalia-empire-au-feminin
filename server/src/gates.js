@@ -118,13 +118,12 @@ async function _getOverride(db, userId, sprintNumber) {
 }
 
 async function _s5DataSubmitted(db, userId) {
-  const row = await db.queryOne(`
-    SELECT 1 FROM participant_data
-    WHERE owner_id = ? AND data_type = 's5_target_problem'
-      AND json_extract(content, '$.status') = 'submitted'
-    LIMIT 1
-  `, [userId]);
-  return !!row;
+  const row = await db.queryOne(
+    `SELECT content FROM participant_data WHERE owner_id = ? AND data_type = 's5_target_problem' LIMIT 1`,
+    [userId]
+  );
+  if (!row) return false;
+  try { return JSON.parse(row.content)?.status === 'submitted'; } catch { return false; }
 }
 
 /* ── Shared ─────────────────────────────────────────────────────────────────── */
