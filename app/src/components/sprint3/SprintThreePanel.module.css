@@ -493,3 +493,83 @@
 :root[data-theme="dark"] .s2ChangedWarning { background: #422006; border-color: #78350f; color: #fef3c7; }
 :root[data-theme="dark"] .ratingBtn_MOYEN { background: #374151; color: #e5e7eb; border-color: #4b5563; }
 :root[data-theme="dark"] .ratingBtn_FORT { background: #e5e7eb; color: #1a1a1a; }
+
+/* ── Decision basis block ─────────────────────────────────────── */
+.basisBlock {
+  background: var(--surface-1, #f9fafb);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius, 8px);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.basisTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent, #1a1a1a);
+}
+.basisIntro {
+  font-size: 13px;
+  color: var(--color-text-secondary, #4b5563);
+  line-height: 1.6;
+  margin: 0;
+}
+.basisField {
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius-sm, 6px);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface-bg, #fff);
+}
+.basisFieldTreated { border-color: #16a34a; }
+.basisFieldHeader { display: flex; align-items: center; justify-content: space-between; }
+.basisFieldTitle { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-primary, #111827); }
+.basisCheck { color: #16a34a; font-size: 13px; font-weight: 700; }
+.basisQuestion { font-size: 12px; color: var(--color-text-muted, #6b7280); line-height: 1.5; margin: 0; }
+.basisTextarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: var(--radius-sm, 4px);
+  resize: vertical;
+  background: var(--surface-bg, #fff);
+  color: var(--color-text-primary, #111827);
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+.basisTextarea:focus { outline: 2px solid var(--color-accent, #1a1a1a); outline-offset: -1px; }
+.basisAckBtn {
+  align-self: flex-start;
+  font-size: 12px;
+  color: var(--color-text-muted, #6b7280);
+  background: none;
+  border: 1px dashed var(--border, #d1d5db);
+  border-radius: var(--radius-sm, 4px);
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.basisAckBtn:hover { background: var(--surface-1, #f9fafb); }
+.basisAcknowledged { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--color-text-muted, #6b7280); font-style: italic; }
+.basisUndoBtn { font-size: 11px; background: none; border: none; color: var(--color-accent, #1a1a1a); cursor: pointer; text-decoration: underline; padding: 0; }
+.basisHint { font-size: 12px; color: #b45309; margin: 0; }
+
+/* ── Basis in summary ─────────────────────────────────────────── */
+.summaryBasis {
+  background: var(--surface-1, #f9fafb);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius, 8px);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.summaryBasisTitle { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent, #1a1a1a); margin: 0; }
+.summaryBasisField { display: flex; flex-direction: column; gap: 4px; }
+.summaryBasisLabel { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-muted, #6b7280); }
+.summaryBasisValue { font-size: 13px; color: var(--color-text-primary, #111827); margin: 0; line-height: 1.5; }

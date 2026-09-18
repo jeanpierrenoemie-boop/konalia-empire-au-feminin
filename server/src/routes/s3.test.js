@@ -7,6 +7,8 @@ import request from 'supertest';
 import { randomUUID } from 'crypto';
 import os from 'os';
 import path from 'path';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
 
 const TEST_DB = path.join(os.tmpdir(), `rc-s3-test-${randomUUID()}.db`);
 process.env.NODE_ENV        = 'test';
@@ -229,6 +231,12 @@ describe('POST /api/s3/arbitration/submit', () => {
       why_priority: 'Car j\'ai déjà des contacts dans ce secteur et une réelle envie.',
       remaining_to_verify: 'Si les personnes cibles seraient prêtes à payer.',
       accepted_unknown: 'Je n\'ai pas encore de certitude sur la taille du marché.',
+      decision_basis: {
+        facts: 'J\'ai formé 50 managers dans ce secteur.',
+        hypotheses: 'Ces managers manquent de temps pour se former en interne.',
+        preferences: '',
+        acknowledged: { facts: false, hypotheses: false, preferences: true },
+      },
     });
   }
 
@@ -456,6 +464,7 @@ describe('gate S4 — behavior', () => {
       why_priority: 'Raison valide pour test',
       remaining_to_verify: 'Vérification nécessaire',
       accepted_unknown: 'Je n\'ai pas besoin de tout savoir.',
+      decision_basis: { facts: 'Fait vérifié', hypotheses: '', preferences: '', acknowledged: { facts: false, hypotheses: true, preferences: true } },
     });
     const mid = randomUUID();
     rawDb.prepare(`INSERT INTO missions (id, cohort_id, cadre_step, sprint_number, title, is_required, sort_order, created_by) VALUES (?, NULL, 'A', 3, 'M3 test', 1, 99, ?)`)
@@ -477,6 +486,7 @@ describe('gate S4 — behavior', () => {
       why_priority: 'Raison valide zero dec',
       remaining_to_verify: 'Vérification',
       accepted_unknown: 'Incertitude acceptée.',
+      decision_basis: { facts: 'Fait', hypotheses: '', preferences: '', acknowledged: { facts: false, hypotheses: true, preferences: true } },
     });
     const mid = randomUUID();
     rawDb.prepare(`INSERT INTO missions (id, cohort_id, cadre_step, sprint_number, title, is_required, sort_order, created_by) VALUES (?, NULL, 'A', 3, 'M3 zdec', 1, 100, ?)`)
@@ -516,5 +526,193 @@ describe('admin read — S3 data visible', () => {
       try { return JSON.parse(s.content)?.type === 's3_arbitration_snapshot'; } catch { return false; }
     });
     expect(s3Sub).toBeTruthy();
+  });
+});
+
+/* ── B21C.2 — 9. decision_basis ─────────────────────────────────── */
+describe('decision_basis — persistence and completeness', () => {
+  let basisUser;
+
+  beforeAll(async () => {
+    const rawDb = getDb(TEST_DB);
+    const hash = await hashPassword(PASS);
+    const uid = randomUUID();
+    const email = `basis+${uid.slice(0,6)}@ex.com`;
+    rawDb.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'BasisUser', 0)`)
+      .run(uid, email, hash);
+    rawDb.prepare(`INSERT INTO enrollments (id, user_id, cohort_id, plan, status) VALUES (?, ?, ?, 'STARTER', 'active')`)
+      .run(randomUUID(), uid, cohortId);
+    rawDb.prepare(`INSERT INTO user_progress (id, user_id, cohort_id, cadre_step, sprint_number, week_in_sprint, gate_status) VALUES (?, ?, ?, 'A', 3, 1, 'in_progress')`)
+      .run(randomUUID(), uid, cohortId);
+    const s2p = makeS2Path({ id: randomUUID() });
+    rawDb.prepare(`INSERT INTO participant_data (id, owner_id, data_type, content) VALUES (?, ?, 's2_paths', ?)`)
+      .run(randomUUID(), uid, makeS2Content([s2p]));
+    const lr = await request(app).post('/auth/login').send({ email, password: PASS });
+    basisUser = { uid, cookie: lr.headers['set-cookie'], s2PathId: s2p.id };
+  });
+
+  it('A — decision_basis persists in live S3 state', async () => {
+    const basis = {
+      facts: 'J\'ai déjà formé 30 managers dans ce secteur.',
+      hypotheses: 'Je suppose qu\'ils manquent de temps pour se former.',
+      preferences: 'Je préfère travailler avec des équipes RH.',
+      acknowledged: { facts: false, hypotheses: false, preferences: false },
+    };
+    const r = await request(app).put('/api/s3/arbitration')
+      .set('Cookie', basisUser.cookie)
+      .send({
+        matrix: [{ path_id: basisUser.s2PathId, criteria: makeFullCriteria('FORT') }],
+        decision_basis: basis,
+      });
+    expect(r.status).toBe(200);
+    expect(r.body.s3.decision_basis.facts).toBe(basis.facts);
+    expect(r.body.s3.decision_basis.hypotheses).toBe(basis.hypotheses);
+    expect(r.body.s3.decision_basis.preferences).toBe(basis.preferences);
+  });
+
+  it('B — submit rejects if a basis category is untreated (no content and no acknowledgement)', async () => {
+    // Prepare: full matrix + priority + rationale but NO decision_basis set => all empty
+    const rawDb = getDb(TEST_DB);
+    const uid = randomUUID();
+    const hash = await hashPassword(PASS);
+    const email = `b2+${uid.slice(0,6)}@ex.com`;
+    rawDb.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'NoBasis', 0)`)
+      .run(uid, email, hash);
+    rawDb.prepare(`INSERT INTO enrollments (id, user_id, cohort_id, plan, status) VALUES (?, ?, ?, 'STARTER', 'active')`)
+      .run(randomUUID(), uid, cohortId);
+    rawDb.prepare(`INSERT INTO user_progress (id, user_id, cohort_id, cadre_step, sprint_number, week_in_sprint, gate_status) VALUES (?, ?, ?, 'A', 3, 1, 'in_progress')`)
+      .run(randomUUID(), uid, cohortId);
+    const s2p = makeS2Path({ id: randomUUID() });
+    rawDb.prepare(`INSERT INTO participant_data (id, owner_id, data_type, content) VALUES (?, ?, 's2_paths', ?)`)
+      .run(randomUUID(), uid, makeS2Content([s2p]));
+    const lr = await request(app).post('/auth/login').send({ email, password: PASS });
+    const ck = lr.headers['set-cookie'];
+
+    await request(app).put('/api/s3/arbitration').set('Cookie', ck).send({
+      matrix: [{ path_id: s2p.id, criteria: makeFullCriteria('FORT') }],
+      priority_path_id: s2p.id,
+      why_priority: 'Raison valide',
+      remaining_to_verify: 'À vérifier',
+      accepted_unknown: 'Incertitude acceptée',
+      // decision_basis intentionally omitted — all three categories untreated
+    });
+    const r = await request(app).post('/api/s3/arbitration/submit').set('Cookie', ck);
+    expect(r.status).toBe(422);
+    expect(r.body.error).toMatch(/ce que je sais|traite|section/i);
+  });
+
+  it('C — consciously acknowledged empty category is accepted', async () => {
+    // Set decision_basis with preferences acknowledged empty
+    const basis = {
+      facts: 'Données terrain confirmées.',
+      hypotheses: 'Suppose que la demande est forte.',
+      preferences: '',
+      acknowledged: { facts: false, hypotheses: false, preferences: true },
+    };
+    const r = await request(app).put('/api/s3/arbitration')
+      .set('Cookie', basisUser.cookie)
+      .send({ decision_basis: basis });
+    expect(r.status).toBe(200);
+    expect(r.body.s3.decision_basis.acknowledged.preferences).toBe(true);
+    expect(r.body.s3.decision_basis.preferences).toBe('');
+  });
+
+  it('D — snapshot contains decision_basis', async () => {
+    // Complete and submit basisUser
+    const rawDb = getDb(TEST_DB);
+    const mid = randomUUID();
+    rawDb.prepare(`INSERT INTO missions (id, cohort_id, cadre_step, sprint_number, title, is_required, sort_order, created_by) VALUES (?, NULL, 'A', 3, 'M3 basis', 1, 101, ?)`)
+      .run(mid, adminId);
+
+    await request(app).put('/api/s3/arbitration').set('Cookie', basisUser.cookie).send({
+      matrix: [{ path_id: basisUser.s2PathId, criteria: makeFullCriteria('FORT') }],
+      priority_path_id: basisUser.s2PathId,
+      why_priority: 'C\'est la piste la plus ancrée dans mon expérience.',
+      remaining_to_verify: 'Accès aux DRH des PME.',
+      accepted_unknown: 'Taille exacte du marché.',
+      decision_basis: {
+        facts: 'J\'ai formé 30 managers.',
+        hypotheses: 'Ils ont des contraintes de temps.',
+        preferences: 'Je préfère l\'accompagnement individuel.',
+        acknowledged: { facts: false, hypotheses: false, preferences: false },
+      },
+    });
+    const sr = await request(app).post('/api/s3/arbitration/submit').set('Cookie', basisUser.cookie);
+    expect(sr.status).toBe(200);
+
+    const sub = rawDb.prepare(`SELECT content FROM mission_submissions WHERE user_id = ?`).get(basisUser.uid);
+    const content = JSON.parse(sub.content);
+    expect(content.decision_basis).toBeTruthy();
+    expect(content.decision_basis.facts).toBeTruthy();
+    expect(content.decision_basis.hypotheses).toBeTruthy();
+    expect(content.decision_basis.preferences).toBeTruthy();
+  });
+
+  it('E — no decision row created by S3 (with decision_basis)', async () => {
+    const rawDb = getDb(TEST_DB);
+    const count = rawDb.prepare(`SELECT COUNT(*) AS n FROM decisions WHERE user_id = ?`).get(basisUser.uid)?.n ?? 0;
+    expect(count).toBe(0);
+  });
+
+  it('F — no numeric scoring in stored decision_basis', async () => {
+    const rawDb = getDb(TEST_DB);
+    const sub = rawDb.prepare(`SELECT content FROM mission_submissions WHERE user_id = ?`).get(basisUser.uid);
+    const json = sub.content;
+    expect(json).not.toMatch(/"rating":\s*\d/);
+    expect(json).not.toMatch(/"score":/);
+    expect(json).not.toMatch(/"total":/);
+  });
+
+  it('G — gateS4 remains missionSubmitted(3) only after B21C.2', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const rawDb = getDb(TEST_DB);
+    const gate = await evaluateGate(getAdapter(), basisUser.uid, 4);
+    expect(gate.status).toBe('VERT');
+    expect(gate.conditions).toHaveLength(1);
+    expect(gate.conditions[0].label).toMatch(/sprint 3|arbitrage/i);
+    // Confirm no decisions exist for this user
+    const decCount = rawDb.prepare(`SELECT COUNT(*) AS n FROM decisions WHERE user_id = ?`).get(basisUser.uid)?.n ?? 0;
+    expect(decCount).toBe(0);
+  });
+});
+
+/* ── B21C.2 — 10. COPILOTE S3 behavioral instruction audit ──────── */
+describe('COPILOTE S3 behavioral instructions', () => {
+  // These tests check that the assembled system prompt contains explicit
+  // S3 prohibition keywords. They prove the instructions are encoded in
+  // the prompt, NOT that the model will follow them in production.
+  // Actual conversational behavior: À TESTER EN PILOTE.
+
+  const copiloteRouteSrc = readFileSync(
+    fileURLToPath(new URL('./copilote.routes.js', import.meta.url)), 'utf8'
+  );
+
+  it('system prompt contains prohibition against choosing priority path', () => {
+    expect(copiloteRouteSrc).toMatch(/Choisir la piste prioritaire à sa place/i);
+  });
+
+  it('system prompt contains prohibition against ranking paths', () => {
+    expect(copiloteRouteSrc).toMatch(/Classer ou ranger les pistes/i);
+  });
+
+  it('system prompt contains prohibition against automatic winner', () => {
+    expect(copiloteRouteSrc).toMatch(/gagnante|score total|résultat automatique/i);
+  });
+
+  it('system prompt contains prohibition against market validation claim', () => {
+    expect(copiloteRouteSrc).toMatch(/validation march|rentabilit/i);
+  });
+
+  it('system prompt contains choose-for-me refusal guidance', () => {
+    expect(copiloteRouteSrc).toMatch(/cette d.cision doit rester la tienne/i);
+  });
+
+  it('system prompt contains dispersion refusal guidance', () => {
+    expect(copiloteRouteSrc).toMatch(/Ajouter de nouvelles pistes maintenant/i);
+  });
+
+  it('COPILOTE write endpoint still requires auth (no unauthenticated mutation)', async () => {
+    const r = await request(app).put('/api/s3/arbitration').send({ priority_path_id: 'fake' });
+    expect(r.status).toBe(401);
   });
 });

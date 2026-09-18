@@ -46,6 +46,13 @@
  *   - why_priority, remaining_to_verify, accepted_unknown must be non-empty.
  *   - No numeric scores stored or calculated.
  *   - No decisions table row created.
+ *   - decision_basis required before submit (or consciously acknowledged empty).
+ *     decision_basis: {
+ *       facts: string,        -- ce que je sais (vérifiés)
+ *       hypotheses: string,   -- ce que je suppose
+ *       preferences: string,  -- ce que je préfère
+ *       acknowledged: { facts: bool, hypotheses: bool, preferences: bool }
+ *     }
  */
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
@@ -121,6 +128,19 @@ function checkS3Completeness(data) {
     return { ok: false, error: 'Indique ce que tu acceptes de ne pas encore savoir.' };
   }
 
+  // decision_basis — each category must have content OR be consciously acknowledged
+  const basis = data.decision_basis ?? {};
+  const ack = basis.acknowledged ?? {};
+  for (const [key, label] of [
+    ['facts', 'Ce que je sais'],
+    ['hypotheses', 'Ce que je suppose'],
+    ['preferences', 'Ce que je préfère'],
+  ]) {
+    if (!basis[key]?.trim() && !ack[key]) {
+      return { ok: false, error: `Traite la section "${label}" (ou confirme qu'il n'y a rien à ajouter).` };
+    }
+  }
+
   return { ok: true, error: null };
 }
 
@@ -186,7 +206,7 @@ router.put('/arbitration', async (req, res) => {
   const db = getAdapter();
   const uid = req.user.id;
 
-  const { matrix, missing_info, priority_path_id, why_priority, remaining_to_verify, accepted_unknown, refresh_s2 } = req.body ?? {};
+  const { matrix, missing_info, priority_path_id, why_priority, remaining_to_verify, accepted_unknown, decision_basis, refresh_s2 } = req.body ?? {};
 
   // Load live S2
   const s2Row = await db.queryOne(
@@ -217,6 +237,7 @@ router.put('/arbitration', async (req, res) => {
     s2_snapshot_paths: [],
     matrix: [],
     missing_info: null,
+    decision_basis: { facts: '', hypotheses: '', preferences: '', acknowledged: { facts: false, hypotheses: false, preferences: false } },
     priority_path_id: null,
     why_priority: '',
     remaining_to_verify: '',
@@ -251,6 +272,16 @@ router.put('/arbitration', async (req, res) => {
       why_it_matters: missing_info.why_it_matters ?? '',
       smallest_way_to_get_it: missing_info.smallest_way_to_get_it ?? '',
     }) : (current.missing_info ?? null),
+    decision_basis: decision_basis !== undefined ? {
+      facts: typeof decision_basis?.facts === 'string' ? decision_basis.facts : (current.decision_basis?.facts ?? ''),
+      hypotheses: typeof decision_basis?.hypotheses === 'string' ? decision_basis.hypotheses : (current.decision_basis?.hypotheses ?? ''),
+      preferences: typeof decision_basis?.preferences === 'string' ? decision_basis.preferences : (current.decision_basis?.preferences ?? ''),
+      acknowledged: {
+        facts: !!(decision_basis?.acknowledged?.facts ?? current.decision_basis?.acknowledged?.facts),
+        hypotheses: !!(decision_basis?.acknowledged?.hypotheses ?? current.decision_basis?.acknowledged?.hypotheses),
+        preferences: !!(decision_basis?.acknowledged?.preferences ?? current.decision_basis?.acknowledged?.preferences),
+      },
+    } : (current.decision_basis ?? { facts: '', hypotheses: '', preferences: '', acknowledged: { facts: false, hypotheses: false, preferences: false } }),
     priority_path_id: priority_path_id !== undefined ? priority_path_id : current.priority_path_id,
     why_priority: why_priority !== undefined ? String(why_priority ?? '') : current.why_priority,
     remaining_to_verify: remaining_to_verify !== undefined ? String(remaining_to_verify ?? '') : current.remaining_to_verify,
@@ -329,6 +360,7 @@ router.post('/arbitration/submit', async (req, res) => {
       compared_paths: data.s2_snapshot_paths,
       matrix: data.matrix,
       missing_info: data.missing_info,
+      decision_basis: data.decision_basis ?? null,
       priority_path: priorityPath ?? null,
       why_priority: data.why_priority,
       remaining_to_verify: data.remaining_to_verify,

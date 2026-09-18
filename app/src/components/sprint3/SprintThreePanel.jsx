@@ -211,7 +211,7 @@ function MissingInfoBlock({ value, onChange }) {
 }
 
 /* ── Synthesis view ─────────────────────────────────────────────── */
-function ArbitrationSummary({ snapshotPaths, matrix, priorityPathId, whyPriority, remainingToVerify, acceptedUnknown }) {
+function ArbitrationSummary({ snapshotPaths, matrix, decisionBasis, priorityPathId, whyPriority, remainingToVerify, acceptedUnknown }) {
   const priorityPath = snapshotPaths?.find(p => p.id === priorityPathId);
   const priorityMatrix = matrix?.find(m => m.path_id === priorityPathId);
 
@@ -246,6 +246,23 @@ function ArbitrationSummary({ snapshotPaths, matrix, priorityPathId, whyPriority
         );
       })}
 
+      {decisionBasis && (
+        <div className={styles.summaryBasis}>
+          <h3 className={styles.summaryBasisTitle}>SUR QUOI REPOSE MON CHOIX ?</h3>
+          {BASIS_FIELDS.map(f => {
+            const val = decisionBasis[f.key];
+            const ack = decisionBasis.acknowledged?.[f.key];
+            if (!val?.trim() && !ack) return null;
+            return (
+              <div key={f.key} className={styles.summaryBasisField}>
+                <span className={styles.summaryBasisLabel}>{f.title}</span>
+                <p className={styles.summaryBasisValue}>{val?.trim() || '(rien à ajouter)'}</p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {priorityPath && (
         <div className={styles.prioritySection}>
           <h4 className={styles.prioritySectionTitle}>MA PISTE PRIORITAIRE</h4>
@@ -278,15 +295,87 @@ function ArbitrationSummary({ snapshotPaths, matrix, priorityPathId, whyPriority
   );
 }
 
+const BASIS_FIELDS = [
+  { key: 'facts', title: 'CE QUE JE SAIS', question: 'Quels faits ou éléments concrets pèsent réellement dans ton choix ?' },
+  { key: 'hypotheses', title: 'CE QUE JE SUPPOSE', question: 'Qu\'est-ce qui influence ton choix mais reste encore une hypothèse ?' },
+  { key: 'preferences', title: 'CE QUE JE PRÉFÈRE', question: 'Qu\'est-ce qui relève simplement de ce que tu veux, apprécies ou préfères ?' },
+];
+
+const EMPTY_BASIS = { facts: '', hypotheses: '', preferences: '', acknowledged: { facts: false, hypotheses: false, preferences: false } };
+
+/* ── Decision basis block ────────────────────────────────────────── */
+function DecisionBasisBlock({ value, onChange }) {
+  const basis = value ?? EMPTY_BASIS;
+  const ack = basis.acknowledged ?? {};
+
+  function update(key, text) {
+    onChange({ ...basis, [key]: text, acknowledged: { ...ack, [key]: false } });
+  }
+  function acknowledge(key) {
+    onChange({ ...basis, [key]: '', acknowledged: { ...ack, [key]: true } });
+  }
+  function unacknowledge(key) {
+    onChange({ ...basis, acknowledged: { ...ack, [key]: false } });
+  }
+
+  const allTreated = BASIS_FIELDS.every(f => basis[f.key]?.trim() || ack[f.key]);
+
+  return (
+    <div className={styles.basisBlock}>
+      <div className={styles.basisTitle}>SUR QUOI REPOSE MON CHOIX ?</div>
+      <p className={styles.basisIntro}>
+        Avant de confirmer ta piste prioritaire, prends un moment pour voir si ton arbitrage repose sur des faits, des hypothèses ou des préférences. Les trois sont légitimes — mais ils ne doivent pas être confondus.
+      </p>
+      {BASIS_FIELDS.map(f => {
+        const treated = basis[f.key]?.trim() || ack[f.key];
+        return (
+          <div key={f.key} className={`${styles.basisField} ${treated ? styles.basisFieldTreated : ''}`}>
+            <div className={styles.basisFieldHeader}>
+              <span className={styles.basisFieldTitle}>{f.title}</span>
+              {treated && <span className={styles.basisCheck}>✓</span>}
+            </div>
+            <p className={styles.basisQuestion}>{f.question}</p>
+            {ack[f.key] ? (
+              <div className={styles.basisAcknowledged}>
+                <span>Rien à ajouter pour ce point.</span>
+                <button type="button" className={styles.basisUndoBtn} onClick={() => unacknowledge(f.key)}>Modifier</button>
+              </div>
+            ) : (
+              <>
+                <textarea
+                  className={styles.basisTextarea}
+                  value={basis[f.key] ?? ''}
+                  onChange={e => update(f.key, e.target.value)}
+                  placeholder="Quelques mots suffisent…"
+                  rows={2}
+                />
+                {!basis[f.key]?.trim() && (
+                  <button type="button" className={styles.basisAckBtn} onClick={() => acknowledge(f.key)}>
+                    Rien à ajouter pour ce point
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        );
+      })}
+      {!allTreated && (
+        <p className={styles.basisHint}>Traite les trois sections pour continuer (ou confirme qu'il n'y a rien à ajouter).</p>
+      )}
+    </div>
+  );
+}
+
 /* ── Main component ─────────────────────────────────────────────── */
 export function SprintThreePanel({ sprint, onMissionUpdate }) {
   const [mode, setMode] = useState('action');
-  const [step, setStep] = useState('matrix'); // 'matrix' | 'priority' | 'summary'
+  const [step, setStep] = useState('matrix'); // 'matrix' | 'basis' | 'priority'
   const [view, setView] = useState('form'); // 'form' | 'summary'
 
   const [retainedPaths, setRetainedPaths] = useState([]);
   const [matrix, setMatrix] = useState([]);
   const [missingInfo, setMissingInfo] = useState(null);
+  const [decisionBasis, setDecisionBasis] = useState(EMPTY_BASIS);
   const [priorityPathId, setPriorityPathId] = useState(null);
   const [whyPriority, setWhyPriority] = useState('');
   const [remainingToVerify, setRemainingToVerify] = useState('');
@@ -313,6 +402,7 @@ export function SprintThreePanel({ sprint, onMissionUpdate }) {
           setMatrix(s3.matrix ?? []);
           setSnapshotPaths(s3.s2_snapshot_paths ?? []);
           setMissingInfo(s3.missing_info ?? null);
+          setDecisionBasis(s3.decision_basis ?? EMPTY_BASIS);
           setPriorityPathId(s3.priority_path_id ?? null);
           setWhyPriority(s3.why_priority ?? '');
           setRemainingToVerify(s3.remaining_to_verify ?? '');
@@ -335,6 +425,7 @@ export function SprintThreePanel({ sprint, onMissionUpdate }) {
     const body = {
       matrix: overrides.matrix ?? matrix,
       missing_info: overrides.missingInfo !== undefined ? overrides.missingInfo : missingInfo,
+      decision_basis: overrides.decisionBasis !== undefined ? overrides.decisionBasis : decisionBasis,
       priority_path_id: overrides.priorityPathId !== undefined ? overrides.priorityPathId : priorityPathId,
       why_priority: overrides.whyPriority !== undefined ? overrides.whyPriority : whyPriority,
       remaining_to_verify: overrides.remainingToVerify !== undefined ? overrides.remainingToVerify : remainingToVerify,
@@ -359,7 +450,7 @@ export function SprintThreePanel({ sprint, onMissionUpdate }) {
       setSaving(false);
       setTimeout(() => setSaveMsg(null), 3000);
     }
-  }, [matrix, missingInfo, priorityPathId, whyPriority, remainingToVerify, acceptedUnknown]);
+  }, [matrix, missingInfo, decisionBasis, priorityPathId, whyPriority, remainingToVerify, acceptedUnknown]);
 
   async function handleRefreshS2() {
     try {
@@ -384,7 +475,7 @@ export function SprintThreePanel({ sprint, onMissionUpdate }) {
       await fetch('/api/s3/arbitration', {
         method: 'PUT', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ matrix, missing_info: missingInfo, priority_path_id: priorityPathId, why_priority: whyPriority, remaining_to_verify: remainingToVerify, accepted_unknown: acceptedUnknown }),
+        body: JSON.stringify({ matrix, missing_info: missingInfo, decision_basis: decisionBasis, priority_path_id: priorityPathId, why_priority: whyPriority, remaining_to_verify: remainingToVerify, accepted_unknown: acceptedUnknown }),
       });
       const r = await fetch('/api/s3/arbitration/submit', {
         method: 'POST', credentials: 'include',
@@ -414,7 +505,9 @@ export function SprintThreePanel({ sprint, onMissionUpdate }) {
   const allCriteriaFilled = pathsForMatrix.length > 0 && matrix.length === pathsForMatrix.length &&
     matrix.every(row => CRITERIA.every(c => RATINGS.includes(row.criteria?.[c.key]?.rating)));
 
-  const canSubmit = allCriteriaFilled && !!priorityPathId && whyPriority.trim() && remainingToVerify.trim() && acceptedUnknown.trim();
+  const basisTreated = BASIS_FIELDS.every(f => decisionBasis?.[f.key]?.trim() || decisionBasis?.acknowledged?.[f.key]);
+
+  const canSubmit = allCriteriaFilled && basisTreated && !!priorityPathId && whyPriority.trim() && remainingToVerify.trim() && acceptedUnknown.trim();
   const isComplete = s3Status === 'complete';
   const videoUrl = sprint?.video_url ?? null;
   const audioUrl = sprint?.audio_url ?? null;
@@ -469,13 +562,14 @@ export function SprintThreePanel({ sprint, onMissionUpdate }) {
               <ArbitrationSummary
                 snapshotPaths={snapshotPaths}
                 matrix={matrix}
+                decisionBasis={decisionBasis}
                 priorityPathId={priorityPathId}
                 whyPriority={whyPriority}
                 remainingToVerify={remainingToVerify}
                 acceptedUnknown={acceptedUnknown}
               />
               <div className={styles.completeState}>
-                <p className={styles.completeMsg}>✓ Matrice soumise — Piste prioritaire identifiée</p>
+                <p className={styles.completeMsg}>✓ PISTE PRIORITAIRE IDENTIFIÉE</p>
                 <button className={styles.editBtn} onClick={() => setView('form')}>Consulter ma matrice</button>
               </div>
             </>
@@ -484,6 +578,7 @@ export function SprintThreePanel({ sprint, onMissionUpdate }) {
               <ArbitrationSummary
                 snapshotPaths={snapshotPaths}
                 matrix={matrix}
+                decisionBasis={decisionBasis}
                 priorityPathId={priorityPathId}
                 whyPriority={whyPriority}
                 remainingToVerify={remainingToVerify}
@@ -522,10 +617,16 @@ export function SprintThreePanel({ sprint, onMissionUpdate }) {
                   1 · Matrice {allCriteriaFilled && '✓'}
                 </button>
                 <button
+                  className={`${styles.stepBtn} ${step === 'basis' ? styles.stepBtnActive : ''}`}
+                  onClick={() => setStep('basis')} type="button"
+                  disabled={!allCriteriaFilled}>
+                  2 · Mon raisonnement {basisTreated && '✓'}
+                </button>
+                <button
                   className={`${styles.stepBtn} ${step === 'priority' ? styles.stepBtnActive : ''}`}
                   onClick={() => setStep('priority')} type="button"
-                  disabled={!allCriteriaFilled}>
-                  2 · Piste prioritaire {priorityPathId && '✓'}
+                  disabled={!allCriteriaFilled || !basisTreated}>
+                  3 · Piste prioritaire {priorityPathId && '✓'}
                 </button>
               </div>
 
@@ -570,10 +671,10 @@ export function SprintThreePanel({ sprint, onMissionUpdate }) {
                     </div>
                     <button
                       className={styles.nextBtn}
-                      onClick={() => setStep('priority')}
+                      onClick={() => setStep('basis')}
                       disabled={!allCriteriaFilled}
                       type="button">
-                      Choisir ma piste prioritaire →
+                      Sur quoi repose mon choix ? →
                     </button>
                   </div>
                   {!allCriteriaFilled && (
@@ -582,7 +683,33 @@ export function SprintThreePanel({ sprint, onMissionUpdate }) {
                 </>
               )}
 
-              {/* STEP 2 — Priority path */}
+              {/* STEP 2 — Decision basis */}
+              {step === 'basis' && (
+                <>
+                  <DecisionBasisBlock
+                    value={decisionBasis}
+                    onChange={v => { setDecisionBasis(v); }}
+                  />
+                  <div className={styles.formActions}>
+                    <button className={styles.backBtn} onClick={() => setStep('matrix')} type="button">← Retour à la matrice</button>
+                    <div className={styles.saveRow}>
+                      <button className={styles.saveBtn} onClick={() => save({ decisionBasis })} disabled={saving} type="button">
+                        {saving ? 'Sauvegarde…' : 'Sauvegarder'}
+                      </button>
+                      {saveMsg && <span className={styles.saveMsg}>{saveMsg}</span>}
+                    </div>
+                    <button
+                      className={styles.nextBtn}
+                      onClick={() => setStep('priority')}
+                      disabled={!basisTreated}
+                      type="button">
+                      Choisir ma piste prioritaire →
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {/* STEP 3 — Priority path */}
               {step === 'priority' && (
                 <>
                   <div className={styles.sectionTitle}>TA PISTE PRIORITAIRE</div>
@@ -634,7 +761,7 @@ export function SprintThreePanel({ sprint, onMissionUpdate }) {
                   <div className={styles.formActions}>
                     <button className={styles.backBtn} onClick={() => setStep('matrix')} type="button">← Retour à la matrice</button>
                     <div className={styles.saveRow}>
-                      <button className={styles.saveBtn} onClick={() => save({ priorityPathId, whyPriority, remainingToVerify, acceptedUnknown })} disabled={saving} type="button">
+                      <button className={styles.saveBtn} onClick={() => save({ priorityPathId, whyPriority, remainingToVerify, acceptedUnknown, decisionBasis })} disabled={saving} type="button">
                         {saving ? 'Sauvegarde…' : 'Sauvegarder'}
                       </button>
                       {saveMsg && <span className={styles.saveMsg}>{saveMsg}</span>}
