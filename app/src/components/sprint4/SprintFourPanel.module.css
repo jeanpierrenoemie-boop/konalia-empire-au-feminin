@@ -1,0 +1,587 @@
+/* ── SprintFourPanel — S4 : VERROUILLE TA DIRECTION ─────────────── */
+
+:root {
+  --s4-bg: #f9f8f6;
+  --s4-surface: #ffffff;
+  --s4-border: #e5e2dc;
+  --s4-accent: #1a472a;
+  --s4-accent-light: #e8f0eb;
+  --s4-text: #1c1c1c;
+  --s4-muted: #6b6560;
+  --s4-error: #b91c1c;
+  --s4-done: #166534;
+  --s4-lock: #1e3a5f;
+  --s4-lock-bg: #eef4fb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --s4-bg: #171614;
+    --s4-surface: #232220;
+    --s4-border: #3a3835;
+    --s4-accent: #4ade80;
+    --s4-accent-light: #1a2e1f;
+    --s4-text: #f0ede8;
+    --s4-muted: #9a9490;
+    --s4-error: #f87171;
+    --s4-done: #4ade80;
+    --s4-lock: #93c5fd;
+    --s4-lock-bg: #1a2332;
+  }
+}
+
+:root[data-theme="dark"] {
+  --s4-bg: #171614;
+  --s4-surface: #232220;
+  --s4-border: #3a3835;
+  --s4-accent: #4ade80;
+  --s4-accent-light: #1a2e1f;
+  --s4-text: #f0ede8;
+  --s4-muted: #9a9490;
+  --s4-error: #f87171;
+  --s4-done: #4ade80;
+  --s4-lock: #93c5fd;
+  --s4-lock-bg: #1a2332;
+}
+
+.panel {
+  background: var(--s4-bg);
+  border: 1px solid var(--s4-border);
+  border-radius: 8px;
+  padding: 0;
+  margin-top: 16px;
+  color: var(--s4-text);
+  font-size: 14px;
+}
+
+.loading {
+  padding: 24px;
+  color: var(--s4-muted);
+  text-align: center;
+  font-size: 14px;
+}
+
+.errorMsg {
+  color: var(--s4-error);
+  font-size: 13px;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--s4-error) 8%, transparent);
+  border-radius: 4px;
+  margin: 8px 16px;
+}
+
+/* ── Step navigation ──────────────────────────────────────────── */
+
+.stepNav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--s4-border);
+  overflow-x: auto;
+}
+
+.stepBtn {
+  flex: 1;
+  padding: 12px 8px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--s4-muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+  text-transform: uppercase;
+}
+
+.stepBtn:hover {
+  color: var(--s4-text);
+}
+
+.stepActive {
+  color: var(--s4-accent);
+  border-bottom-color: var(--s4-accent);
+}
+
+.stepDone {
+  color: var(--s4-done);
+}
+
+/* ── Step body ────────────────────────────────────────────────── */
+
+.stepBody {
+  padding: 20px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--s4-accent);
+  margin: 0;
+}
+
+.sectionIntro {
+  font-size: 13px;
+  color: var(--s4-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Field groups ─────────────────────────────────────────────── */
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s4-text);
+}
+
+.fieldHint {
+  font-size: 12px;
+  color: var(--s4-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  background: var(--s4-surface);
+  border: 1px solid var(--s4-border);
+  border-radius: 4px;
+  color: var(--s4-text);
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--s4-accent);
+}
+
+.textarea:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  background: var(--s4-surface);
+  border: 1px solid var(--s4-border);
+  border-radius: 4px;
+  color: var(--s4-text);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--s4-accent);
+}
+
+.input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ── Prefill banner ───────────────────────────────────────────── */
+
+.prefillBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--s4-accent-light);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.prefillLabel {
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s4-accent);
+}
+
+.prefillValue {
+  color: var(--s4-text);
+}
+
+/* ── Set aside paths ──────────────────────────────────────────── */
+
+.setAside {
+  padding: 12px;
+  background: var(--s4-surface);
+  border: 1px solid var(--s4-border);
+  border-radius: 4px;
+}
+
+.setAsideLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s4-muted);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.setAsideList {
+  margin: 0;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setAsideItem {
+  font-size: 13px;
+  color: var(--s4-muted);
+}
+
+/* ── Acknowledge fields ───────────────────────────────────────── */
+
+.ackField {
+  background: var(--s4-surface);
+  border: 1px solid var(--s4-border);
+  border-radius: 6px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ackFieldTreated {
+  border-color: var(--s4-done);
+}
+
+.ackFieldHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ackFieldLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s4-text);
+}
+
+.ackCheck {
+  color: var(--s4-done);
+  font-size: 14px;
+}
+
+.ackQuestion {
+  font-size: 12px;
+  color: var(--s4-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ackTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  background: var(--s4-bg);
+  border: 1px solid var(--s4-border);
+  border-radius: 4px;
+  color: var(--s4-text);
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.ackTextarea:focus {
+  outline: none;
+  border-color: var(--s4-accent);
+}
+
+.ackBtn {
+  align-self: flex-start;
+  padding: 6px 12px;
+  background: none;
+  border: 1px solid var(--s4-border);
+  border-radius: 4px;
+  color: var(--s4-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ackBtn:hover {
+  border-color: var(--s4-accent);
+  color: var(--s4-accent);
+}
+
+.ackAcknowledged {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--s4-done);
+  font-style: italic;
+}
+
+.ackUndoBtn {
+  background: none;
+  border: none;
+  color: var(--s4-muted);
+  font-size: 11px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+/* ── Summary block ────────────────────────────────────────────── */
+
+.summaryBlock {
+  background: var(--s4-surface);
+  border: 1px solid var(--s4-border);
+  border-radius: 6px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summaryTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s4-accent);
+  margin: 0 0 4px;
+}
+
+.summaryRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.summaryLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s4-muted);
+}
+
+.summaryValue {
+  font-size: 13px;
+  color: var(--s4-text);
+  line-height: 1.4;
+}
+
+/* ── Confirm block ────────────────────────────────────────────── */
+
+.confirmBlock {
+  background: var(--s4-lock-bg);
+  border: 1px solid var(--s4-border);
+  border-radius: 6px;
+  padding: 14px;
+}
+
+.confirmLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--s4-text);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.confirmCheckbox {
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--s4-lock);
+}
+
+/* ── Navigation buttons ───────────────────────────────────────── */
+
+.stepNav2 {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.backBtn {
+  padding: 10px 16px;
+  background: none;
+  border: 1px solid var(--s4-border);
+  border-radius: 4px;
+  color: var(--s4-muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.backBtn:hover {
+  border-color: var(--s4-text);
+  color: var(--s4-text);
+}
+
+.nextBtn {
+  padding: 10px 20px;
+  background: var(--s4-accent);
+  border: none;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nextBtnDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.lockBtn {
+  padding: 12px 24px;
+  background: var(--s4-lock);
+  border: none;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+
+.lockBtnDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.lockHint {
+  font-size: 12px;
+  color: var(--s4-muted);
+  text-align: right;
+  margin: 0;
+}
+
+/* ── Locked state ─────────────────────────────────────────────── */
+
+.lockedState {
+  background: var(--s4-bg);
+  border: 1px solid var(--s4-done);
+  border-radius: 8px;
+  padding: 20px 16px;
+  margin-top: 16px;
+  color: var(--s4-text);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lockedHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lockedIcon {
+  font-size: 20px;
+  color: var(--s4-done);
+}
+
+.lockedTitle {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s4-done);
+  margin: 0;
+}
+
+.lockedCard {
+  background: var(--s4-surface);
+  border: 1px solid var(--s4-border);
+  border-radius: 6px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lockedFormulation {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--s4-text);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.lockedMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lockedMetaLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s4-muted);
+}
+
+.lockedSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lockedSectionLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s4-muted);
+}
+
+.lockedFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.lockBadge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s4-lock);
+  padding: 4px 10px;
+  background: var(--s4-lock-bg);
+  border-radius: 4px;
+}

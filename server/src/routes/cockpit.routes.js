@@ -188,6 +188,27 @@ router.get('/', async (req, res) => {
     }
   }
 
+  /* 13. S4 direction status — only relevant when on sprint 4 */
+  let s4Direction = null;
+  if (progress?.sprint_number === 4) {
+    const s4Row = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's4_direction' LIMIT 1`,
+      [uid]
+    );
+    if (s4Row) {
+      const parsed = JSON.parse(s4Row.content);
+      s4Direction = {
+        status: parsed.status ?? 'draft',
+        formulation: parsed.direction?.formulation ?? null,
+        person: parsed.direction?.person ?? null,
+        problem: parsed.direction?.problem ?? null,
+        participantConfirmed: parsed.participant_confirmed ?? false,
+        decisionId: parsed.decision_id ?? null,
+        updatedAt: s4Row.updated_at,
+      };
+    }
+  }
+
   return res.json({
     progress: progress ?? null,
     pilotage: pilotage ?? null,
@@ -203,6 +224,7 @@ router.get('/', async (req, res) => {
     s1Inventory,
     s2Paths,
     s3Arbitration,
+    s4Direction,
   });
 });
 
