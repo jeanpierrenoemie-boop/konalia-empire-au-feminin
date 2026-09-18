@@ -23,6 +23,22 @@ import { createApp } from '../../server.js';
 
 const app = createApp();
 
+/* Minimal complete inventory body satisfying all 5 sections */
+function completeInventoryBody(overrides = {}) {
+  return {
+    sections: {
+      A: ['Compétence principale'],
+      B: [],
+      C: [],
+      D: [],
+      E: { available_time: '6h par semaine', constraints: '', context: '' },
+    },
+    acknowledged: { B: true, C: true, D: true },
+    observation: '',
+    ...overrides,
+  };
+}
+
 /* ── Persistent seeds (created once for all tests) ───────────────── */
 let db;
 let adminId, participantId, participantEmail, cohortId, missionId;
@@ -166,7 +182,7 @@ describe('ownership isolation', () => {
 describe('POST /api/s1/inventory/submit', () => {
   it('creates mission_submission and marks inventory complete', async () => {
     await request(app).put('/api/s1/inventory').set('Cookie', participantCookies)
-      .send({ sections: { A: ['Compétence principale'], B: [], C: [], D: [], E: { available_time: '4h', constraints: '', context: '' } } });
+      .send(completeInventoryBody());
 
     const r = await request(app).post('/api/s1/inventory/submit').set('Cookie', participantCookies);
 
@@ -249,7 +265,7 @@ describe('POST /api/s1/inventory/submit', () => {
     const snapCookies = snapR.headers['set-cookie'];
 
     await request(app).put('/api/s1/inventory').set('Cookie', snapCookies)
-      .send({ sections: { A: ['Ma compétence X'] }, observation: 'Observation test' });
+      .send(completeInventoryBody({ sections: { A: ['Ma compétence X'], B: [], C: [], D: [], E: { available_time: '4h', constraints: '', context: '' } }, acknowledged: { B: true, C: true, D: true }, observation: 'Observation test' }));
 
     const r = await request(app).post('/api/s1/inventory/submit').set('Cookie', snapCookies);
     expect(r.status).toBe(200);
@@ -279,7 +295,7 @@ describe('POST /api/s1/inventory/submit', () => {
     const nmCookies = nmR.headers['set-cookie'];
 
     await request(app).put('/api/s1/inventory').set('Cookie', nmCookies)
-      .send({ sections: { A: ['Compétence X'] } });
+      .send(completeInventoryBody());
 
     const r = await request(app).post('/api/s1/inventory/submit').set('Cookie', nmCookies);
     expect(r.status).toBe(200);
@@ -309,7 +325,7 @@ describe('gate S2 — submission satisfies condition', () => {
     const gateCookies = gr.headers['set-cookie'];
 
     await request(app).put('/api/s1/inventory').set('Cookie', gateCookies)
-      .send({ sections: { A: ['Compétence'] } });
+      .send(completeInventoryBody());
     await request(app).post('/api/s1/inventory/submit').set('Cookie', gateCookies);
 
     const gate = await evaluateGate(adapter, gateUserId, 2);
@@ -399,6 +415,68 @@ describe('gate S2 — submission satisfies condition', () => {
   });
 });
 
+/* ── 6b. Completeness rules — 5 sections required ───────────────── */
+describe('completeness rules — 5 sections required to submit', () => {
+  async function makeUser(label) {
+    const rawDb = getDb(TEST_DB);
+    const hash = await hashPassword(PARTICIPANT_PASS);
+    const id = randomUUID();
+    const email = `${label}+${id.slice(0,6)}@ex.com`;
+    rawDb.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', ?, 0)`)
+      .run(id, email, hash, label);
+    rawDb.prepare(`INSERT INTO enrollments (id, user_id, cohort_id, plan, status) VALUES (?, ?, ?, 'STARTER', 'active')`)
+      .run(randomUUID(), id, cohortId);
+    rawDb.prepare(`INSERT INTO user_progress (id, user_id, cohort_id, cadre_step, sprint_number, week_in_sprint, gate_status) VALUES (?, ?, ?, 'C', 1, 1, 'in_progress')`)
+      .run(randomUUID(), id, cohortId);
+    const r = await request(app).post('/auth/login').send({ email, password: PARTICIPANT_PASS });
+    return { id, email, cookies: r.headers['set-cookie'] };
+  }
+
+  it('CAS 1 — A only, B/C/D/E untreated → cannot submit', async () => {
+    const u = await makeUser('cas1');
+    await request(app).put('/api/s1/inventory').set('Cookie', u.cookies)
+      .send({ sections: { A: ['Une compétence'] } });
+    const r = await request(app).post('/api/s1/inventory/submit').set('Cookie', u.cookies);
+    expect(r.status).toBe(422);
+    expect(r.body.error).toMatch(/section B/i);
+  });
+
+  it('CAS 2 — A filled, B/D acknowledged, C filled, E treated → can submit', async () => {
+    const u = await makeUser('cas2');
+    await request(app).put('/api/s1/inventory').set('Cookie', u.cookies)
+      .send({
+        sections: { A: ['Formation adultes'], B: [], C: ['Secteur RH'], D: [], E: { available_time: '5h', constraints: '', context: '' } },
+        acknowledged: { B: true, D: true },
+      });
+    const r = await request(app).post('/api/s1/inventory/submit').set('Cookie', u.cookies);
+    expect(r.status).toBe(200);
+    expect(r.body.ok).toBe(true);
+  });
+
+  it('CAS 6 — complete inventory draft (not submitted) → gate S2 ROUGE', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const adapter = getAdapter();
+    const u = await makeUser('cas6');
+    await request(app).put('/api/s1/inventory').set('Cookie', u.cookies)
+      .send(completeInventoryBody());
+    // Draft saved but NOT submitted
+    const gate = await evaluateGate(adapter, u.id, 2);
+    expect(gate.status).toBe('ROUGE');
+  });
+
+  it('CAS 7 — complete inventory + submitted → gate S2 VERT', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const adapter = getAdapter();
+    const u = await makeUser('cas7');
+    await request(app).put('/api/s1/inventory').set('Cookie', u.cookies)
+      .send(completeInventoryBody());
+    const submitR = await request(app).post('/api/s1/inventory/submit').set('Cookie', u.cookies);
+    expect(submitR.status).toBe(200);
+    const gate = await evaluateGate(adapter, u.id, 2);
+    expect(gate.status).toBe('VERT');
+  });
+});
+
 /* ── 7. Admin read — inventory visible via submissions ───────────── */
 describe('admin read — S1 data visible', () => {
   it('admin can read S1 submission via GET /api/admin/submissions', async () => {
@@ -417,7 +495,7 @@ describe('admin read — S1 data visible', () => {
     const arCookies = arR.headers['set-cookie'];
 
     await request(app).put('/api/s1/inventory').set('Cookie', arCookies)
-      .send({ sections: { A: ['Compétence importante'] }, observation: 'Note admin' });
+      .send(completeInventoryBody({ sections: { A: ['Compétence importante'], B: [], C: [], D: [], E: { available_time: '4h', constraints: '', context: '' } }, acknowledged: { B: true, C: true, D: true }, observation: 'Note admin' }));
     await request(app).post('/api/s1/inventory/submit').set('Cookie', arCookies);
 
     const r = await request(app).get('/api/admin/submissions?status=submitted').set('Cookie', adminCookies);

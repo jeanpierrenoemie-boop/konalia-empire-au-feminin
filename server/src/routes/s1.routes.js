@@ -17,9 +17,19 @@
  *     D: string[],   // CE À QUOI J'AI DÉJÀ ACCÈS
  *     E: { available_time: string, constraints: string, context: string }
  *   },
+ *   acknowledged: {       // sections B/C/D explicitly marked "rien à ajouter"
+ *     B?: true, C?: true, D?: true
+ *   },
  *   observation: string,   // CE QUE JE REMARQUE
  *   mission_submission_id: null | string
  * }
+ *
+ * Completeness rule (required to submit):
+ *   A  — at least one non-empty entry
+ *   B  — has entries OR acknowledged.B === true
+ *   C  — has entries OR acknowledged.C === true
+ *   D  — has entries OR acknowledged.D === true
+ *   E  — available_time is non-empty
  */
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
@@ -31,6 +41,28 @@ const router = Router();
 router.use(requireAuth, denyTestInProduction);
 
 const DATA_TYPE = 's1_inventory';
+
+/* Returns { ok, error } — all 5 sections must be treated */
+function checkCompleteness(inventory) {
+  const s = inventory.sections ?? {};
+  const ack = inventory.acknowledged ?? {};
+
+  const hasA = Array.isArray(s.A) && s.A.some(e => e?.trim());
+  if (!hasA) return { ok: false, error: 'La section A (Ce que je sais faire) doit contenir au moins une entrée.' };
+
+  for (const k of ['B', 'C', 'D']) {
+    const hasEntries = Array.isArray(s[k]) && s[k].some(e => e?.trim());
+    if (!hasEntries && !ack[k]) {
+      const labels = { B: 'B (Ce que j\'ai vécu)', C: 'C (Ce que je connais)', D: 'D (Ce à quoi j\'ai déjà accès)' };
+      return { ok: false, error: `La section ${labels[k]} doit contenir au moins une entrée ou être explicitement confirmée comme vide.` };
+    }
+  }
+
+  const hasE = typeof s.E?.available_time === 'string' && s.E.available_time.trim();
+  if (!hasE) return { ok: false, error: 'Indique ton temps réellement disponible dans la section E (Mes contraintes réelles).' };
+
+  return { ok: true, error: null };
+}
 
 /* ── GET /api/s1/inventory ──────────────────────────────────── */
 router.get('/inventory', async (req, res) => {
@@ -46,7 +78,7 @@ router.get('/inventory', async (req, res) => {
 /* ── PUT /api/s1/inventory ──────────────────────────────────── */
 router.put('/inventory', async (req, res) => {
   const db = getAdapter();
-  const { sections, observation } = req.body ?? {};
+  const { sections, observation, acknowledged } = req.body ?? {};
 
   if (!sections || typeof sections !== 'object') {
     return res.status(400).json({ error: 'sections requis' });
@@ -59,12 +91,22 @@ router.put('/inventory', async (req, res) => {
 
   const current = existing ? JSON.parse(existing.content) : { version: 1, status: 'draft' };
 
+  /* Merge acknowledged — only set true, never unset via merge */
+  const mergedAck = { ...(current.acknowledged ?? {}) };
+  if (acknowledged && typeof acknowledged === 'object') {
+    for (const k of ['B', 'C', 'D']) {
+      if (acknowledged[k] === true) mergedAck[k] = true;
+      else if (acknowledged[k] === false) delete mergedAck[k];
+    }
+  }
+
   /* Merge sections — only update provided keys */
   const merged = {
     version: 1,
     status: current.status === 'complete' ? 'complete' : 'draft',
     completed_at: current.completed_at ?? null,
     sections: { ...(current.sections ?? {}), ...sections },
+    acknowledged: mergedAck,
     observation: observation !== undefined ? (observation ?? '') : (current.observation ?? ''),
     mission_submission_id: current.mission_submission_id ?? null,
   };
@@ -103,16 +145,7 @@ router.post('/inventory/submit', async (req, res) => {
     return res.status(400).json({ error: 'Aucun inventaire à soumettre. Commence par remplir les sections.' });
   }
 
-  const inventory = JSON.parse(existing.content);
-  const sections = inventory.sections ?? {};
-
-  /* Validate minimum completeness: at least one entry in A + E has available_time */
-  const hasA = Array.isArray(sections.A) && sections.A.some(e => e && e.trim());
-  if (!hasA) {
-    return res.status(422).json({ error: 'La section A (Ce que je sais faire) doit contenir au moins une entrée.' });
-  }
-
-  /* Find enrollment and progress */
+  /* Find enrollment and progress — sprint check first */
   const enrollment = await db.queryOne(
     `SELECT cohort_id FROM enrollments WHERE user_id = ? AND status = 'active' ORDER BY enrolled_at DESC LIMIT 1`,
     [userId]
@@ -126,6 +159,14 @@ router.post('/inventory/submit', async (req, res) => {
 
   if (!progress || progress.sprint_number !== 1) {
     return res.status(400).json({ error: 'Cette soumission est uniquement disponible lors du Sprint 1.' });
+  }
+
+  const inventory = JSON.parse(existing.content);
+
+  /* Validate completeness — all 5 sections must be treated */
+  const completeness = checkCompleteness(inventory);
+  if (!completeness.ok) {
+    return res.status(422).json({ error: completeness.error });
   }
 
   /* Find a sprint 1 mission for this cohort or global */

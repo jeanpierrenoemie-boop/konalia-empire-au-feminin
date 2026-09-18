@@ -79,7 +79,7 @@ function MediaPlaceholder({ type, url }) {
 }
 
 /* ── Multi-entry section (A, B, C, D) ─────────────────────────── */
-function MultiSection({ section, entries = [], onChange }) {
+function MultiSection({ section, entries = [], acknowledged = false, onChange, onAcknowledge }) {
   const [draft, setDraft] = useState('');
 
   function addEntry() {
@@ -87,6 +87,7 @@ function MultiSection({ section, entries = [], onChange }) {
     if (!trimmed) return;
     onChange([...entries, trimmed]);
     setDraft('');
+    if (acknowledged) onAcknowledge(false); // unset "rien à ajouter" if entry added
   }
 
   function removeEntry(idx) {
@@ -100,9 +101,15 @@ function MultiSection({ section, entries = [], onChange }) {
     }
   }
 
+  const isEmpty = entries.length === 0;
+  const isTreated = entries.length > 0 || acknowledged;
+
   return (
-    <div className={styles.sectionBlock}>
-      <h4 className={styles.sectionLabel}>{section.label}</h4>
+    <div className={`${styles.sectionBlock} ${isTreated ? styles.sectionTreated : ''}`}>
+      <div className={styles.sectionLabelRow}>
+        <h4 className={styles.sectionLabel}>{section.label}</h4>
+        {isTreated && <span className={styles.sectionCheck} aria-hidden>✓</span>}
+      </div>
       <p className={styles.sectionDesc}>{section.description}</p>
       <ul className={styles.entryList}>
         {entries.map((e, i) => (
@@ -117,22 +124,41 @@ function MultiSection({ section, entries = [], onChange }) {
           </li>
         ))}
       </ul>
-      <div className={styles.entryInputRow}>
-        <input
-          className={styles.entryInput}
-          value={draft}
-          onChange={e => setDraft(e.target.value)}
-          onKeyDown={handleKey}
-          placeholder={section.placeholder}
-          type="text"
-        />
+      {acknowledged && isEmpty && (
+        <p className={styles.acknowledgedNote}>
+          ✓ Rien à ajouter pour le moment —{' '}
+          <button className={styles.undoAckBtn} type="button" onClick={() => onAcknowledge(false)}>
+            Annuler
+          </button>
+        </p>
+      )}
+      {!acknowledged && (
+        <div className={styles.entryInputRow}>
+          <input
+            className={styles.entryInput}
+            value={draft}
+            onChange={e => setDraft(e.target.value)}
+            onKeyDown={handleKey}
+            placeholder={section.placeholder}
+            type="text"
+          />
+          <button
+            className={styles.addBtn}
+            onClick={addEntry}
+            type="button"
+            disabled={!draft.trim()}
+          >Ajouter</button>
+        </div>
+      )}
+      {!acknowledged && isEmpty && section.key !== 'A' && (
         <button
-          className={styles.addBtn}
-          onClick={addEntry}
+          className={styles.nothingToAddBtn}
           type="button"
-          disabled={!draft.trim()}
-        >Ajouter</button>
-      </div>
+          onClick={() => onAcknowledge(true)}
+        >
+          Rien à ajouter pour le moment
+        </button>
+      )}
     </div>
   );
 }
@@ -142,9 +168,13 @@ function ConstraintsSection({ values = {}, onChange }) {
   function update(field, val) {
     onChange({ ...values, [field]: val });
   }
+  const isTreated = typeof values.available_time === 'string' && values.available_time.trim();
   return (
-    <div className={styles.sectionBlock}>
-      <h4 className={styles.sectionLabel}>MES CONTRAINTES RÉELLES</h4>
+    <div className={`${styles.sectionBlock} ${isTreated ? styles.sectionTreated : ''}`}>
+      <div className={styles.sectionLabelRow}>
+        <h4 className={styles.sectionLabel}>MES CONTRAINTES RÉELLES</h4>
+        {isTreated && <span className={styles.sectionCheck} aria-hidden>✓</span>}
+      </div>
       <p className={styles.sectionDesc}>Ce qui encadre réellement ton projet.</p>
       <label className={styles.fieldLabel}>Temps réellement disponible</label>
       <input
@@ -175,20 +205,25 @@ function ConstraintsSection({ values = {}, onChange }) {
 }
 
 /* ── Synthesis view ─────────────────────────────────────────────── */
-function InventorySummary({ sections, observation }) {
+function InventorySummary({ sections, acknowledged = {}, observation }) {
   const LABELS = { A: 'Ce que je sais faire', B: 'Ce que j\'ai vécu', C: 'Ce que je connais', D: 'Ce à quoi j\'ai déjà accès', E: 'Mes contraintes réelles' };
   return (
     <div className={styles.summary}>
       <h3 className={styles.summaryTitle}>MON INVENTAIRE DE DÉPART</h3>
       {['A','B','C','D'].map(k => {
         const entries = sections?.[k] ?? [];
-        if (!entries.length) return null;
+        const isAcknowledged = acknowledged[k];
+        if (!entries.length && !isAcknowledged) return null;
         return (
           <div key={k} className={styles.summarySect}>
             <h4 className={styles.summarySectTitle}>{LABELS[k]}</h4>
-            <ul className={styles.summaryList}>
-              {entries.map((e, i) => <li key={i}>{e}</li>)}
-            </ul>
+            {entries.length > 0 ? (
+              <ul className={styles.summaryList}>
+                {entries.map((e, i) => <li key={i}>{e}</li>)}
+              </ul>
+            ) : (
+              <p className={styles.summarySectEmpty}>Rien à ajouter pour le moment.</p>
+            )}
           </div>
         );
       })}
@@ -220,6 +255,7 @@ export function SprintOnePanel({ sprint, onMissionUpdate }) {
   const [sections, setSections] = useState({
     A: [], B: [], C: [], D: [], E: { available_time: '', constraints: '', context: '' },
   });
+  const [acknowledged, setAcknowledged] = useState({}); // { B: true, C: true, D: true }
   const [observation, setObservation] = useState('');
   const [inventoryStatus, setInventoryStatus] = useState(null);
   const [submissionStatus, setSubmissionStatus] = useState(null);
@@ -237,6 +273,7 @@ export function SprintOnePanel({ sprint, onMissionUpdate }) {
           const inv = data.inventory;
           setInventoryStatus(inv.status);
           setSections(s => ({ ...s, ...(inv.sections ?? {}) }));
+          setAcknowledged(inv.acknowledged ?? {});
           setObservation(inv.observation ?? '');
           if (inv.status === 'complete') setView('summary');
         }
@@ -245,7 +282,7 @@ export function SprintOnePanel({ sprint, onMissionUpdate }) {
   }, []);
 
   /* Auto-save after section changes (debounce via saveInventory call) */
-  const saveInventory = useCallback(async (sects, obs) => {
+  const saveInventory = useCallback(async (sects, ack, obs) => {
     setSaving(true);
     setSaveMsg(null);
     try {
@@ -253,7 +290,7 @@ export function SprintOnePanel({ sprint, onMissionUpdate }) {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sections: sects, observation: obs }),
+        body: JSON.stringify({ sections: sects, acknowledged: ack, observation: obs }),
       });
       if (r.ok) setSaveMsg('Sauvegardé');
     } catch {
@@ -265,12 +302,20 @@ export function SprintOnePanel({ sprint, onMissionUpdate }) {
   }, []);
 
   function updateSection(key, value) {
-    const next = { ...sections, [key]: value };
-    setSections(next);
+    setSections(prev => ({ ...prev, [key]: value }));
+  }
+
+  function updateAcknowledged(key, value) {
+    setAcknowledged(prev => {
+      const next = { ...prev };
+      if (value) next[key] = true;
+      else delete next[key];
+      return next;
+    });
   }
 
   function handleSave() {
-    saveInventory(sections, observation);
+    saveInventory(sections, acknowledged, observation);
   }
 
   async function handleSubmit() {
@@ -281,7 +326,7 @@ export function SprintOnePanel({ sprint, onMissionUpdate }) {
       await fetch('/api/s1/inventory', {
         method: 'PUT', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sections, observation }),
+        body: JSON.stringify({ sections, acknowledged, observation }),
       });
       // Then submit
       const r = await fetch('/api/s1/inventory/submit', {
@@ -305,7 +350,12 @@ export function SprintOnePanel({ sprint, onMissionUpdate }) {
   }
 
   const isComplete = inventoryStatus === 'complete';
-  const hasMinimum = (sections.A ?? []).some(e => e && e.trim());
+  const hasA = (sections.A ?? []).some(e => e?.trim());
+  const hasB = (sections.B ?? []).some(e => e?.trim()) || !!acknowledged.B;
+  const hasC = (sections.C ?? []).some(e => e?.trim()) || !!acknowledged.C;
+  const hasD = (sections.D ?? []).some(e => e?.trim()) || !!acknowledged.D;
+  const hasE = !!(sections.E?.available_time?.trim());
+  const hasMinimum = hasA && hasB && hasC && hasD && hasE;
   const videoUrl = sprint?.video_url ?? null;
   const audioUrl = sprint?.audio_url ?? null;
 
@@ -381,7 +431,7 @@ export function SprintOnePanel({ sprint, onMissionUpdate }) {
 
           {isComplete && view === 'summary' ? (
             <>
-              <InventorySummary sections={sections} observation={observation} />
+              <InventorySummary sections={sections} acknowledged={acknowledged} observation={observation} />
               <div className={styles.completeState}>
                 <p className={styles.completeMsg}>
                   {submissionStatus === 'submitted' || inventoryStatus === 'complete'
@@ -398,7 +448,7 @@ export function SprintOnePanel({ sprint, onMissionUpdate }) {
             </>
           ) : view === 'summary' ? (
             <>
-              <InventorySummary sections={sections} observation={observation} />
+              <InventorySummary sections={sections} acknowledged={acknowledged} observation={observation} />
               <div className={styles.summaryActions}>
                 <button className={styles.editBtn} onClick={() => setView('form')}>
                   Modifier
@@ -422,7 +472,9 @@ export function SprintOnePanel({ sprint, onMissionUpdate }) {
                     key={sect.key}
                     section={sect}
                     entries={sections[sect.key] ?? []}
+                    acknowledged={!!acknowledged[sect.key]}
                     onChange={val => updateSection(sect.key, val)}
+                    onAcknowledge={val => updateAcknowledged(sect.key, val)}
                   />
                 ) : (
                   <ConstraintsSection
@@ -467,7 +519,12 @@ export function SprintOnePanel({ sprint, onMissionUpdate }) {
 
               {!hasMinimum && (
                 <p className={styles.hint}>
-                  Remplis au moins une entrée dans la section A pour continuer.
+                  Pour voir la synthèse, traite les 5 sections.
+                  {!hasA && ' A : au moins une compétence.'}
+                  {hasA && !hasB && ' B : ajoute une expérience ou confirme "rien à ajouter".'}
+                  {hasA && hasB && !hasC && ' C : ajoute un domaine ou confirme "rien à ajouter".'}
+                  {hasA && hasB && hasC && !hasD && ' D : ajoute une ressource ou confirme "rien à ajouter".'}
+                  {hasA && hasB && hasC && hasD && !hasE && ' E : indique ton temps disponible.'}
                 </p>
               )}
             </div>

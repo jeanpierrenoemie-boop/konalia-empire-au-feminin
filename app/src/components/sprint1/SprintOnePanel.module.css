@@ -402,6 +402,59 @@
   font-style: italic;
 }
 
+/* ── Section treated state ────────────────────────────────────── */
+.sectionLabelRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionCheck {
+  font-size: 12px;
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.sectionTreated .sectionLabel {
+  color: var(--color-text-secondary, #4b5563);
+}
+
+.acknowledgedNote {
+  font-size: 13px;
+  color: #16a34a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.undoAckBtn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: var(--color-text-muted, #9ca3af);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.nothingToAddBtn {
+  align-self: flex-start;
+  background: none;
+  border: 1px dashed var(--border, #d1d5db);
+  border-radius: var(--radius, 6px);
+  color: var(--color-text-secondary, #6b7280);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 6px 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.nothingToAddBtn:hover {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
 /* ── Summary ──────────────────────────────────────────────────── */
 .summary {
   background: var(--surface-1, #f9fafb);
@@ -458,6 +511,13 @@
   font-size: 14px;
   color: var(--color-text-primary, #111827);
   line-height: 1.6;
+}
+
+.summarySectEmpty {
+  font-size: 13px;
+  color: var(--color-text-muted, #9ca3af);
+  font-style: italic;
+  margin: 0;
 }
 
 .observationText {
