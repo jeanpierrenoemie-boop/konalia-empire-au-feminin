@@ -228,6 +228,27 @@ router.get('/', async (req, res) => {
     }
   }
 
+  /* 15. S6 test offer status — only relevant when on sprint 6 */
+  let s6TestOffer = null;
+  if (progress?.sprint_number === 6) {
+    const s6Row = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's6_test_offer' LIMIT 1`,
+      [uid]
+    );
+    if (s6Row) {
+      const parsed = JSON.parse(s6Row.content);
+      s6TestOffer = {
+        status: parsed.status ?? 'draft',
+        audienceFormulation: parsed.audience?.formulation ?? null,
+        resultFormulation: parsed.desired_result?.formulation ?? null,
+        pricingAmount: parsed.pricing?.amount ?? null,
+        pricingStatus: parsed.pricing?.status ?? null,
+        clientTomorrowAnswer: parsed.client_tomorrow_test?.answer ?? null,
+        updatedAt: s6Row.updated_at,
+      };
+    }
+  }
+
   return res.json({
     progress: progress ?? null,
     pilotage: pilotage ?? null,
@@ -245,6 +266,7 @@ router.get('/', async (req, res) => {
     s3Arbitration,
     s4Direction,
     s5TargetProblem,
+    s6TestOffer,
   });
 });
 
