@@ -125,8 +125,7 @@ function gateS2Sync(db, userId) {
 }
 function gateS3Sync(db, userId) {
   return evaluate([
-    { label: 'Sprint 2 complete', met: _missionSubmittedSync(db, userId, 2) },
-    { label: 'Au moins une decision strategique validee', met: _hasActiveDecisionSync(db, userId, ['project','persona','scope','other']) },
+    { label: 'Pistes S2 soumises', met: _missionSubmittedSync(db, userId, 2) },
   ], _getOverrideSync(db, userId, 3));
 }
 function gateS4Sync(db, userId) {
@@ -185,8 +184,8 @@ async function gateS2(db, userId) {
   return evaluate([{ label: 'Inventaire sprint 1 soumis ou preuve deposee', met: submitted || proofs > 0 }], override);
 }
 async function gateS3(db, userId) {
-  const [hasMission2, hasDecision, override] = await Promise.all([_missionSubmitted(db, userId, 2), _hasActiveDecision(db, userId, ['project','persona','scope','other']), _getOverride(db, userId, 3)]);
-  return evaluate([{ label: 'Sprint 2 complete', met: hasMission2 }, { label: 'Au moins une decision strategique validee', met: hasDecision }], override);
+  const [hasMission2, override] = await Promise.all([_missionSubmitted(db, userId, 2), _getOverride(db, userId, 3)]);
+  return evaluate([{ label: 'Pistes S2 soumises', met: hasMission2 }], override);
 }
 async function gateS4(db, userId) {
   const [submitted, override] = await Promise.all([_missionSubmitted(db, userId, 3), _getOverride(db, userId, 4)]);

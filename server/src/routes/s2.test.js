@@ -1,6 +1,6 @@
 /**
  * S2 — TES RESSOURCES EXPLOITABLES — Tests
- * Build 21B: Paths CRUD, constraints, ownership isolation, submit, admin read, gate S3 audit.
+ * Build 21B / 21B.1: Paths CRUD, constraints, ownership isolation, submit, admin read, gate S3 (realigned).
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
@@ -407,78 +407,138 @@ describe('POST /api/s2/paths/submit', () => {
   });
 });
 
-/* ── 7. Gate S3 — audit ─────────────────────────────────────────── */
-describe('gate S3 — behavior audit', () => {
-  it('gateS3 is ROUGE after S2 submission (no active decision)', async () => {
-    /* This test documents the KNOWN MISMATCH:
-     * gateS3 requires missionSubmitted(sprint 2) AND hasActiveDecision(['project','persona','scope','other'])
-     * S2 produces paths retained for arbitration, NOT a final strategic direction.
-     * Creating a decision in S2 would contradict the pedagogy.
-     * Expected behavior: gate shows ROUGE on decision condition until S3 creates the decision.
-     */
-    const { evaluateGate } = await import('../gates.js');
-    const adapter = getAdapter();
+/* ── 7. Gate S3 — realigned (B21B.1) ───────────────────────────── */
+describe('gate S3 — realigned (B21B.1)', () => {
+  async function makeGateUser(name, suffix) {
+    const rawDb = getDb(TEST_DB);
+    const hash = await hashPassword(PARTICIPANT_PASS);
+    const uid = randomUUID();
+    const email = `${suffix}+${uid.slice(0,6)}@ex.com`;
+    rawDb.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', ?, 0)`)
+      .run(uid, email, hash, name);
+    rawDb.prepare(`INSERT INTO enrollments (id, user_id, cohort_id, plan, status) VALUES (?, ?, ?, 'STARTER', 'active')`)
+      .run(randomUUID(), uid, cohortId);
+    rawDb.prepare(`INSERT INTO user_progress (id, user_id, cohort_id, cadre_step, sprint_number, week_in_sprint, gate_status) VALUES (?, ?, ?, 'C', 2, 1, 'in_progress')`)
+      .run(randomUUID(), uid, cohortId);
+    const lr = await request(app).post('/auth/login').send({ email, password: PARTICIPANT_PASS });
+    return { uid, email, cookie: lr.headers['set-cookie'] };
+  }
 
-    const gate = await evaluateGate(adapter, participantId, 3);
-    /* After S2 submission: mission2 submitted → true; decision → false → overall ROUGE */
+  /* A — S2 draft only → ROUGE */
+  it('A: S2 draft only => gateS3 ROUGE', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const { uid, cookie: ck } = await makeGateUser('DraftGate', 'draftg');
+    await request(app).put('/api/s2/paths').set('Cookie', ck).send({ paths: [completePath()] });
+    const gate = await evaluateGate(getAdapter(), uid, 3);
     expect(gate.status).toBe('ROUGE');
-    const missionCondition = gate.conditions.find(c => c.label.includes('Sprint 2'));
-    const decisionCondition = gate.conditions.find(c => c.label.includes('decision') || c.label.includes('décision'));
-    expect(missionCondition?.met).toBe(true);
-    expect(decisionCondition?.met).toBe(false);
   });
 
+  /* B — S2 live complete but no mission submission → ROUGE */
+  it('B: S2 participant_data complete but not submitted => gateS3 ROUGE', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const rawDb = getDb(TEST_DB);
+    const { uid, cookie: ck } = await makeGateUser('CompleteLive', 'complg');
+    await request(app).put('/api/s2/paths').set('Cookie', ck).send({ paths: [completePath()] });
+    // Mark participant_data complete without creating a mission_submissions row
+    rawDb.prepare(`UPDATE participant_data SET content = json_patch(content, '{"status":"complete"}') WHERE owner_id = ? AND data_type = 's2_paths'`).run(uid);
+    const gate = await evaluateGate(getAdapter(), uid, 3);
+    expect(gate.status).toBe('ROUGE');
+  });
+
+  /* C — S2 mission submitted → VERT */
+  it('C: S2 mission submitted => gateS3 VERT', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const rawDb = getDb(TEST_DB);
+    const { uid, cookie: ck } = await makeGateUser('SubmitGate', 'subg');
+    await request(app).put('/api/s2/paths').set('Cookie', ck).send({ paths: [completePath()] });
+    // Insert a mission for sprint 2 and submit
+    const mid = randomUUID();
+    rawDb.prepare(`INSERT INTO missions (id, title, sprint_number, cohort_id, cadre_step, sort_order, created_by) VALUES (?, 'Mission S2', 2, NULL, 'C', 1, ?)`)
+      .run(mid, adminId);
+    await request(app).post('/api/s2/paths/submit').set('Cookie', ck);
+    const gate = await evaluateGate(getAdapter(), uid, 3);
+    expect(gate.status).toBe('VERT');
+    expect(gate.conditions).toHaveLength(1);
+    expect(gate.conditions[0].met).toBe(true);
+  });
+
+  /* D — S2 mission reviewed → VERT */
+  it('D: S2 mission reviewed => gateS3 VERT', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const rawDb = getDb(TEST_DB);
+    const { uid, cookie: ck } = await makeGateUser('ReviewGate', 'revg');
+    await request(app).put('/api/s2/paths').set('Cookie', ck).send({ paths: [completePath()] });
+    const mid = randomUUID();
+    rawDb.prepare(`INSERT INTO missions (id, title, sprint_number, cohort_id, cadre_step, sort_order, created_by) VALUES (?, 'Mission S2 Rev', 2, NULL, 'C', 2, ?)`).run(mid, adminId);
+    await request(app).post('/api/s2/paths/submit').set('Cookie', ck);
+    rawDb.prepare(`UPDATE mission_submissions SET status = 'reviewed' WHERE user_id = ?`).run(uid);
+    const gate = await evaluateGate(getAdapter(), uid, 3);
+    expect(gate.status).toBe('VERT');
+  });
+
+  /* E — S2 mission approved → VERT */
+  it('E: S2 mission approved => gateS3 VERT', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const rawDb = getDb(TEST_DB);
+    const { uid, cookie: ck } = await makeGateUser('ApproveGate', 'apprg');
+    await request(app).put('/api/s2/paths').set('Cookie', ck).send({ paths: [completePath()] });
+    const mid = randomUUID();
+    rawDb.prepare(`INSERT INTO missions (id, title, sprint_number, cohort_id, cadre_step, sort_order, created_by) VALUES (?, 'Mission S2 App', 2, NULL, 'C', 3, ?)`).run(mid, adminId);
+    await request(app).post('/api/s2/paths/submit').set('Cookie', ck);
+    rawDb.prepare(`UPDATE mission_submissions SET status = 'approved' WHERE user_id = ?`).run(uid);
+    const gate = await evaluateGate(getAdapter(), uid, 3);
+    expect(gate.status).toBe('VERT');
+  });
+
+  /* F — Weekly Review only (no S2 submission) → ROUGE */
+  it('F: Weekly Review only => gateS3 ROUGE', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const rawDb = getDb(TEST_DB);
+    const { uid } = await makeGateUser('WeeklyOnlyGate', 'wkg');
+    rawDb.prepare(`INSERT INTO weekly_reviews (id, user_id, cohort_id, sprint_number, week_number) VALUES (?, ?, ?, 2, 1)`).run(randomUUID(), uid, cohortId);
+    const gate = await evaluateGate(getAdapter(), uid, 3);
+    expect(gate.status).toBe('ROUGE');
+  });
+
+  /* G — S2 submitted, ZERO strategic decisions → VERT (critical: no fake-decision dependency) */
+  it('G: S2 submitted with zero strategic decisions => gateS3 VERT', async () => {
+    const { evaluateGate } = await import('../gates.js');
+    const rawDb = getDb(TEST_DB);
+    const { uid, cookie: ck } = await makeGateUser('ZeroDecGate', 'zdg');
+    await request(app).put('/api/s2/paths').set('Cookie', ck).send({ paths: [completePath()] });
+    const mid = randomUUID();
+    rawDb.prepare(`INSERT INTO missions (id, title, sprint_number, cohort_id, cadre_step, sort_order, created_by) VALUES (?, 'Mission S2 ZD', 2, NULL, 'C', 4, ?)`).run(mid, adminId);
+    await request(app).post('/api/s2/paths/submit').set('Cookie', ck);
+    // Confirm no decisions exist for this user
+    const decCount = rawDb.prepare(`SELECT COUNT(*) AS n FROM decisions WHERE user_id = ?`).get(uid)?.n ?? 0;
+    expect(decCount).toBe(0);
+    const gate = await evaluateGate(getAdapter(), uid, 3);
+    expect(gate.status).toBe('VERT');
+    expect(gate.conditions).toHaveLength(1);
+  });
+
+  /* video alone → ROUGE */
   it('video alone does NOT advance S2 (gate remains ROUGE)', async () => {
     const { evaluateGate } = await import('../gates.js');
-    const adapter = getAdapter();
-    const rawDb = getDb(TEST_DB);
-    const hash = await hashPassword(PARTICIPANT_PASS);
-    const uid = randomUUID();
-    rawDb.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'VideoOnly', 0)`)
-      .run(uid, `vidonly+${uid.slice(0,6)}@ex.com`, hash);
-    rawDb.prepare(`INSERT INTO enrollments (id, user_id, cohort_id, plan, status) VALUES (?, ?, ?, 'STARTER', 'active')`)
-      .run(randomUUID(), uid, cohortId);
-    rawDb.prepare(`INSERT INTO user_progress (id, user_id, cohort_id, cadre_step, sprint_number, week_in_sprint, gate_status) VALUES (?, ?, ?, 'C', 2, 1, 'in_progress')`)
-      .run(randomUUID(), uid, cohortId);
-    // No S2 submission — only on sprint 2
-    const gate = await evaluateGate(adapter, uid, 3);
+    const { uid } = await makeGateUser('VideoOnly', 'vidonly');
+    const gate = await evaluateGate(getAdapter(), uid, 3);
     expect(gate.status).toBe('ROUGE');
   });
 
+  /* audio alone → ROUGE */
   it('audio alone does NOT advance S2 (gate remains ROUGE)', async () => {
     const { evaluateGate } = await import('../gates.js');
-    const adapter = getAdapter();
-    const rawDb = getDb(TEST_DB);
-    const hash = await hashPassword(PARTICIPANT_PASS);
-    const uid = randomUUID();
-    rawDb.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'AudioOnly', 0)`)
-      .run(uid, `audonly+${uid.slice(0,6)}@ex.com`, hash);
-    rawDb.prepare(`INSERT INTO enrollments (id, user_id, cohort_id, plan, status) VALUES (?, ?, ?, 'STARTER', 'active')`)
-      .run(randomUUID(), uid, cohortId);
-    rawDb.prepare(`INSERT INTO user_progress (id, user_id, cohort_id, cadre_step, sprint_number, week_in_sprint, gate_status) VALUES (?, ?, ?, 'C', 2, 1, 'in_progress')`)
-      .run(randomUUID(), uid, cohortId);
-    const gate = await evaluateGate(adapter, uid, 3);
+    const { uid } = await makeGateUser('AudioOnly', 'audonly');
+    const gate = await evaluateGate(getAdapter(), uid, 3);
     expect(gate.status).toBe('ROUGE');
   });
 
+  /* draft paths saved but not submitted → ROUGE */
   it('draft paths (not submitted) do NOT advance S2', async () => {
     const { evaluateGate } = await import('../gates.js');
-    const adapter = getAdapter();
-    const rawDb = getDb(TEST_DB);
-    const hash = await hashPassword(PARTICIPANT_PASS);
-    const uid = randomUUID();
-    rawDb.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'DraftOnly2', 0)`)
-      .run(uid, `draft2+${uid.slice(0,6)}@ex.com`, hash);
-    rawDb.prepare(`INSERT INTO enrollments (id, user_id, cohort_id, plan, status) VALUES (?, ?, ?, 'STARTER', 'active')`)
-      .run(randomUUID(), uid, cohortId);
-    rawDb.prepare(`INSERT INTO user_progress (id, user_id, cohort_id, cadre_step, sprint_number, week_in_sprint, gate_status) VALUES (?, ?, ?, 'C', 2, 1, 'in_progress')`)
-      .run(randomUUID(), uid, cohortId);
-    const cr = await request(app).post('/auth/login').send({ email: `draft2+${uid.slice(0,6)}@ex.com`, password: PARTICIPANT_PASS });
-    const cc = cr.headers['set-cookie'];
-    await request(app).put('/api/s2/paths').set('Cookie', cc)
-      .send({ paths: [completePath()] });
-    // Saved but NOT submitted
-    const gate = await evaluateGate(adapter, uid, 3);
+    const { uid, cookie: ck } = await makeGateUser('DraftOnly2', 'draft2');
+    await request(app).put('/api/s2/paths').set('Cookie', ck).send({ paths: [completePath()] });
+    const gate = await evaluateGate(getAdapter(), uid, 3);
     expect(gate.status).toBe('ROUGE');
   });
 });
