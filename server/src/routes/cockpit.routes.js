@@ -145,7 +145,7 @@ router.get('/', async (req, res) => {
 
   /* 11. S2 paths status — only relevant when on sprint 2 */
   let s2Paths = null;
-  if (progress?.sprint_number === 2) {
+  if (progress?.sprint_number === 2 || progress?.sprint_number === 3) {
     const s2Row = await db.queryOne(
       `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's2_paths' LIMIT 1`,
       [uid]
@@ -158,6 +158,32 @@ router.get('/', async (req, res) => {
         totalPaths: paths.filter(p => p.status !== 'discarded').length,
         retainedPaths: paths.filter(p => p.status === 'retained').length,
         updatedAt: s2Row.updated_at,
+      };
+    }
+  }
+
+  /* 12. S3 arbitration status — only relevant when on sprint 3 */
+  let s3Arbitration = null;
+  if (progress?.sprint_number === 3) {
+    const s3Row = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's3_arbitration' LIMIT 1`,
+      [uid]
+    );
+    if (s3Row) {
+      const parsed = JSON.parse(s3Row.content);
+      const matrix = parsed.matrix ?? [];
+      const snapshotPaths = parsed.s2_snapshot_paths ?? [];
+      s3Arbitration = {
+        status: parsed.status ?? 'draft',
+        pathsCompared: snapshotPaths.length,
+        criteriaFilled: matrix.filter(m => {
+          const c = m.criteria ?? {};
+          return ['envie_reelle','ressources_existantes','acces_personnes','probleme_a_explorer',
+                  'compatibilite_vie','simplicite_premier_test','niveau_inconnu']
+            .every(k => ['FORT','MOYEN','FAIBLE'].includes(c[k]?.rating));
+        }).length,
+        priorityPathId: parsed.priority_path_id ?? null,
+        updatedAt: s3Row.updated_at,
       };
     }
   }
@@ -176,6 +202,7 @@ router.get('/', async (req, res) => {
     openSupportCount: openSupport?.count ?? 0,
     s1Inventory,
     s2Paths,
+    s3Arbitration,
   });
 });
 

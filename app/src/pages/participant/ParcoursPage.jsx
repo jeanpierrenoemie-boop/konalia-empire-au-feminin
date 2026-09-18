@@ -4,6 +4,7 @@ import { LoadingState } from '../../components/states/LoadingState';
 import { ErrorState } from '../../components/states/ErrorState';
 import { SprintOnePanel } from '../../components/sprint1/SprintOnePanel';
 import { SprintTwoPanel } from '../../components/sprint2/SprintTwoPanel';
+import { SprintThreePanel } from '../../components/sprint3/SprintThreePanel';
 import styles from './ParcoursPage.module.css';
 import pageStyles from './Page.module.css';
 
@@ -264,7 +265,10 @@ function SprintCard({ sprint, isCurrent, onPass }) {
           {isCurrent && sprint.number === 2 && (
             <SprintTwoPanel sprint={sprint} onMissionUpdate={onPass} />
           )}
-          {isCurrent && sprint.number !== 1 && sprint.number !== 2 && (
+          {isCurrent && sprint.number === 3 && (
+            <SprintThreePanel sprint={sprint} onMissionUpdate={onPass} />
+          )}
+          {isCurrent && sprint.number !== 1 && sprint.number !== 2 && sprint.number !== 3 && (
             <MissionPanel sprintNumber={sprint.number} onMissionUpdate={onPass} />
           )}
           {isCurrent && sprint.gate && (

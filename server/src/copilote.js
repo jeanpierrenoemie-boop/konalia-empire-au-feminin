@@ -157,6 +157,12 @@ export async function buildCopiloteContext(db, userId, shortcutType = 'general')
   );
   const s2Paths = s2PathsRow ? JSON.parse(s2PathsRow.content) : null;
 
+  const s3ArbitrationRow = await db.queryOne(
+    `SELECT content FROM participant_data WHERE owner_id = ? AND data_type = 's3_arbitration' LIMIT 1`,
+    [userId]
+  );
+  const s3Arbitration = s3ArbitrationRow ? JSON.parse(s3ArbitrationRow.content) : null;
+
   // ── build structured per shortcut type ──────────────────────────────────────
   let structured = {};
 
@@ -173,6 +179,7 @@ export async function buildCopiloteContext(db, userId, shortcutType = 'general')
         market_summary,
         s1_inventory: s1Inventory ?? null,
         s2_paths: s2Paths ?? null,
+        s3_arbitration: s3Arbitration ?? null,
       };
       break;
 
@@ -232,6 +239,7 @@ export async function buildCopiloteContext(db, userId, shortcutType = 'general')
         market_summary,
         s1_inventory: s1Inventory ?? null,
         s2_paths: s2Paths ?? null,
+        s3_arbitration: s3Arbitration ?? null,
       };
       break;
   }

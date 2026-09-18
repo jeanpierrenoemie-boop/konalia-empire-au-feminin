@@ -25,6 +25,7 @@ import invitationsRouter from './src/routes/invitations.routes.js';
 import weeklyReviewRouter from './src/routes/weekly-review.routes.js';
 import s1Router from './src/routes/s1.routes.js';
 import s2Router from './src/routes/s2.routes.js';
+import s3Router from './src/routes/s3.routes.js';
 
 export function createApp() {
   const app = express();
@@ -60,6 +61,7 @@ export function createApp() {
   app.use('/api/weekly-review', weeklyReviewRouter);
   app.use('/api/s1', s1Router);
   app.use('/api/s2', s2Router);
+  app.use('/api/s3', s3Router);
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
 
