@@ -209,6 +209,25 @@ router.get('/', async (req, res) => {
     }
   }
 
+  /* 14. S5 target-problem status — only relevant when on sprint 5 */
+  let s5TargetProblem = null;
+  if (progress?.sprint_number === 5) {
+    const s5Row = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's5_target_problem' LIMIT 1`,
+      [uid]
+    );
+    if (s5Row) {
+      const parsed = JSON.parse(s5Row.content);
+      s5TargetProblem = {
+        status: parsed.status ?? 'draft',
+        targetWho: parsed.target_test?.who ?? null,
+        fivePersonAnswer: parsed.five_person_test?.answer ?? null,
+        problemSituation: parsed.problem_to_investigate?.situation ?? null,
+        updatedAt: s5Row.updated_at,
+      };
+    }
+  }
+
   return res.json({
     progress: progress ?? null,
     pilotage: pilotage ?? null,
@@ -225,6 +244,7 @@ router.get('/', async (req, res) => {
     s2Paths,
     s3Arbitration,
     s4Direction,
+    s5TargetProblem,
   });
 });
 

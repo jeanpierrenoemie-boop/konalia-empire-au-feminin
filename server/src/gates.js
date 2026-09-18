@@ -140,7 +140,6 @@ function gateS5Sync(db, userId) {
 function gateS6Sync(db, userId) {
   return evaluate([
     { label: 'Sprint 5 complete', met: _missionSubmittedSync(db, userId, 5) },
-    { label: 'Persona valide', met: _hasActiveDecisionSync(db, userId, ['persona']) },
   ], _getOverrideSync(db, userId, 6));
 }
 function gateS7Sync(db, userId) {
@@ -196,8 +195,8 @@ async function gateS5(db, userId) {
   return evaluate([{ label: 'Sprint 4 complete', met: hasMission4 }, { label: 'Direction validee', met: hasDirection }], override);
 }
 async function gateS6(db, userId) {
-  const [hasPersona, hasMission5, override] = await Promise.all([_hasActiveDecision(db, userId, ['persona']), _missionSubmitted(db, userId, 5), _getOverride(db, userId, 6)]);
-  return evaluate([{ label: 'Sprint 5 complete', met: hasMission5 }, { label: 'Persona valide', met: hasPersona }], override);
+  const [hasMission5, override] = await Promise.all([_missionSubmitted(db, userId, 5), _getOverride(db, userId, 6)]);
+  return evaluate([{ label: 'Sprint 5 complete', met: hasMission5 }], override);
 }
 async function gateS7(db, userId) {
   const [submitted, override] = await Promise.all([_missionSubmitted(db, userId, 6), _getOverride(db, userId, 7)]);

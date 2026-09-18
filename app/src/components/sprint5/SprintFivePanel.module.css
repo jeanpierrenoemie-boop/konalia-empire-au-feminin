@@ -1,0 +1,396 @@
+/* ── SprintFivePanel — S5 : TA CIBLE & SON PROBLÈME ─────────────── */
+
+:root {
+  --s5-bg: #f8f7f5;
+  --s5-surface: #ffffff;
+  --s5-border: #e2dfd8;
+  --s5-accent: #7c3d12;
+  --s5-accent-light: #fef3e2;
+  --s5-text: #1c1c1c;
+  --s5-muted: #6b6560;
+  --s5-error: #b91c1c;
+  --s5-done: #166534;
+  --s5-submitted: #1e3a5f;
+  --s5-submitted-bg: #eef4fb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --s5-bg: #171614;
+    --s5-surface: #232220;
+    --s5-border: #3a3835;
+    --s5-accent: #fb923c;
+    --s5-accent-light: #2e1a0f;
+    --s5-text: #f0ede8;
+    --s5-muted: #9a9490;
+    --s5-error: #f87171;
+    --s5-done: #4ade80;
+    --s5-submitted: #93c5fd;
+    --s5-submitted-bg: #1a2332;
+  }
+}
+
+:root[data-theme="dark"] {
+  --s5-bg: #171614;
+  --s5-surface: #232220;
+  --s5-border: #3a3835;
+  --s5-accent: #fb923c;
+  --s5-accent-light: #2e1a0f;
+  --s5-text: #f0ede8;
+  --s5-muted: #9a9490;
+  --s5-error: #f87171;
+  --s5-done: #4ade80;
+  --s5-submitted: #93c5fd;
+  --s5-submitted-bg: #1a2332;
+}
+
+.panel {
+  background: var(--s5-bg);
+  border: 1px solid var(--s5-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  color: var(--s5-text);
+}
+
+.loading {
+  color: var(--s5-muted);
+  font-size: 0.875rem;
+  padding: 1rem 0;
+}
+
+.errorMsg {
+  color: var(--s5-error);
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+}
+
+/* ── Step navigation ──────────────────────────────────────────── */
+.stepNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.stepBtn {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--s5-border);
+  border-radius: 4px;
+  background: var(--s5-surface);
+  color: var(--s5-text);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.stepBtn:hover { background: var(--s5-accent-light); }
+.stepActive {
+  background: var(--s5-accent);
+  color: #fff;
+  border-color: var(--s5-accent);
+}
+.stepDone { border-color: var(--s5-done); color: var(--s5-done); }
+
+/* ── Step body ───────────────────────────────────────────────── */
+.stepBody { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.sectionHeader { margin-bottom: 0.5rem; }
+.sectionTitle {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--s5-accent);
+  margin: 0 0 0.5rem;
+}
+.sectionIntro {
+  font-size: 0.875rem;
+  color: var(--s5-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Field groups ─────────────────────────────────────────────── */
+.fieldGroup { display: flex; flex-direction: column; gap: 0.375rem; }
+
+.fieldLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--s5-text);
+}
+
+.fieldHint {
+  font-size: 0.8125rem;
+  color: var(--s5-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--s5-border);
+  border-radius: 4px;
+  background: var(--s5-surface);
+  color: var(--s5-text);
+  font-size: 0.875rem;
+  font-family: inherit;
+  resize: vertical;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.textarea:focus {
+  outline: 2px solid var(--s5-accent);
+  outline-offset: -2px;
+}
+
+.textarea:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--s5-border);
+  border-radius: 4px;
+  background: var(--s5-surface);
+  color: var(--s5-text);
+  font-size: 0.875rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: 2px solid var(--s5-accent);
+  outline-offset: -2px;
+}
+
+.input:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Acknowledge field ────────────────────────────────────────── */
+.ackField {
+  background: var(--s5-surface);
+  border: 1px solid var(--s5-border);
+  border-radius: 6px;
+  padding: 0.875rem;
+}
+.ackFieldTreated { border-color: var(--s5-done); }
+.ackFieldHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.375rem;
+}
+.ackFieldLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--s5-text);
+}
+.ackCheck { color: var(--s5-done); font-size: 0.875rem; }
+.ackBtn {
+  margin-top: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px dashed var(--s5-muted);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--s5-muted);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+.ackBtn:hover { border-color: var(--s5-accent); color: var(--s5-accent); }
+.ackAcknowledged {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+  color: var(--s5-done);
+  background: var(--s5-accent-light);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+}
+.ackUndoBtn {
+  background: none;
+  border: none;
+  color: var(--s5-accent);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ── Five person test ─────────────────────────────────────────── */
+.radioGroup { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.25rem; }
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+/* ── Direction ref banner ─────────────────────────────────────── */
+.directionBanner {
+  background: var(--s5-accent-light);
+  border: 1px solid var(--s5-accent);
+  border-radius: 6px;
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.directionBannerLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--s5-accent);
+}
+.directionBannerValue {
+  font-size: 0.875rem;
+  color: var(--s5-text);
+}
+.directionMeta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+.directionMetaItem {
+  font-size: 0.8125rem;
+  color: var(--s5-muted);
+}
+.directionMetaItem strong { color: var(--s5-text); }
+
+/* ── Navigation buttons ───────────────────────────────────────── */
+.stepNav2 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.backBtn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--s5-border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--s5-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.backBtn:hover { border-color: var(--s5-accent); color: var(--s5-accent); }
+
+.nextBtn {
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--s5-accent);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.nextBtn:hover { opacity: 0.9; }
+.nextBtnDisabled { opacity: 0.4; cursor: not-allowed; }
+
+.submitBtn {
+  padding: 0.625rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--s5-accent);
+  color: #fff;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+}
+.submitBtn:hover { opacity: 0.9; }
+.submitBtnDisabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Submitted state ─────────────────────────────────────────── */
+.submittedState {
+  background: var(--s5-submitted-bg);
+  border: 2px solid var(--s5-submitted);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  color: var(--s5-text);
+}
+.submittedHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.submittedIcon { font-size: 1.25rem; color: var(--s5-submitted); }
+.submittedTitle {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--s5-submitted);
+  margin: 0;
+}
+.submittedCard {
+  background: var(--s5-surface);
+  border: 1px solid var(--s5-border);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.submittedField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+.submittedField:last-child { margin-bottom: 0; }
+.submittedFieldLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--s5-muted);
+}
+.submittedFieldValue { font-size: 0.875rem; }
+.submittedFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+.submittedBadge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--s5-submitted);
+  border-radius: 20px;
+  color: var(--s5-submitted);
+}
+
+/* ── Summary block ───────────────────────────────────────────── */
+.summaryBlock {
+  background: var(--s5-surface);
+  border: 1px solid var(--s5-border);
+  border-radius: 6px;
+  padding: 1rem;
+}
+.summaryTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--s5-muted);
+  margin: 0 0 0.75rem;
+}
+.summaryRow {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+.summaryLabel {
+  font-weight: 600;
+  min-width: 120px;
+  color: var(--s5-muted);
+  flex-shrink: 0;
+}
+.summaryValue { color: var(--s5-text); }
