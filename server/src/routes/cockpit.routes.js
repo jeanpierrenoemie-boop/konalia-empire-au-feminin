@@ -143,6 +143,25 @@ router.get('/', async (req, res) => {
     }
   }
 
+  /* 11. S2 paths status — only relevant when on sprint 2 */
+  let s2Paths = null;
+  if (progress?.sprint_number === 2) {
+    const s2Row = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's2_paths' LIMIT 1`,
+      [uid]
+    );
+    if (s2Row) {
+      const parsed = JSON.parse(s2Row.content);
+      const paths = parsed.paths ?? [];
+      s2Paths = {
+        status: parsed.status ?? 'draft',
+        totalPaths: paths.filter(p => p.status !== 'discarded').length,
+        retainedPaths: paths.filter(p => p.status === 'retained').length,
+        updatedAt: s2Row.updated_at,
+      };
+    }
+  }
+
   return res.json({
     progress: progress ?? null,
     pilotage: pilotage ?? null,
@@ -156,6 +175,7 @@ router.get('/', async (req, res) => {
     passport: passport ?? null,
     openSupportCount: openSupport?.count ?? 0,
     s1Inventory,
+    s2Paths,
   });
 });
 
