@@ -54,6 +54,15 @@ function _getOverrideSync(db, userId, sprintNumber) {
     .get(userId, sprintNumber) ?? null;
 }
 
+function _s5DataSubmittedSync(db, userId) {
+  return !!db.prepare(`
+    SELECT 1 FROM participant_data
+    WHERE owner_id = ? AND data_type = 's5_target_problem'
+      AND json_extract(content, '$.status') = 'submitted'
+    LIMIT 1
+  `).get(userId);
+}
+
 /* ── Async helpers (adapter) ────────────────────────────────────────────────── */
 
 async function _missionSubmitted(db, userId, sprintNumber) {
@@ -108,6 +117,16 @@ async function _getOverride(db, userId, sprintNumber) {
   `, [userId, sprintNumber])) ?? null;
 }
 
+async function _s5DataSubmitted(db, userId) {
+  const row = await db.queryOne(`
+    SELECT 1 FROM participant_data
+    WHERE owner_id = ? AND data_type = 's5_target_problem'
+      AND json_extract(content, '$.status') = 'submitted'
+    LIMIT 1
+  `, [userId]);
+  return !!row;
+}
+
 /* ── Shared ─────────────────────────────────────────────────────────────────── */
 
 function evaluate(conditions, override) {
@@ -140,6 +159,7 @@ function gateS5Sync(db, userId) {
 function gateS6Sync(db, userId) {
   return evaluate([
     { label: 'Sprint 5 complete', met: _missionSubmittedSync(db, userId, 5) },
+    { label: 'Cible test S5 soumise', met: _s5DataSubmittedSync(db, userId) },
   ], _getOverrideSync(db, userId, 6));
 }
 function gateS7Sync(db, userId) {
@@ -195,8 +215,11 @@ async function gateS5(db, userId) {
   return evaluate([{ label: 'Sprint 4 complete', met: hasMission4 }, { label: 'Direction validee', met: hasDirection }], override);
 }
 async function gateS6(db, userId) {
-  const [hasMission5, override] = await Promise.all([_missionSubmitted(db, userId, 5), _getOverride(db, userId, 6)]);
-  return evaluate([{ label: 'Sprint 5 complete', met: hasMission5 }], override);
+  const [hasMission5, hasS5Data, override] = await Promise.all([_missionSubmitted(db, userId, 5), _s5DataSubmitted(db, userId), _getOverride(db, userId, 6)]);
+  return evaluate([
+    { label: 'Sprint 5 complete', met: hasMission5 },
+    { label: 'Cible test S5 soumise', met: hasS5Data },
+  ], override);
 }
 async function gateS7(db, userId) {
   const [submitted, override] = await Promise.all([_missionSubmitted(db, userId, 6), _getOverride(db, userId, 7)]);

@@ -473,78 +473,138 @@ describe('GET /api/cockpit — s5TargetProblem', () => {
   });
 });
 
+/* ── helpers for gate tests ────────────────────────────────────── */
+function insertGateUser(db, suffix) {
+  const uid = randomUUID();
+  db.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, 'hash', 'PARTICIPANTE_STARTER', 'STARTER', 'G6', 0)`)
+    .run(uid, `s5gate_${suffix}_${uid.slice(0,6)}@ex.com`);
+  return uid;
+}
+function insertMission5Sub(db, uid, cohort) {
+  const missionId = db.prepare(`SELECT id FROM missions WHERE sprint_number = 5 LIMIT 1`).get()?.id;
+  if (!missionId) return false;
+  db.prepare(`INSERT INTO mission_submissions (id, mission_id, user_id, cohort_id, content, status, created_at, updated_at) VALUES (?, ?, ?, ?, '{}', 'submitted', datetime('now'), datetime('now'))`)
+    .run(randomUUID(), missionId, uid, cohort ?? '');
+  return true;
+}
+function insertS5ParticipantData(db, uid, submitted = true) {
+  const content = JSON.stringify({ version: 1, status: submitted ? 'submitted' : 'draft', target_test: { who: 'qui', situation: 's', recognition_signals: 'r', access_places: 'a' } });
+  db.prepare(`INSERT INTO participant_data (id, owner_id, data_type, content) VALUES (?, ?, 's5_target_problem', ?)`)
+    .run(randomUUID(), uid, content);
+}
+
 /* ── 7. Gate S6 ───────────────────────────────────────────────────── */
-describe('Gate S6 — missionSubmitted(5) only', () => {
-  let gateUserId;
+describe('Gate S6 — missionSubmitted(5) AND s5DataSubmitted', () => {
   let rawDb;
 
-  beforeAll(() => {
-    rawDb = getDb(TEST_DB);
-    gateUserId = randomUUID();
-    const hash = rawDb.prepare(`SELECT password_hash FROM users WHERE id = ?`).get(participantId)?.password_hash ?? '';
-    rawDb.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'GateTest', 0)`)
-      .run(gateUserId, `s5gate+${gateUserId.slice(0,6)}@ex.com`, hash);
-    rawDb.prepare(`INSERT INTO user_progress (id, user_id, cohort_id, cadre_step, sprint_number, week_in_sprint, gate_status) VALUES (?, ?, ?, 'A', 5, 1, 'in_progress')`)
-      .run(randomUUID(), gateUserId, cohortId);
-  });
+  beforeAll(() => { rawDb = getDb(TEST_DB); });
 
-  it('draft only → ROUGE (sync)', () => {
-    const gate = evaluateGate(rawDb, gateUserId, 6);
+  /* Case A: participant_data S5 complete but no mission → ROUGE */
+  it('A. participant_data S5 complète, aucune mission → ROUGE (sync)', () => {
+    const uid = insertGateUser(rawDb, 'A');
+    insertS5ParticipantData(rawDb, uid, true);
+    const gate = evaluateGate(rawDb, uid, 6);
     expect(gate.status).toBe('ROUGE');
     expect(gate.missing).toContain('Sprint 5 complete');
   });
 
-  it('draft only → ROUGE (async)', async () => {
+  /* Case B: mission submitted but participant_data absent → ROUGE */
+  it('B. mission S5 submitted, participant_data absente → ROUGE (sync)', () => {
+    const uid = insertGateUser(rawDb, 'B');
+    const inserted = insertMission5Sub(rawDb, uid, cohortId);
+    if (!inserted) return; // skip if no mission fixture
+    const gate = evaluateGate(rawDb, uid, 6);
+    expect(gate.status).toBe('ROUGE');
+    expect(gate.missing).toContain('Cible test S5 soumise');
+  });
+
+  it('B. mission S5 submitted, participant_data absente → ROUGE (async)', async () => {
+    const uid = insertGateUser(rawDb, 'Basync');
+    const inserted = insertMission5Sub(rawDb, uid, cohortId);
+    if (!inserted) return;
     const db = getAdapter();
-    const gate = await evaluateGate(db, gateUserId, 6);
+    const gate = await evaluateGate(db, uid, 6);
     expect(gate.status).toBe('ROUGE');
   });
 
-  it('mission submitted → VERT (sync)', () => {
-    const missionId = rawDb.prepare(`SELECT id FROM missions WHERE sprint_number = 5 LIMIT 1`).get()?.id;
-    if (!missionId) return; // skip if no mission fixture
-    const subId = randomUUID();
-    rawDb.prepare(`INSERT INTO mission_submissions (id, mission_id, user_id, cohort_id, content, status, created_at, updated_at) VALUES (?, ?, ?, ?, '{}', 'submitted', datetime('now'), datetime('now'))`)
-      .run(subId, missionId, gateUserId, cohortId);
+  /* Case C: mission submitted but participant_data draft (incomplete) → ROUGE */
+  it('C. mission S5 submitted, participant_data draft → ROUGE (sync)', () => {
+    const uid = insertGateUser(rawDb, 'C');
+    const inserted = insertMission5Sub(rawDb, uid, cohortId);
+    if (!inserted) return;
+    insertS5ParticipantData(rawDb, uid, false); // draft, not submitted
+    const gate = evaluateGate(rawDb, uid, 6);
+    expect(gate.status).toBe('ROUGE');
+    expect(gate.missing).toContain('Cible test S5 soumise');
+  });
 
-    const gate = evaluateGate(rawDb, gateUserId, 6);
+  /* Case D: mission submitted + participant_data submitted → VERT */
+  it('D. mission S5 submitted + participant_data submitted → VERT (sync)', () => {
+    const uid = insertGateUser(rawDb, 'D');
+    const inserted = insertMission5Sub(rawDb, uid, cohortId);
+    if (!inserted) return;
+    insertS5ParticipantData(rawDb, uid, true);
+    const gate = evaluateGate(rawDb, uid, 6);
     expect(gate.status).toBe('VERT');
     expect(gate.missing).toHaveLength(0);
   });
 
-  it('mission submitted → VERT (async)', async () => {
+  it('D. mission S5 submitted + participant_data submitted → VERT (async)', async () => {
+    const uid = insertGateUser(rawDb, 'Dasync');
+    const inserted = insertMission5Sub(rawDb, uid, cohortId);
+    if (!inserted) return;
+    insertS5ParticipantData(rawDb, uid, true);
     const db = getAdapter();
-    const gate = await evaluateGate(db, gateUserId, 6);
+    const gate = await evaluateGate(db, uid, 6);
     expect(gate.status).toBe('VERT');
   });
 
-  it('active direction only (no mission) → ROUGE', () => {
-    const newId = randomUUID();
-    rawDb.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'DirOnly', 0)`)
-      .run(newId, `s5dironly+${newId.slice(0,6)}@ex.com`, 'hash');
-    rawDb.prepare(`INSERT INTO decisions (id, user_id, decision_type, title, context, rationale, sprint_number, cadre_step, status, facts_used, hypotheses, reopening_condition, created_at) VALUES (?, ?, 'project', 'D', '{}', '', 4, 'A', 'active', '', '', '{}', datetime('now'))`)
-      .run(randomUUID(), newId);
-    const gate = evaluateGate(rawDb, newId, 6);
-    expect(gate.status).toBe('ROUGE');
-  });
-
-  it('persona decision only → ROUGE (persona no longer counts for gate 6)', () => {
-    const newId = randomUUID();
-    rawDb.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'PersonaOnly', 0)`)
-      .run(newId, `s5persona+${newId.slice(0,6)}@ex.com`, 'hash');
+  /* Case E: persona decision alone → ROUGE */
+  it('E. persona decision seule → ROUGE', () => {
+    const uid = insertGateUser(rawDb, 'E');
     rawDb.prepare(`INSERT INTO decisions (id, user_id, decision_type, title, context, rationale, sprint_number, cadre_step, status, facts_used, hypotheses, reopening_condition, created_at) VALUES (?, ?, 'persona', 'P', '{}', '', 5, 'A', 'active', '', '', '{}', datetime('now'))`)
-      .run(randomUUID(), newId);
-    const gate = evaluateGate(rawDb, newId, 6);
+      .run(randomUUID(), uid);
+    const gate = evaluateGate(rawDb, uid, 6);
     expect(gate.status).toBe('ROUGE');
   });
 
-  it('gate S6 has exactly 1 condition (Sprint 5 complete)', () => {
-    const newId = randomUUID();
-    rawDb.prepare(`INSERT INTO users (id, email, password_hash, role, tier, first_name, is_test) VALUES (?, ?, ?, 'PARTICIPANTE_STARTER', 'STARTER', 'Cond', 0)`)
-      .run(newId, `s5cond+${newId.slice(0,6)}@ex.com`, 'hash');
-    const gate = evaluateGate(rawDb, newId, 6);
-    expect(gate.conditions).toHaveLength(1);
-    expect(gate.conditions[0].label).toBe('Sprint 5 complete');
+  /* Case F: Direction S4 alone → ROUGE */
+  it('F. Direction S4 seule → ROUGE', () => {
+    const uid = insertGateUser(rawDb, 'F');
+    rawDb.prepare(`INSERT INTO decisions (id, user_id, decision_type, title, context, rationale, sprint_number, cadre_step, status, facts_used, hypotheses, reopening_condition, created_at) VALUES (?, ?, 'project', 'D', '{}', '', 4, 'A', 'active', '', '', '{}', datetime('now'))`)
+      .run(randomUUID(), uid);
+    const gate = evaluateGate(rawDb, uid, 6);
+    expect(gate.status).toBe('ROUGE');
+  });
+
+  /* Case G: weekly review alone → ROUGE */
+  it('G. aucun état S5 → ROUGE (gate has 2 conditions)', () => {
+    const uid = insertGateUser(rawDb, 'G');
+    const gate = evaluateGate(rawDb, uid, 6);
+    expect(gate.status).toBe('ROUGE');
+    expect(gate.conditions).toHaveLength(2);
+  });
+
+  /* Case H: mission + 0 persona + participant_data submitted → VERT */
+  it('H. mission S5 valide + 0 persona + participant_data soumise → VERT', () => {
+    const uid = insertGateUser(rawDb, 'H');
+    const inserted = insertMission5Sub(rawDb, uid, cohortId);
+    if (!inserted) return;
+    insertS5ParticipantData(rawDb, uid, true);
+    // Verify NO persona decision exists
+    const decisions = rawDb.prepare(`SELECT * FROM decisions WHERE user_id = ? AND decision_type = 'persona'`).all(uid);
+    expect(decisions).toHaveLength(0);
+    const gate = evaluateGate(rawDb, uid, 6);
+    expect(gate.status).toBe('VERT');
+  });
+
+  /* Gate has exactly 2 conditions */
+  it('gate S6 has exactly 2 conditions', () => {
+    const uid = insertGateUser(rawDb, 'cond2');
+    const gate = evaluateGate(rawDb, uid, 6);
+    expect(gate.conditions).toHaveLength(2);
+    expect(gate.conditions.map(c => c.label)).toContain('Sprint 5 complete');
+    expect(gate.conditions.map(c => c.label)).toContain('Cible test S5 soumise');
   });
 });
 
