@@ -367,6 +367,7 @@ router.post('/direction/lock', async (req, res) => {
 
   let decisionId, submissionId, proofId;
 
+  try {
   await db.transaction(async tx => {
     // 1. Handle supersession or fresh insert
     decisionId = randomUUID();
@@ -502,6 +503,12 @@ router.post('/direction/lock', async (req, res) => {
       afterState: { decision_id: decisionId, direction: data.direction.formulation, supersedes: existingDecision?.id ?? null },
     });
   });
+  } catch (err) {
+    if (err.status === 409) {
+      return res.status(409).json({ error: 'Cette mission a déjà été approuvée par Noémie et ne peut pas être soumise à nouveau.' });
+    }
+    throw err;
+  }
 
   const decision = await db.queryOne(`SELECT * FROM decisions WHERE id = ?`, [decisionId]);
   const submission = submissionId
