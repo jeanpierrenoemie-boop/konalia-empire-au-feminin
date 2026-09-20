@@ -249,6 +249,25 @@ router.get('/', async (req, res) => {
     }
   }
 
+  /* 16. S7 presentation status — only relevant when on sprint 7 */
+  let s7Presentation = null;
+  if (progress?.sprint_number === 7) {
+    const s7Row = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's7_presentation' LIMIT 1`,
+      [uid]
+    );
+    if (s7Row) {
+      const parsed = JSON.parse(s7Row.content);
+      s7Presentation = {
+        status: parsed.status ?? 'draft',
+        offerSentence: parsed.offer_sentence?.formulation ?? null,
+        withoutNotesPracticed: parsed.without_notes?.practiced ?? false,
+        proofId: parsed.proof_id ?? null,
+        updatedAt: s7Row.updated_at,
+      };
+    }
+  }
+
   return res.json({
     progress: progress ?? null,
     pilotage: pilotage ?? null,
@@ -267,6 +286,7 @@ router.get('/', async (req, res) => {
     s4Direction,
     s5TargetProblem,
     s6TestOffer,
+    s7Presentation,
   });
 });
 

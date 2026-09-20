@@ -72,6 +72,15 @@ function _s6DataSubmittedSync(db, userId) {
   `).get(userId);
 }
 
+function _s7DataSubmittedSync(db, userId) {
+  return !!db.prepare(`
+    SELECT 1 FROM participant_data
+    WHERE owner_id = ? AND data_type = 's7_presentation'
+      AND json_extract(content, '$.status') = 'submitted'
+    LIMIT 1
+  `).get(userId);
+}
+
 /* ── Async helpers (adapter) ────────────────────────────────────────────────── */
 
 async function _missionSubmitted(db, userId, sprintNumber) {
@@ -144,6 +153,15 @@ async function _s6DataSubmitted(db, userId) {
   try { return JSON.parse(row.content)?.status === 'submitted'; } catch { return false; }
 }
 
+async function _s7DataSubmitted(db, userId) {
+  const row = await db.queryOne(
+    `SELECT content FROM participant_data WHERE owner_id = ? AND data_type = 's7_presentation' LIMIT 1`,
+    [userId]
+  );
+  if (!row) return false;
+  try { return JSON.parse(row.content)?.status === 'submitted'; } catch { return false; }
+}
+
 /* ── Shared ─────────────────────────────────────────────────────────────────── */
 
 function evaluate(conditions, override) {
@@ -188,8 +206,7 @@ function gateS7Sync(db, userId) {
 function gateS8Sync(db, userId) {
   return evaluate([
     { label: 'Sprint 7 complete', met: _missionSubmittedSync(db, userId, 7) },
-    { label: 'Preuve deposee etape D', met: _proofsCountSync(db, userId, 'D') > 0 },
-    { label: 'Modele de revenus documente', met: _hasActiveDecisionSync(db, userId, ['revenue']) },
+    { label: 'Presentation terrain S7 soumise', met: _s7DataSubmittedSync(db, userId) },
   ], _getOverrideSync(db, userId, 8));
 }
 function gateS9Sync(db, userId) {
@@ -253,8 +270,15 @@ async function gateS7(db, userId) {
   ], override);
 }
 async function gateS8(db, userId) {
-  const [hasMission7, hasProofD, hasRevenueDecision, override] = await Promise.all([_missionSubmitted(db, userId, 7), _proofsCount(db, userId, 'D'), _hasActiveDecision(db, userId, ['revenue']), _getOverride(db, userId, 8)]);
-  return evaluate([{ label: 'Sprint 7 complete', met: hasMission7 }, { label: 'Preuve deposee etape D', met: hasProofD > 0 }, { label: 'Modele de revenus documente', met: hasRevenueDecision }], override);
+  const [hasMission7, hasS7Data, override] = await Promise.all([
+    _missionSubmitted(db, userId, 7),
+    _s7DataSubmitted(db, userId),
+    _getOverride(db, userId, 8),
+  ]);
+  return evaluate([
+    { label: 'Sprint 7 complete', met: hasMission7 },
+    { label: 'Presentation terrain S7 soumise', met: hasS7Data },
+  ], override);
 }
 async function gateS9(db, userId) {
   const [contacted, override] = await Promise.all([_marketContactsCount(db, userId, ['en_cours','converti']), _getOverride(db, userId, 9)]);
