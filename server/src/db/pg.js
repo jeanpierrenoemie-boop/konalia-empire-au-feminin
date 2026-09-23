@@ -19,6 +19,10 @@ function toPostgres(sql) {
   sql = sql.replace(/\?/g, () => `$${++i}`);
   // datetime('now') → NOW()
   sql = sql.replace(/datetime\('now'\)/gi, 'NOW()');
+  // datetime('now', '-N days/hours/minutes') → NOW() - INTERVAL 'N days/hours/minutes'
+  sql = sql.replace(/datetime\('now',\s*'([+-]?\d+)\s+(day|hour|minute|second)s?'\)/gi,
+    (_, n, unit) => `NOW() - INTERVAL '${Math.abs(parseInt(n))} ${unit}s'`);
+  // fallback for any other datetime('now', ...) modifier
   sql = sql.replace(/datetime\('now',\s*[^)]+\)/gi, 'NOW()');
   // COLLATE NOCASE → (strip)
   sql = sql.replace(/\s+COLLATE\s+NOCASE/gi, '');

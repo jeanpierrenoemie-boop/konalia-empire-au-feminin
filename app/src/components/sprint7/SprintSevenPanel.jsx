@@ -312,7 +312,7 @@ export function SprintSevenPanel({ sprint, onMissionUpdate }) {
             <p className={styles.fieldHint}>Écris ta phrase d'offre complète telle que tu la dirais.</p>
             <textarea className={styles.textarea} rows={3} disabled={submitted}
               value={offerFormulation} onChange={e => setOfferFormulation(e.target.value)}
-              placeholder='ex : "J\'aide les managers de 40+ à retrouver de l\'élan professionnel grâce à un accompagnement en 5 séances."' />
+              placeholder={"ex : \"J'aide les managers de 40+ à retrouver de l'élan professionnel grâce à un accompagnement en 5 séances.\""} />
 
             {!submitted && (
               <button className={styles.saveBtn} onClick={() => saveDraft()} disabled={saving}>

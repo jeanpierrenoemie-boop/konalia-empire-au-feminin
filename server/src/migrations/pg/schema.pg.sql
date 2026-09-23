@@ -210,7 +210,7 @@ CREATE TABLE IF NOT EXISTS decisions (
   id                   VARCHAR(36) PRIMARY KEY,
   user_id              VARCHAR(36) NOT NULL REFERENCES users(id),
   decision_type        TEXT        NOT NULL CHECK(decision_type IN (
-    'project','pivot','persona','revenue','go_nogo','scope','other'
+    'project','pivot','persona','revenue','go_nogo','scope','continuity','other'
   )),
   title                TEXT        NOT NULL,
   context              TEXT        NOT NULL DEFAULT '',
@@ -416,6 +416,19 @@ CREATE TABLE IF NOT EXISTS gate_overrides (
   UNIQUE(user_id, sprint_number)
 );
 CREATE INDEX IF NOT EXISTS idx_gate_overrides_user ON gate_overrides(user_id);
+
+-- ── graduation_records ───────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS graduation_records (
+  id            VARCHAR(36) PRIMARY KEY,
+  user_id       VARCHAR(36) NOT NULL REFERENCES users(id),
+  cohort_id     VARCHAR(36) REFERENCES cohorts(id),
+  graduated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  method        TEXT        NOT NULL DEFAULT 'self' CHECK(method IN ('self','admin_override')),
+  passed_by     VARCHAR(36) NOT NULL REFERENCES users(id),
+  gate_snapshot JSONB,
+  UNIQUE(user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_graduation_user ON graduation_records(user_id);
 
 -- ── audit_events ─────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS audit_events (

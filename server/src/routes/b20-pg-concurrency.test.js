@@ -399,8 +399,8 @@ describeIf('BUILD 20.1 — PostgreSQL concurrency & isolation', () => {
       const result = await evaluateGate(db, userId, 8);
       expect(result).not.toBeNull();
       expect(result.status).toBe('ROUGE');
-      /* Must require all 3 conditions */
-      expect(result.missing.length).toBe(3);
+      /* gateS8 requires 2 conditions: mission7 + s7Data */
+      expect(result.missing.length).toBe(2);
     });
 
     it('gateS9 (R step) returns ROUGE with no data', async () => {
@@ -430,7 +430,7 @@ describeIf('BUILD 20.1 — PostgreSQL concurrency & isolation', () => {
       expect(result.status).toBe('VERT');
     });
 
-    it('gateS8 returns VERT after all 3 conditions met', async () => {
+    it('gateS8 returns VERT after both conditions met', async () => {
       /* Condition 1: sprint 7 mission submitted */
       const mId = randomUUID();
       await db.execute(
@@ -443,15 +443,10 @@ describeIf('BUILD 20.1 — PostgreSQL concurrency & isolation', () => {
          VALUES (?, ?, ?, ?, 'ok', 'submitted')`,
         [randomUUID(), mId, userId, cohortId]
       );
-      /* Condition 2: proof at step D */
+      /* Condition 2: s7_presentation submitted */
       await db.execute(
-        `INSERT INTO proofs (id, user_id, proof_type, title, cadre_step) VALUES (?, ?, 'note', 'Preuve D', 'D')`,
-        [randomUUID(), userId]
-      );
-      /* Condition 3: revenue decision */
-      await db.execute(
-        `INSERT INTO decisions (id, user_id, decision_type, title, status) VALUES (?, ?, 'revenue', 'Rev', 'active')`,
-        [randomUUID(), userId]
+        `INSERT INTO participant_data (id, owner_id, data_type, content) VALUES (?, ?, 's7_presentation', ?)`,
+        [randomUUID(), userId, JSON.stringify({ status: 'submitted' })]
       );
 
       const { evaluateGate } = await import('../gates.js');
