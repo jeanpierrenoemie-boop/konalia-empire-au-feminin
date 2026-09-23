@@ -81,6 +81,15 @@ function _s7DataSubmittedSync(db, userId) {
   `).get(userId);
 }
 
+function _s8DataSubmittedSync(db, userId) {
+  return !!db.prepare(`
+    SELECT 1 FROM participant_data
+    WHERE owner_id = ? AND data_type = 's8_field_test'
+      AND json_extract(content, '$.status') = 'submitted'
+    LIMIT 1
+  `).get(userId);
+}
+
 /* ── Async helpers (adapter) ────────────────────────────────────────────────── */
 
 async function _missionSubmitted(db, userId, sprintNumber) {
@@ -162,6 +171,15 @@ async function _s7DataSubmitted(db, userId) {
   try { return JSON.parse(row.content)?.status === 'submitted'; } catch { return false; }
 }
 
+async function _s8DataSubmitted(db, userId) {
+  const row = await db.queryOne(
+    `SELECT content FROM participant_data WHERE owner_id = ? AND data_type = 's8_field_test' LIMIT 1`,
+    [userId]
+  );
+  if (!row) return false;
+  try { return JSON.parse(row.content)?.status === 'submitted'; } catch { return false; }
+}
+
 /* ── Shared ─────────────────────────────────────────────────────────────────── */
 
 function evaluate(conditions, override) {
@@ -211,7 +229,8 @@ function gateS8Sync(db, userId) {
 }
 function gateS9Sync(db, userId) {
   return evaluate([
-    { label: 'Au moins un contact contacte', met: _marketContactsCountSync(db, userId, ['en_cours','converti']) > 0 },
+    { label: 'Sprint 8 complete', met: _missionSubmittedSync(db, userId, 8) },
+    { label: 'Test terrain S8 soumis', met: _s8DataSubmittedSync(db, userId) },
   ], _getOverrideSync(db, userId, 9));
 }
 function gateS10Sync(db, userId) {
@@ -281,8 +300,15 @@ async function gateS8(db, userId) {
   ], override);
 }
 async function gateS9(db, userId) {
-  const [contacted, override] = await Promise.all([_marketContactsCount(db, userId, ['en_cours','converti']), _getOverride(db, userId, 9)]);
-  return evaluate([{ label: 'Au moins un contact contacte', met: contacted > 0 }], override);
+  const [hasMission8, hasS8Data, override] = await Promise.all([
+    _missionSubmitted(db, userId, 8),
+    _s8DataSubmitted(db, userId),
+    _getOverride(db, userId, 9),
+  ]);
+  return evaluate([
+    { label: 'Sprint 8 complete', met: hasMission8 },
+    { label: 'Test terrain S8 soumis', met: hasS8Data },
+  ], override);
 }
 async function gateS10(db, userId) {
   const [hasConversation, override] = await Promise.all([_conversationsCount(db, userId), _getOverride(db, userId, 10)]);

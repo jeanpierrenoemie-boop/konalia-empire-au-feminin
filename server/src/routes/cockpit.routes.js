@@ -249,7 +249,7 @@ router.get('/', async (req, res) => {
     }
   }
 
-  /* 16. S7 presentation status — only relevant when on sprint 7 */
+  /* 16. S7 presentation status — only relevant when on sprint 7 or 8 (read-only ref) */
   let s7Presentation = null;
   if (progress?.sprint_number === 7) {
     const s7Row = await db.queryOne(
@@ -264,6 +264,27 @@ router.get('/', async (req, res) => {
         withoutNotesPracticed: parsed.without_notes?.practiced ?? false,
         proofId: parsed.proof_id ?? null,
         updatedAt: s7Row.updated_at,
+      };
+    }
+  }
+
+  /* 17. S8 field test status — only relevant when on sprint 8 */
+  let s8FieldTest = null;
+  if (progress?.sprint_number === 8) {
+    const s8Row = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's8_field_test' LIMIT 1`,
+      [uid]
+    );
+    if (s8Row) {
+      const parsed = JSON.parse(s8Row.content);
+      s8FieldTest = {
+        status: parsed.status ?? 'draft',
+        testedAt: parsed.test_context?.date ?? null,
+        targetMatch: parsed.test_context?.target_match ?? null,
+        outcome: parsed.outcome?.type ?? null,
+        pricePresented: parsed.presented?.price_presented ?? false,
+        nextToVerify: parsed.next_to_verify ?? null,
+        updatedAt: s8Row.updated_at,
       };
     }
   }
@@ -287,6 +308,7 @@ router.get('/', async (req, res) => {
     s5TargetProblem,
     s6TestOffer,
     s7Presentation,
+    s8FieldTest,
   });
 });
 

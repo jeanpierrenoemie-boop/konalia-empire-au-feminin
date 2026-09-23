@@ -1,0 +1,726 @@
+/* SprintEightPanel — S8 : PREMIER TEST TERRAIN */
+
+:root {
+  --s8-primary: #2563eb;
+  --s8-primary-light: #eff6ff;
+  --s8-border: #e2e8f0;
+  --s8-text: #1e293b;
+  --s8-text-muted: #64748b;
+  --s8-success: #16a34a;
+  --s8-success-bg: #f0fdf4;
+  --s8-warning: #d97706;
+  --s8-warning-bg: #fffbeb;
+  --s8-error: #dc2626;
+  --s8-error-bg: #fef2f2;
+  --s8-step-active-bg: #2563eb;
+  --s8-step-active-text: #fff;
+  --s8-bg: #fff;
+  --s8-section-bg: #f8fafc;
+  --s8-ack-bg: #f1f5f9;
+  --s8-ack-treated-bg: #f0fdf4;
+  --s8-ack-treated-border: #bbf7d0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --s8-primary: #3b82f6;
+    --s8-primary-light: #1e3a5f;
+    --s8-border: #334155;
+    --s8-text: #f1f5f9;
+    --s8-text-muted: #94a3b8;
+    --s8-success: #4ade80;
+    --s8-success-bg: #14532d;
+    --s8-warning: #fbbf24;
+    --s8-warning-bg: #422006;
+    --s8-error: #f87171;
+    --s8-error-bg: #450a0a;
+    --s8-bg: #0f172a;
+    --s8-section-bg: #1e293b;
+    --s8-ack-bg: #1e293b;
+    --s8-ack-treated-bg: #14532d;
+    --s8-ack-treated-border: #166534;
+  }
+}
+
+:root[data-theme="dark"] {
+  --s8-primary: #3b82f6;
+  --s8-primary-light: #1e3a5f;
+  --s8-border: #334155;
+  --s8-text: #f1f5f9;
+  --s8-text-muted: #94a3b8;
+  --s8-success: #4ade80;
+  --s8-success-bg: #14532d;
+  --s8-warning: #fbbf24;
+  --s8-warning-bg: #422006;
+  --s8-error: #f87171;
+  --s8-error-bg: #450a0a;
+  --s8-bg: #0f172a;
+  --s8-section-bg: #1e293b;
+  --s8-ack-bg: #1e293b;
+  --s8-ack-treated-bg: #14532d;
+  --s8-ack-treated-border: #166534;
+}
+
+/* ── Panel wrapper ─────────────────────────────────────────────── */
+.panel {
+  background: var(--s8-bg);
+  color: var(--s8-text);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ── Step navigation ───────────────────────────────────────────── */
+.stepNav {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--s8-border);
+  padding: 0 16px;
+  gap: 4px;
+  scrollbar-width: thin;
+}
+
+.stepBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--s8-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.stepBtn:hover {
+  color: var(--s8-primary);
+}
+
+.stepActive {
+  color: var(--s8-primary);
+  border-bottom-color: var(--s8-primary);
+}
+
+.stepNum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--s8-border);
+  color: var(--s8-text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.stepActive .stepNum {
+  background: var(--s8-primary);
+  color: #fff;
+}
+
+.stepLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+}
+
+/* ── Step body ─────────────────────────────────────────────────── */
+.stepBody {
+  padding: 24px 16px;
+}
+
+/* ── Section ───────────────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--s8-text);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sectionHint {
+  font-size: 0.85rem;
+  color: var(--s8-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Fields ────────────────────────────────────────────────────── */
+.fieldLabel {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--s8-text);
+  margin-bottom: -8px;
+}
+
+.fieldHint {
+  font-size: 0.8rem;
+  color: var(--s8-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.fieldWarning {
+  font-size: 0.8rem;
+  color: var(--s8-warning);
+  background: var(--s8-warning-bg);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--s8-border);
+  border-radius: 6px;
+  background: var(--s8-bg);
+  color: var(--s8-text);
+  font-size: 0.875rem;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--s8-primary);
+}
+
+.inputSmall {
+  width: 120px;
+  padding: 6px 10px;
+  border: 1px solid var(--s8-border);
+  border-radius: 6px;
+  background: var(--s8-bg);
+  color: var(--s8-text);
+  font-size: 0.875rem;
+}
+
+.textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--s8-border);
+  border-radius: 6px;
+  background: var(--s8-bg);
+  color: var(--s8-text);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--s8-primary);
+}
+
+/* ── Check / radio ─────────────────────────────────────────────── */
+.confirmBox {
+  background: var(--s8-section-bg);
+  border: 1px solid var(--s8-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.875rem;
+  color: var(--s8-text);
+  cursor: pointer;
+}
+
+.checkLabel input[type="checkbox"] {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+}
+
+.inlineField {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+  color: var(--s8-text);
+  cursor: pointer;
+}
+
+/* ── Read-only reference box ───────────────────────────────────── */
+.readOnlyBox {
+  background: var(--s8-section-bg);
+  border: 1px solid var(--s8-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.refBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.refLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--s8-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.refValue {
+  font-size: 0.875rem;
+  color: var(--s8-text);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.noRef {
+  font-size: 0.85rem;
+  color: var(--s8-text-muted);
+  margin: 0;
+}
+
+/* ── Outcome hint ──────────────────────────────────────────────── */
+.outcomeHint {
+  font-size: 0.85rem;
+  color: var(--s8-text-muted);
+  background: var(--s8-section-bg);
+  border-left: 3px solid var(--s8-primary);
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
+}
+
+/* ── Verbatims ─────────────────────────────────────────────────── */
+.verbatimAdd {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.addVerbatimBtn {
+  align-self: flex-start;
+  padding: 6px 16px;
+  border: 1px solid var(--s8-primary);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--s8-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.addVerbatimBtn:hover:not(:disabled) {
+  background: var(--s8-primary-light);
+}
+
+.addVerbatimBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.verbatimList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.verbatimItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--s8-section-bg);
+  border: 1px solid var(--s8-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.verbatimQuote {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--s8-text);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.removeVerbatimBtn {
+  border: none;
+  background: transparent;
+  color: var(--s8-text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.removeVerbatimBtn:hover {
+  color: var(--s8-error);
+}
+
+.noVerbatims {
+  font-size: 0.85rem;
+  color: var(--s8-text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+/* ── Epistemic ─────────────────────────────────────────────────── */
+.epistemicSection {
+  background: var(--s8-section-bg);
+  border: 1px solid var(--s8-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.epistemicTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--s8-text);
+  margin: 0;
+}
+
+.epistemicHint {
+  font-size: 0.8rem;
+  color: var(--s8-text-muted);
+  margin: 0;
+}
+
+/* ── AcknowledgeField ──────────────────────────────────────────── */
+.ackField {
+  background: var(--s8-ack-bg);
+  border: 1px solid var(--s8-border);
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ackFieldTreated {
+  background: var(--s8-ack-treated-bg);
+  border-color: var(--s8-ack-treated-border);
+}
+
+.ackFieldHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ackFieldLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--s8-text);
+}
+
+.ackCheck {
+  color: var(--s8-success);
+  font-weight: 700;
+}
+
+.ackBtn {
+  align-self: flex-start;
+  padding: 4px 12px;
+  border: 1px solid var(--s8-border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--s8-text-muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.ackBtn:hover {
+  border-color: var(--s8-primary);
+  color: var(--s8-primary);
+}
+
+.ackAcknowledged {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--s8-text-muted);
+  font-style: italic;
+}
+
+.ackUndoBtn {
+  border: none;
+  background: transparent;
+  color: var(--s8-primary);
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+/* ── Navigation ────────────────────────────────────────────────── */
+.navRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+}
+
+.prevBtn {
+  padding: 8px 16px;
+  border: 1px solid var(--s8-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--s8-text-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.prevBtn:hover {
+  border-color: var(--s8-primary);
+  color: var(--s8-primary);
+}
+
+.nextBtn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  background: var(--s8-primary);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.nextBtn:hover {
+  opacity: 0.9;
+}
+
+.saveBtn {
+  padding: 8px 16px;
+  border: 1px solid var(--s8-primary);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--s8-primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background: var(--s8-primary-light);
+}
+
+.saveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.saveMsg {
+  font-size: 0.8rem;
+  color: var(--s8-success);
+  margin: 0;
+}
+
+/* ── Submit step ───────────────────────────────────────────────── */
+.submitChecklist {
+  background: var(--s8-section-bg);
+  border: 1px solid var(--s8-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.checkItemMet {
+  color: var(--s8-success);
+}
+
+.checkItemMissing {
+  color: var(--s8-text-muted);
+}
+
+.submitError {
+  background: var(--s8-error-bg);
+  border: 1px solid var(--s8-error);
+  border-radius: 6px;
+  color: var(--s8-error);
+  padding: 10px 14px;
+  font-size: 0.875rem;
+}
+
+.submitBtn {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 8px;
+  background: var(--s8-primary);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: opacity 0.15s;
+  align-self: flex-start;
+}
+
+.submitBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submitDisclaimer {
+  font-size: 0.8rem;
+  color: var(--s8-text-muted);
+  font-style: italic;
+  margin: 0;
+  border-left: 3px solid var(--s8-border);
+  padding-left: 12px;
+}
+
+/* ── Submitted state ───────────────────────────────────────────── */
+.submittedState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.submittedIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--s8-success-bg);
+  color: var(--s8-success);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.submittedTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--s8-text);
+  margin: 0;
+}
+
+.submittedMsg {
+  font-size: 0.9rem;
+  color: var(--s8-text-muted);
+  max-width: 420px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.outcomeNote {
+  font-size: 0.85rem;
+  color: var(--s8-text-muted);
+  background: var(--s8-section-bg);
+  border: 1px solid var(--s8-border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  max-width: 420px;
+  text-align: left;
+  font-style: italic;
+  margin: 0;
+}
+
+/* ── States ────────────────────────────────────────────────────── */
+.loading {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--s8-text-muted);
+  font-size: 0.9rem;
+}
+
+.errorBanner {
+  padding: 16px;
+  background: var(--s8-error-bg);
+  color: var(--s8-error);
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .stepNav {
+    padding: 0 8px;
+  }
+
+  .stepLabel {
+    display: none;
+  }
+
+  .stepBody {
+    padding: 16px 12px;
+  }
+
+  .navRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .submitBtn {
+    width: 100%;
+  }
+}
