@@ -5,7 +5,7 @@ import { requireAuth } from '../middleware/requireAuth.js';
 
 const router = Router();
 
-const DECISION_TYPES = ['project', 'pivot', 'persona', 'revenue', 'go_nogo', 'scope', 'other'];
+const DECISION_TYPES = ['project', 'pivot', 'persona', 'revenue', 'go_nogo', 'scope', 'continuity', 'other'];
 
 /* ── GET /api/decisions ── */
 router.get('/', requireAuth, async (req, res) => {

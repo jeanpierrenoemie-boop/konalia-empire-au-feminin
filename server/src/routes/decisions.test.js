@@ -56,6 +56,13 @@ describe('POST /api/decisions', () => {
     expect(r.status).toBe(400);
   });
 
+  it('accepts continuity decision_type', async () => {
+    const r = await request(app).post('/api/decisions').set('Cookie', cookie)
+      .send({ decision_type: 'continuity', title: 'Plan 90 jours — poursuivre' });
+    expect(r.status).toBe(201);
+    expect(r.body.decision_type).toBe('continuity');
+  });
+
   it('creates decision with all new fields', async () => {
     const r = await request(app).post('/api/decisions').set('Cookie', cookie).send({
       decision_type: 'project',
