@@ -289,9 +289,9 @@ router.get('/', async (req, res) => {
     }
   }
 
-  /* 18. S9 learning review — only relevant when on sprint 9 */
+  /* 18. S9 learning review — only relevant when on sprint 9 or 10 */
   let s9LearningReview = null;
-  if (progress?.sprint_number === 9) {
+  if (progress?.sprint_number === 9 || progress?.sprint_number === 10) {
     const s9Row = await db.queryOne(
       `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's9_learning_review' LIMIT 1`,
       [uid]
@@ -305,6 +305,29 @@ router.get('/', async (req, res) => {
         nextTestQuestion: parsed.next_test?.question ?? null,
         nextTestTarget: parsed.next_test?.target_person ?? null,
         updatedAt: s9Row.updated_at,
+      };
+    }
+  }
+
+  /* 19. S10 iteration plan — only relevant when on sprint 10 */
+  let s10IterationPlan = null;
+  if (progress?.sprint_number === 10) {
+    const s10Row = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's10_iteration_plan' LIMIT 1`,
+      [uid]
+    );
+    if (s10Row) {
+      const parsed = JSON.parse(s10Row.content);
+      s10IterationPlan = {
+        status: parsed.status ?? 'draft',
+        hypothesis: parsed.iteration?.hypothesis ?? null,
+        variableUnderTest: parsed.iteration?.variable_under_test ?? null,
+        variableCategory: parsed.iteration?.variable_category ?? null,
+        nextTestTarget: parsed.test_plan?.target_person ?? null,
+        observationCriteria: parsed.observation_criteria?.data_to_observe ?? null,
+        completionCriterion: parsed.observation_criteria?.completion_criterion ?? null,
+        nextAction: parsed.test_plan?.main_question ?? null,
+        updatedAt: s10Row.updated_at,
       };
     }
   }
@@ -330,6 +353,7 @@ router.get('/', async (req, res) => {
     s7Presentation,
     s8FieldTest,
     s9LearningReview,
+    s10IterationPlan,
   });
 });
 
