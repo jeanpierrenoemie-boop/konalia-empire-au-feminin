@@ -311,7 +311,7 @@ router.post('/continuity-plan/submit', async (req, res) => {
   let submissionId = null;
   let continuityDecisionId = data.continuity_decision_id ?? null;
 
-  await db.transaction(async tx => {
+  try { await db.transaction(async tx => {
     // 1. Create or supersede continuity strategic decision
     const existingContinuity = await tx.queryOne(
       `SELECT id FROM decisions WHERE user_id = ? AND decision_type = 'continuity' AND sprint_number = 12 AND status = 'active'`,
@@ -446,7 +446,7 @@ router.post('/continuity-plan/submit', async (req, res) => {
         mission_submission_id: submissionId,
       },
     });
-  });
+  }); } catch (err) { return res.status(err.status ?? 500).json({ error: err.message }); }
 
   const submission = submissionId
     ? await db.queryOne(`SELECT * FROM mission_submissions WHERE id = ?`, [submissionId])

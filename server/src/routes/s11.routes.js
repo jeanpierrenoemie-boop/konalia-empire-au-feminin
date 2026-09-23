@@ -317,7 +317,7 @@ router.post('/real-decision/submit', async (req, res) => {
   let submissionId = null;
   let strategicDecisionId = data.strategic_decision_id ?? null;
 
-  await db.transaction(async tx => {
+  try { await db.transaction(async tx => {
     // 1. Create or supersede go_nogo strategic decision
     const existingGoNogo = await tx.queryOne(
       `SELECT id FROM decisions WHERE user_id = ? AND decision_type = 'go_nogo' AND sprint_number = 11 AND status = 'active'`,
@@ -427,7 +427,7 @@ router.post('/real-decision/submit', async (req, res) => {
       recordId: strategicDecisionId,
       afterState: { decision: data.decision, strategic_decision_id: strategicDecisionId, mission_submission_id: submissionId },
     });
-  });
+  }); } catch (err) { return res.status(err.status ?? 500).json({ error: err.message }); }
 
   const submission = submissionId
     ? await db.queryOne(`SELECT * FROM mission_submissions WHERE id = ?`, [submissionId])

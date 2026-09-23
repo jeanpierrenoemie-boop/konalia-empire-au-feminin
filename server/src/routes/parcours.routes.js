@@ -157,6 +157,7 @@ router.post('/gate/:n/pass', requireAuth, async (req, res) => {
     await tx.execute(`
       INSERT INTO sprint_gate_log (id, user_id, cohort_id, sprint_number, cadre_step, passed_by, method)
       VALUES (?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT (user_id, sprint_number) DO NOTHING
     `, [
       randomUUID(), userId, cohort?.cohort_id ?? null,
       sprintNumber, progress.cadre_step, userId, 'self'
