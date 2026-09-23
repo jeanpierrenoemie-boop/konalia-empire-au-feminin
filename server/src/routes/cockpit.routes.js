@@ -332,9 +332,9 @@ router.get('/', async (req, res) => {
     }
   }
 
-  /* 20. S11 real decision — only relevant when on sprint 11 */
+  /* 20. S11 real decision — only relevant when on sprint 11 or 12 (read-only ref) */
   let s11RealDecision = null;
-  if (progress?.sprint_number === 11) {
+  if (progress?.sprint_number === 11 || progress?.sprint_number === 12) {
     const s11Row = await db.queryOne(
       `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's11_real_decision' LIMIT 1`,
       [uid]
@@ -349,6 +349,31 @@ router.get('/', async (req, res) => {
         signalsRecurringCount: (parsed.signals?.recurring ?? []).length,
         signalsContradictoryCount: (parsed.signals?.contradictory ?? []).length,
         updatedAt: s11Row.updated_at,
+      };
+    }
+  }
+
+  /* 21. S12 continuity plan — only relevant when on sprint 12 */
+  let s12ContinuityPlan = null;
+  if (progress?.sprint_number === 12) {
+    const s12Row = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's12_continuity_plan' LIMIT 1`,
+      [uid]
+    );
+    if (s12Row) {
+      const parsed = JSON.parse(s12Row.content);
+      const nextCheckpoint = !parsed.checkpoints?.day_30?.what_done ? 'J30'
+        : !parsed.checkpoints?.day_60?.what_done ? 'J60' : 'J90';
+      s12ContinuityPlan = {
+        status: parsed.status ?? 'draft',
+        s11Decision: parsed.source_refs?.s11_decision ?? null,
+        ninetyDayGoal: parsed.ninety_day_goal ?? null,
+        priority: parsed.priority ?? null,
+        weeklyCommitment: parsed.weekly_rhythm?.hours_available ?? null,
+        nextCheckpoint,
+        nextAction: parsed.next_action ?? null,
+        continuityDecisionId: parsed.continuity_decision_id ?? null,
+        updatedAt: s12Row.updated_at,
       };
     }
   }
@@ -376,6 +401,7 @@ router.get('/', async (req, res) => {
     s9LearningReview,
     s10IterationPlan,
     s11RealDecision,
+    s12ContinuityPlan,
   });
 });
 

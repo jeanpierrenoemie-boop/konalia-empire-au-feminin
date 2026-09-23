@@ -117,6 +117,23 @@ function _s11DataSubmittedSync(db, userId) {
   `).get(userId);
 }
 
+function _s12DataSubmittedSync(db, userId) {
+  return !!db.prepare(`
+    SELECT 1 FROM participant_data
+    WHERE owner_id = ? AND data_type = 's12_continuity_plan'
+      AND json_extract(content, '$.status') = 'submitted'
+    LIMIT 1
+  `).get(userId);
+}
+
+function _hasActiveContinuityDecisionSync(db, userId) {
+  return !!db.prepare(`
+    SELECT 1 FROM decisions
+    WHERE user_id = ? AND decision_type = 'continuity' AND sprint_number = 12 AND status = 'active'
+    LIMIT 1
+  `).get(userId);
+}
+
 /* ── Async helpers (adapter) ────────────────────────────────────────────────── */
 
 async function _missionSubmitted(db, userId, sprintNumber) {
@@ -234,6 +251,23 @@ async function _s11DataSubmitted(db, userId) {
   try { return JSON.parse(row.content)?.status === 'submitted'; } catch { return false; }
 }
 
+async function _s12DataSubmitted(db, userId) {
+  const row = await db.queryOne(
+    `SELECT content FROM participant_data WHERE owner_id = ? AND data_type = 's12_continuity_plan' LIMIT 1`,
+    [userId]
+  );
+  if (!row) return false;
+  try { return JSON.parse(row.content)?.status === 'submitted'; } catch { return false; }
+}
+
+async function _hasActiveContinuityDecision(db, userId) {
+  const row = await db.queryOne(
+    `SELECT 1 FROM decisions WHERE user_id = ? AND decision_type = 'continuity' AND sprint_number = 12 AND status = 'active' LIMIT 1`,
+    [userId]
+  );
+  return !!row;
+}
+
 /* ── Shared ─────────────────────────────────────────────────────────────────── */
 
 function evaluate(conditions, override) {
@@ -307,7 +341,11 @@ function gateS12Sync(db, userId) {
   ], _getOverrideSync(db, userId, 12));
 }
 function gateFinalSync(db, userId) {
-  return evaluate([{ label: 'Continuite 90 jours soumise', met: _missionSubmittedSync(db, userId, 12) }], _getOverrideSync(db, userId, 'final'));
+  return evaluate([
+    { label: 'Sprint 12 complete', met: _missionSubmittedSync(db, userId, 12) },
+    { label: 'Plan continuité S12 soumis', met: _s12DataSubmittedSync(db, userId) },
+    { label: 'Décision continuité enregistrée', met: _hasActiveContinuityDecisionSync(db, userId) },
+  ], _getOverrideSync(db, userId, 'final'));
 }
 
 /* ── Async gate evaluators ────────────────────────────────────────────────────── */
@@ -404,8 +442,17 @@ async function gateS12(db, userId) {
   ], override);
 }
 async function gateFinal(db, userId) {
-  const [submitted, override] = await Promise.all([_missionSubmitted(db, userId, 12), _getOverride(db, userId, 'final')]);
-  return evaluate([{ label: 'Continuite 90 jours soumise', met: submitted }], override);
+  const [hasMission12, hasS12Data, hasContinuity, override] = await Promise.all([
+    _missionSubmitted(db, userId, 12),
+    _s12DataSubmitted(db, userId),
+    _hasActiveContinuityDecision(db, userId),
+    _getOverride(db, userId, 'final'),
+  ]);
+  return evaluate([
+    { label: 'Sprint 12 complete', met: hasMission12 },
+    { label: 'Plan continuité S12 soumis', met: hasS12Data },
+    { label: 'Décision continuité enregistrée', met: hasContinuity },
+  ], override);
 }
 
 /* ── Exports ─────────────────────────────────────────────────────────────────── */

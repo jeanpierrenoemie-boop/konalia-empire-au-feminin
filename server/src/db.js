@@ -63,6 +63,7 @@ const MIGRATION_FILES = [
   '015_invitations.sql',
   '016_password_resets.sql',
   '017_s1_media.sql',
+  '018_continuity_decision.sql',
 ];
 
 function runMigrations(db) {
