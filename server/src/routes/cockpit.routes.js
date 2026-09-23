@@ -309,9 +309,9 @@ router.get('/', async (req, res) => {
     }
   }
 
-  /* 19. S10 iteration plan — only relevant when on sprint 10 */
+  /* 19. S10 iteration plan — only relevant when on sprint 10 or 11 (read-only ref) */
   let s10IterationPlan = null;
-  if (progress?.sprint_number === 10) {
+  if (progress?.sprint_number === 10 || progress?.sprint_number === 11) {
     const s10Row = await db.queryOne(
       `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's10_iteration_plan' LIMIT 1`,
       [uid]
@@ -328,6 +328,27 @@ router.get('/', async (req, res) => {
         completionCriterion: parsed.observation_criteria?.completion_criterion ?? null,
         nextAction: parsed.test_plan?.main_question ?? null,
         updatedAt: s10Row.updated_at,
+      };
+    }
+  }
+
+  /* 20. S11 real decision — only relevant when on sprint 11 */
+  let s11RealDecision = null;
+  if (progress?.sprint_number === 11) {
+    const s11Row = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's11_real_decision' LIMIT 1`,
+      [uid]
+    );
+    if (s11Row) {
+      const parsed = JSON.parse(s11Row.content);
+      s11RealDecision = {
+        status: parsed.status ?? 'draft',
+        decision: parsed.decision ?? null,
+        justification: parsed.justification ?? null,
+        nextAction: parsed.next_action ?? null,
+        signalsRecurringCount: (parsed.signals?.recurring ?? []).length,
+        signalsContradictoryCount: (parsed.signals?.contradictory ?? []).length,
+        updatedAt: s11Row.updated_at,
       };
     }
   }
@@ -354,6 +375,7 @@ router.get('/', async (req, res) => {
     s8FieldTest,
     s9LearningReview,
     s10IterationPlan,
+    s11RealDecision,
   });
 });
 

@@ -403,16 +403,27 @@ describeIf('BUILD 20.1 — PostgreSQL concurrency & isolation', () => {
       expect(result.missing.length).toBe(3);
     });
 
-    it('gateS9 (R step) returns ROUGE with no market contacts', async () => {
+    it('gateS9 (R step) returns ROUGE with no data', async () => {
       const { evaluateGate } = await import('../gates.js');
       const result = await evaluateGate(db, userId, 9);
       expect(result.status).toBe('ROUGE');
     });
 
-    it('gateS9 returns VERT after adding a market contact', async () => {
+    it('gateS9 returns VERT after S8 mission submitted and s8 data submitted', async () => {
+      const mId = randomUUID();
       await db.execute(
-        `INSERT INTO market_contacts (id, user_id, name, status) VALUES (?, ?, 'Contact Test', 'en_cours')`,
-        [randomUUID(), userId]
+        `INSERT INTO missions (id, cohort_id, cadre_step, sprint_number, title, is_required, sort_order, created_by)
+         VALUES (?, ?, 'D', 8, 'Mission S8', TRUE, 0, ?)`,
+        [mId, cohortId, userId]
+      );
+      await db.execute(
+        `INSERT INTO mission_submissions (id, mission_id, user_id, cohort_id, content, status)
+         VALUES (?, ?, ?, ?, 'ok', 'submitted')`,
+        [randomUUID(), mId, userId, cohortId]
+      );
+      await db.execute(
+        `INSERT INTO participant_data (id, owner_id, data_type, content) VALUES (?, ?, 's8_field_test', ?)`,
+        [randomUUID(), userId, JSON.stringify({ status: 'submitted' })]
       );
       const { evaluateGate } = await import('../gates.js');
       const result = await evaluateGate(db, userId, 9);

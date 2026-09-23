@@ -1,0 +1,646 @@
+/* SprintElevenPanel — S11 : Décider à partir du réel */
+
+:root {
+  --s11-bg: #f4f1ee;
+  --s11-surface: #ffffff;
+  --s11-border: #ddd8d0;
+  --s11-text: #1c1a17;
+  --s11-muted: #6e6558;
+  --s11-accent: #5a4a8a;
+  --s11-accent-light: #ede9f5;
+  --s11-step-active: #5a4a8a;
+  --s11-step-done: #8b78c4;
+  --s11-step-inactive: #ddd8d0;
+  --s11-success-bg: #ede9f5;
+  --s11-success-text: #36246b;
+  --s11-error-bg: #fde8e8;
+  --s11-error-text: #8b1a1a;
+  --s11-doctrine-bg: #f0ece8;
+  --s11-doctrine-border: #c8c0b8;
+  --s11-source-bg: #f8f5f2;
+  --s11-tag-recurring-bg: #e8f0e6;
+  --s11-tag-recurring-text: #2e5028;
+  --s11-tag-contradictory-bg: #fef3e2;
+  --s11-tag-contradictory-text: #7a4800;
+  --s11-tag-insufficient-bg: #f0ece8;
+  --s11-tag-insufficient-text: #5c4a38;
+  --s11-ack-treated: #ede9f5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --s11-bg: #1a1820;
+    --s11-surface: #232030;
+    --s11-border: #38344a;
+    --s11-text: #e8e4dd;
+    --s11-muted: #9a9488;
+    --s11-accent: #9a80d4;
+    --s11-accent-light: #221d38;
+    --s11-step-active: #9a80d4;
+    --s11-step-done: #5a4a8a;
+    --s11-step-inactive: #38344a;
+    --s11-success-bg: #1e1a30;
+    --s11-success-text: #9a80d4;
+    --s11-error-bg: #2e1a1a;
+    --s11-error-text: #e88080;
+    --s11-doctrine-bg: #1e1c20;
+    --s11-doctrine-border: #38344a;
+    --s11-source-bg: #1e1c20;
+    --s11-tag-recurring-bg: #1a2e18;
+    --s11-tag-recurring-text: #8aab85;
+    --s11-tag-contradictory-bg: #2e2010;
+    --s11-tag-contradictory-text: #d4a060;
+    --s11-tag-insufficient-bg: #201e18;
+    --s11-tag-insufficient-text: #9a9488;
+    --s11-ack-treated: #1e1a30;
+  }
+}
+
+:root[data-theme="dark"] {
+  --s11-bg: #1a1820;
+  --s11-surface: #232030;
+  --s11-border: #38344a;
+  --s11-text: #e8e4dd;
+  --s11-muted: #9a9488;
+  --s11-accent: #9a80d4;
+  --s11-accent-light: #221d38;
+  --s11-step-active: #9a80d4;
+  --s11-step-done: #5a4a8a;
+  --s11-step-inactive: #38344a;
+  --s11-success-bg: #1e1a30;
+  --s11-success-text: #9a80d4;
+  --s11-error-bg: #2e1a1a;
+  --s11-error-text: #e88080;
+  --s11-doctrine-bg: #1e1c20;
+  --s11-doctrine-border: #38344a;
+  --s11-source-bg: #1e1c20;
+  --s11-tag-recurring-bg: #1a2e18;
+  --s11-tag-recurring-text: #8aab85;
+  --s11-tag-contradictory-bg: #2e2010;
+  --s11-tag-contradictory-text: #d4a060;
+  --s11-tag-insufficient-bg: #201e18;
+  --s11-tag-insufficient-text: #9a9488;
+  --s11-ack-treated: #1e1a30;
+}
+
+.panel {
+  background: var(--s11-bg);
+  color: var(--s11-text);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.progressBar {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.stepBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--s11-step-inactive);
+  background: transparent;
+  color: var(--s11-muted);
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+
+.stepBtn:hover {
+  border-color: var(--s11-accent);
+  color: var(--s11-accent);
+}
+
+.stepActive {
+  background: var(--s11-accent);
+  border-color: var(--s11-accent);
+  color: #fff;
+}
+
+.stepDone {
+  border-color: var(--s11-step-done);
+  color: var(--s11-step-done);
+}
+
+.stepNum {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 0.7rem;
+}
+
+.stepLabel {
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+}
+
+.content {
+  background: var(--s11-surface);
+  border: 1px solid var(--s11-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  min-height: 300px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--s11-text);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sectionHint {
+  color: var(--s11-muted);
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sourceCard {
+  background: var(--s11-source-bg);
+  border: 1px solid var(--s11-border);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sourceRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sourceLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--s11-muted);
+}
+
+.sourceValue {
+  font-size: 0.88rem;
+  color: var(--s11-text);
+  line-height: 1.5;
+}
+
+.emptyNote {
+  color: var(--s11-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.doctrineBox {
+  background: var(--s11-doctrine-bg);
+  border: 1px solid var(--s11-doctrine-border);
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--s11-text);
+}
+
+.doctrineBox strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+}
+
+.doctrineBox p {
+  margin: 0.25rem 0;
+}
+
+.doctrineNote {
+  color: var(--s11-muted);
+  font-style: italic;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--s11-text);
+  letter-spacing: 0.02em;
+}
+
+.textarea {
+  background: var(--s11-bg);
+  border: 1.5px solid var(--s11-border);
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  color: var(--s11-text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--s11-accent);
+}
+
+.textarea:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.input {
+  background: var(--s11-bg);
+  border: 1.5px solid var(--s11-border);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  color: var(--s11-text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--s11-accent);
+}
+
+.select {
+  background: var(--s11-bg);
+  border: 1.5px solid var(--s11-border);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  color: var(--s11-text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--s11-accent);
+}
+
+.signalGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.signalGroupLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--s11-muted);
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 2rem;
+}
+
+.tagRecurring {
+  background: var(--s11-tag-recurring-bg);
+  color: var(--s11-tag-recurring-text);
+  border-radius: 20px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tagContradictory {
+  background: var(--s11-tag-contradictory-bg);
+  color: var(--s11-tag-contradictory-text);
+  border-radius: 20px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tagInsufficient {
+  background: var(--s11-tag-insufficient-bg);
+  color: var(--s11-tag-insufficient-text);
+  border-radius: 20px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tagRemove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+  opacity: 0.7;
+}
+
+.tagRemove:hover {
+  opacity: 1;
+}
+
+.tagInput {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.addBtn {
+  background: var(--s11-accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.addBtn:hover {
+  opacity: 0.9;
+}
+
+.epNote {
+  background: var(--s11-doctrine-bg);
+  border-left: 3px solid var(--s11-accent);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.8rem;
+  color: var(--s11-muted);
+  border-radius: 0 6px 6px 0;
+  line-height: 1.5;
+}
+
+.decisionOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.decisionOption {
+  border: 1.5px solid var(--s11-border);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  background: var(--s11-surface);
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.decisionOption:hover {
+  border-color: var(--s11-accent);
+}
+
+.decisionOptionSelected {
+  border-color: var(--s11-accent);
+  background: var(--s11-accent-light);
+}
+
+.decisionOptionTitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--s11-text);
+}
+
+.decisionOptionDesc {
+  font-size: 0.78rem;
+  color: var(--s11-muted);
+}
+
+.ackField {
+  border: 1.5px solid var(--s11-border);
+  border-radius: 8px;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: background 0.2s;
+}
+
+.ackFieldTreated {
+  background: var(--s11-ack-treated);
+  border-color: var(--s11-step-done);
+}
+
+.ackFieldHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ackFieldLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--s11-text);
+}
+
+.ackCheck {
+  color: var(--s11-step-done);
+  font-weight: 700;
+}
+
+.fieldHint {
+  font-size: 0.78rem;
+  color: var(--s11-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ackBtn {
+  align-self: flex-start;
+  background: none;
+  border: 1.5px dashed var(--s11-border);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  color: var(--s11-muted);
+  cursor: pointer;
+}
+
+.ackBtn:hover {
+  border-color: var(--s11-accent);
+  color: var(--s11-accent);
+}
+
+.ackAcknowledged {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.82rem;
+  color: var(--s11-muted);
+  font-style: italic;
+}
+
+.ackUndoBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--s11-accent);
+  font-size: 0.78rem;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.submitArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+}
+
+.submitBtn {
+  background: var(--s11-accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+
+.submitBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submitNote {
+  font-size: 0.78rem;
+  color: var(--s11-muted);
+  margin: 0;
+}
+
+.submitError {
+  color: var(--s11-error-text);
+  background: var(--s11-error-bg);
+  border-radius: 6px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.successBox {
+  background: var(--s11-success-bg);
+  color: var(--s11-success-text);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.successIcon {
+  font-size: 1.2rem;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navBtn {
+  background: var(--s11-surface);
+  border: 1.5px solid var(--s11-border);
+  border-radius: 8px;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--s11-text);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.navBtn:hover:not(:disabled) {
+  border-color: var(--s11-accent);
+  color: var(--s11-accent);
+}
+
+.navBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.savingLabel {
+  font-size: 0.78rem;
+  color: var(--s11-muted);
+}
+
+.loading {
+  color: var(--s11-muted);
+  font-size: 0.9rem;
+  padding: 1rem;
+}
+
+.errorBox {
+  background: var(--s11-error-bg);
+  color: var(--s11-error-text);
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 480px) {
+  .panel {
+    padding: 1rem;
+  }
+
+  .stepLabel {
+    display: none;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+
+  .tagInput {
+    flex-direction: column;
+  }
+
+  .decisionOptions {
+    gap: 0.35rem;
+  }
+}
