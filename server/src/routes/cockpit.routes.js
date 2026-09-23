@@ -289,6 +289,26 @@ router.get('/', async (req, res) => {
     }
   }
 
+  /* 18. S9 learning review — only relevant when on sprint 9 */
+  let s9LearningReview = null;
+  if (progress?.sprint_number === 9) {
+    const s9Row = await db.queryOne(
+      `SELECT content, updated_at FROM participant_data WHERE owner_id = ? AND data_type = 's9_learning_review' LIMIT 1`,
+      [uid]
+    );
+    if (s9Row) {
+      const parsed = JSON.parse(s9Row.content);
+      s9LearningReview = {
+        status: parsed.status ?? 'draft',
+        observationCount: (parsed.observations ?? []).length,
+        priorityHypothesis: parsed.hypothesis_to_test?.formulation ?? null,
+        nextTestQuestion: parsed.next_test?.question ?? null,
+        nextTestTarget: parsed.next_test?.target_person ?? null,
+        updatedAt: s9Row.updated_at,
+      };
+    }
+  }
+
   return res.json({
     progress: progress ?? null,
     pilotage: pilotage ?? null,
@@ -309,6 +329,7 @@ router.get('/', async (req, res) => {
     s6TestOffer,
     s7Presentation,
     s8FieldTest,
+    s9LearningReview,
   });
 });
 

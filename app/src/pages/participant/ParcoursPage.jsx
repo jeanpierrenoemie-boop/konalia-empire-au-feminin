@@ -10,6 +10,7 @@ import { SprintFivePanel } from '../../components/sprint5/SprintFivePanel';
 import { SprintSixPanel } from '../../components/sprint6/SprintSixPanel';
 import { SprintSevenPanel } from '../../components/sprint7/SprintSevenPanel';
 import { SprintEightPanel } from '../../components/sprint8/SprintEightPanel';
+import { SprintNinePanel } from '../../components/sprint9/SprintNinePanel';
 import styles from './ParcoursPage.module.css';
 import pageStyles from './Page.module.css';
 
@@ -288,7 +289,10 @@ function SprintCard({ sprint, isCurrent, onPass }) {
           {isCurrent && sprint.number === 8 && (
             <SprintEightPanel sprint={sprint} onMissionUpdate={onPass} />
           )}
-          {isCurrent && sprint.number !== 1 && sprint.number !== 2 && sprint.number !== 3 && sprint.number !== 4 && sprint.number !== 5 && sprint.number !== 6 && sprint.number !== 7 && sprint.number !== 8 && (
+          {isCurrent && sprint.number === 9 && (
+            <SprintNinePanel sprint={sprint} onMissionUpdate={onPass} />
+          )}
+          {isCurrent && sprint.number !== 1 && sprint.number !== 2 && sprint.number !== 3 && sprint.number !== 4 && sprint.number !== 5 && sprint.number !== 6 && sprint.number !== 7 && sprint.number !== 8 && sprint.number !== 9 && (
             <MissionPanel sprintNumber={sprint.number} onMissionUpdate={onPass} />
           )}
           {isCurrent && sprint.gate && (

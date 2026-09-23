@@ -1,0 +1,452 @@
+/* SprintNinePanel — S9 : APPRENDRE DU TERRAIN ET DÉCIDER DU PROCHAIN TEST */
+
+:root {
+  --s9-primary: #7c3aed;
+  --s9-primary-light: #f5f3ff;
+  --s9-border: #e2e8f0;
+  --s9-text: #1e293b;
+  --s9-text-muted: #64748b;
+  --s9-success: #16a34a;
+  --s9-success-bg: #f0fdf4;
+  --s9-warning: #d97706;
+  --s9-warning-bg: #fffbeb;
+  --s9-error: #dc2626;
+  --s9-error-bg: #fef2f2;
+  --s9-step-active-bg: #7c3aed;
+  --s9-step-active-text: #fff;
+  --s9-bg: #fff;
+  --s9-section-bg: #f8fafc;
+  --s9-ack-bg: #f1f5f9;
+  --s9-ack-treated-bg: #f0fdf4;
+  --s9-ack-treated-border: #bbf7d0;
+  --s9-obs-observation: #dbeafe;
+  --s9-obs-hypothesis: #fef9c3;
+  --s9-obs-signal: #dcfce7;
+  --s9-obs-unknown: #f1f5f9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --s9-primary: #a78bfa;
+    --s9-primary-light: #2e1065;
+    --s9-border: #334155;
+    --s9-text: #f1f5f9;
+    --s9-text-muted: #94a3b8;
+    --s9-success: #4ade80;
+    --s9-success-bg: #14532d;
+    --s9-warning: #fbbf24;
+    --s9-warning-bg: #422006;
+    --s9-error: #f87171;
+    --s9-error-bg: #450a0a;
+    --s9-bg: #0f172a;
+    --s9-section-bg: #1e293b;
+    --s9-ack-bg: #1e293b;
+    --s9-ack-treated-bg: #14532d;
+    --s9-ack-treated-border: #166534;
+    --s9-obs-observation: #1e3a5f;
+    --s9-obs-hypothesis: #422006;
+    --s9-obs-signal: #14532d;
+    --s9-obs-unknown: #1e293b;
+  }
+}
+
+:root[data-theme="dark"] {
+  --s9-primary: #a78bfa;
+  --s9-primary-light: #2e1065;
+  --s9-border: #334155;
+  --s9-text: #f1f5f9;
+  --s9-text-muted: #94a3b8;
+  --s9-success: #4ade80;
+  --s9-success-bg: #14532d;
+  --s9-warning: #fbbf24;
+  --s9-warning-bg: #422006;
+  --s9-error: #f87171;
+  --s9-error-bg: #450a0a;
+  --s9-bg: #0f172a;
+  --s9-section-bg: #1e293b;
+  --s9-ack-bg: #1e293b;
+  --s9-ack-treated-bg: #14532d;
+  --s9-ack-treated-border: #166534;
+  --s9-obs-observation: #1e3a5f;
+  --s9-obs-hypothesis: #422006;
+  --s9-obs-signal: #14532d;
+  --s9-obs-unknown: #1e293b;
+}
+
+/* ── Panel wrapper ─────────────────────────────────────────────── */
+.panel {
+  background: var(--s9-bg);
+  color: var(--s9-text);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ── Step navigation ───────────────────────────────────────────── */
+.stepNav {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--s9-border);
+  padding: 0 16px;
+  gap: 4px;
+  scrollbar-width: thin;
+}
+
+.stepBtn {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .03em;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--s9-text-muted);
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+
+.stepBtn:hover {
+  color: var(--s9-text);
+}
+
+.stepBtnActive {
+  color: var(--s9-primary);
+  border-bottom-color: var(--s9-primary);
+}
+
+/* ── Step body ─────────────────────────────────────────────────── */
+.stepBody {
+  padding: 24px 16px;
+}
+
+.stepTitle {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--s9-primary);
+  margin: 0 0 4px;
+}
+
+.stepSubtitle {
+  font-size: 14px;
+  color: var(--s9-text-muted);
+  margin: 0 0 20px;
+}
+
+/* ── Fields ────────────────────────────────────────────────────── */
+.fieldLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--s9-text);
+  margin-bottom: 6px;
+}
+
+.fieldHint {
+  font-size: 12px;
+  color: var(--s9-text-muted);
+  margin: 0 0 6px;
+}
+
+.textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--s9-text);
+  background: var(--s9-section-bg);
+  border: 1px solid var(--s9-border);
+  border-radius: 6px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--s9-primary);
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--s9-text);
+  background: var(--s9-section-bg);
+  border: 1px solid var(--s9-border);
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--s9-primary);
+}
+
+.fieldGroup {
+  margin-bottom: 16px;
+}
+
+/* ── Acknowledge field ─────────────────────────────────────────── */
+.ackField {
+  background: var(--s9-ack-bg);
+  border: 1px solid var(--s9-border);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.ackFieldTreated {
+  background: var(--s9-ack-treated-bg);
+  border-color: var(--s9-ack-treated-border);
+}
+
+.ackFieldHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ackFieldLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--s9-text);
+}
+
+.ackCheck {
+  color: var(--s9-success);
+  font-size: 14px;
+}
+
+.ackBtn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--s9-text-muted);
+  background: none;
+  border: 1px solid var(--s9-border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ackAcknowledged {
+  font-size: 13px;
+  color: var(--s9-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ackUndoBtn {
+  font-size: 12px;
+  color: var(--s9-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ── Observations list ─────────────────────────────────────────── */
+.obsCard {
+  border: 1px solid var(--s9-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: var(--s9-section-bg);
+}
+
+.obsTypeRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.obsTypeBtn {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 1px solid var(--s9-border);
+  background: var(--s9-section-bg);
+  color: var(--s9-text-muted);
+  cursor: pointer;
+}
+
+.obsTypeBtnActive {
+  border-color: var(--s9-primary);
+  color: var(--s9-primary);
+  background: var(--s9-primary-light);
+}
+
+.obsRemoveBtn {
+  font-size: 12px;
+  color: var(--s9-error);
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.addBtn {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--s9-primary);
+  background: var(--s9-primary-light);
+  border: 1px solid var(--s9-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+/* ── Keep list ─────────────────────────────────────────────────── */
+.keepCard {
+  border: 1px solid var(--s9-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: var(--s9-section-bg);
+}
+
+/* ── S8 ref panel (read-only) ──────────────────────────────────── */
+.refPanel {
+  background: var(--s9-section-bg);
+  border: 1px solid var(--s9-border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.refPanelTitle {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--s9-text-muted);
+  margin: 0 0 12px;
+}
+
+.refItem {
+  margin-bottom: 10px;
+}
+
+.refItemLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--s9-text-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.refItemValue {
+  font-size: 14px;
+  color: var(--s9-text);
+  margin-top: 2px;
+}
+
+/* ── Navigation buttons ────────────────────────────────────────── */
+.navRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--s9-border);
+}
+
+.btnBack {
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--s9-text-muted);
+  background: none;
+  border: 1px solid var(--s9-border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btnNext {
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--s9-primary);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btnNext:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* ── Submit CTA ────────────────────────────────────────────────── */
+.submitBtn {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--s9-primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: .03em;
+  margin-top: 12px;
+}
+
+.submitBtn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* ── Error / success messages ──────────────────────────────────── */
+.errorMsg {
+  background: var(--s9-error-bg);
+  color: var(--s9-error);
+  border: 1px solid var(--s9-error);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.successBanner {
+  background: var(--s9-success-bg);
+  color: var(--s9-success);
+  border: 1px solid var(--s9-success);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 16px;
+}
+
+.successSub {
+  font-size: 13px;
+  font-weight: 400;
+  margin-top: 8px;
+  color: var(--s9-text-muted);
+}
+
+/* ── Loading ───────────────────────────────────────────────────── */
+.loading {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--s9-text-muted);
+  font-size: 14px;
+}
+
+/* ── Saving indicator ──────────────────────────────────────────── */
+.savingIndicator {
+  font-size: 11px;
+  color: var(--s9-text-muted);
+  text-align: right;
+  margin-top: 4px;
+}

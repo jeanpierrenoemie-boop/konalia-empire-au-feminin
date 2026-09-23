@@ -31,6 +31,7 @@ import s5Router from './src/routes/s5.routes.js';
 import s6Router from './src/routes/s6.routes.js';
 import s7Router from './src/routes/s7.routes.js';
 import s8Router from './src/routes/s8.routes.js';
+import s9Router from './src/routes/s9.routes.js';
 
 export function createApp() {
   const app = express();
@@ -72,6 +73,7 @@ export function createApp() {
   app.use('/api/s6', s6Router);
   app.use('/api/s7', s7Router);
   app.use('/api/s8', s8Router);
+  app.use('/api/s9', s9Router);
 
   app.get('/health', (_req, res) => res.json({ ok: true }));
 

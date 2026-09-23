@@ -90,6 +90,15 @@ function _s8DataSubmittedSync(db, userId) {
   `).get(userId);
 }
 
+function _s9DataSubmittedSync(db, userId) {
+  return !!db.prepare(`
+    SELECT 1 FROM participant_data
+    WHERE owner_id = ? AND data_type = 's9_learning_review'
+      AND json_extract(content, '$.status') = 'submitted'
+    LIMIT 1
+  `).get(userId);
+}
+
 /* ── Async helpers (adapter) ────────────────────────────────────────────────── */
 
 async function _missionSubmitted(db, userId, sprintNumber) {
@@ -180,6 +189,15 @@ async function _s8DataSubmitted(db, userId) {
   try { return JSON.parse(row.content)?.status === 'submitted'; } catch { return false; }
 }
 
+async function _s9DataSubmitted(db, userId) {
+  const row = await db.queryOne(
+    `SELECT content FROM participant_data WHERE owner_id = ? AND data_type = 's9_learning_review' LIMIT 1`,
+    [userId]
+  );
+  if (!row) return false;
+  try { return JSON.parse(row.content)?.status === 'submitted'; } catch { return false; }
+}
+
 /* ── Shared ─────────────────────────────────────────────────────────────────── */
 
 function evaluate(conditions, override) {
@@ -234,7 +252,10 @@ function gateS9Sync(db, userId) {
   ], _getOverrideSync(db, userId, 9));
 }
 function gateS10Sync(db, userId) {
-  return evaluate([{ label: 'Au moins une conversation documentee', met: _conversationsCountSync(db, userId) > 0 }], _getOverrideSync(db, userId, 10));
+  return evaluate([
+    { label: 'Sprint 9 complete', met: _missionSubmittedSync(db, userId, 9) },
+    { label: 'Analyse terrain S9 soumise', met: _s9DataSubmittedSync(db, userId) },
+  ], _getOverrideSync(db, userId, 10));
 }
 function gateS11Sync(db, userId) {
   return evaluate([
@@ -311,8 +332,15 @@ async function gateS9(db, userId) {
   ], override);
 }
 async function gateS10(db, userId) {
-  const [hasConversation, override] = await Promise.all([_conversationsCount(db, userId), _getOverride(db, userId, 10)]);
-  return evaluate([{ label: 'Au moins une conversation documentee', met: hasConversation > 0 }], override);
+  const [hasMission9, hasS9Data, override] = await Promise.all([
+    _missionSubmitted(db, userId, 9),
+    _s9DataSubmitted(db, userId),
+    _getOverride(db, userId, 10),
+  ]);
+  return evaluate([
+    { label: 'Sprint 9 complete', met: hasMission9 },
+    { label: 'Analyse terrain S9 soumise', met: hasS9Data },
+  ], override);
 }
 async function gateS11(db, userId) {
   const [hasConversation, hasSignal, override] = await Promise.all([_conversationsCount(db, userId), _signalsCount(db, userId), _getOverride(db, userId, 11)]);
