@@ -198,9 +198,10 @@ router.post('/gate-override', async (req, res) => {
     return res.status(400).json({ error: 'exception_type doit être VERT ou ORANGE' });
   }
 
+  const sprintKey = String(sprint_number);
   const existing = await db.queryOne(
     `SELECT id FROM gate_overrides WHERE user_id = ? AND sprint_number = ?`,
-    [user_id, sprint_number]
+    [user_id, sprintKey]
   );
   if (existing) {
     return res.status(409).json({ error: 'Un override existe déjà pour ce sprint' });
@@ -210,7 +211,7 @@ router.post('/gate-override', async (req, res) => {
   await db.execute(`
     INSERT INTO gate_overrides (id, user_id, sprint_number, exception_type, reason, override_by)
     VALUES (?,?,?,?,?,?)
-  `, [id, user_id, sprint_number, exception_type, reason.trim(), req.user.id]);
+  `, [id, user_id, sprintKey, exception_type, reason.trim(), req.user.id]);
 
   await db.writeAudit({
     actorId: req.user.id,

@@ -1,0 +1,163 @@
+:root {
+  --final-accent: #6b4fa0;
+  --final-accent-light: #f3eeff;
+  --final-accent-border: #c4aaec;
+  --final-text: #1a1025;
+  --final-muted: #5c4f72;
+  --final-bg: #faf8ff;
+  --final-badge-bg: #6b4fa0;
+  --final-badge-text: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --final-accent: #a07dda;
+    --final-accent-light: #1e1530;
+    --final-accent-border: #5a3f8a;
+    --final-text: #ede8f8;
+    --final-muted: #b09ece;
+    --final-bg: #160f24;
+    --final-badge-bg: #7c5cb5;
+    --final-badge-text: #ffffff;
+  }
+}
+
+:root[data-theme="dark"] {
+  --final-accent: #a07dda;
+  --final-accent-light: #1e1530;
+  --final-accent-border: #5a3f8a;
+  --final-text: #ede8f8;
+  --final-muted: #b09ece;
+  --final-bg: #160f24;
+  --final-badge-bg: #7c5cb5;
+  --final-badge-text: #ffffff;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+  color: var(--final-text);
+}
+
+.hero {
+  background: var(--final-accent-light);
+  border: 1px solid var(--final-accent-border);
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.heroIcon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.heroTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--final-accent);
+  text-wrap: balance;
+}
+
+.heroSub {
+  font-size: 0.925rem;
+  color: var(--final-muted);
+  margin: 0;
+  max-width: 480px;
+  line-height: 1.55;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--final-accent);
+  margin: 0;
+}
+
+.goalText {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.priorityRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.priorityLabel {
+  font-size: 0.8rem;
+  color: var(--final-muted);
+}
+
+.priorityValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.phaseObjective {
+  font-size: 0.9rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.phaseActions {
+  font-size: 0.875rem;
+  color: var(--final-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.nextStepsList {
+  padding-left: 1.25rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.nextStepsList li {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.badge {
+  background: var(--final-badge-bg);
+  color: var(--final-badge-text);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  text-align: center;
+}
+
+.badgeText {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.badgeSub {
+  font-size: 0.78rem;
+  opacity: 0.85;
+}

@@ -636,7 +636,7 @@ describe('Gate S7 — sync + async', () => {
 
   it('35H. Gate S7 override ORANGE', async () => {
     const { uid, db } = await makeGateUser();
-    db.prepare(`INSERT INTO gate_overrides (id, user_id, sprint_number, exception_type, reason, override_by) VALUES (?, ?, 7, 'ORANGE', 'Raison test', ?)`)
+    db.prepare(`INSERT INTO gate_overrides (id, user_id, sprint_number, exception_type, reason, override_by) VALUES (?, ?, '7', 'ORANGE', 'Raison test', ?)`)
       .run(randomUUID(), uid, adminId);
     const gate = evaluateGate(db, uid, 7);
     expect(gate.status).toBe('ORANGE');

@@ -51,7 +51,7 @@ function _proofsCountSync(db, userId, cadreStep) {
 
 function _getOverrideSync(db, userId, sprintNumber) {
   return db.prepare(`SELECT exception_type, reason FROM gate_overrides WHERE user_id = ? AND sprint_number = ?`)
-    .get(userId, sprintNumber) ?? null;
+    .get(userId, String(sprintNumber)) ?? null;
 }
 
 function _s5DataSubmittedSync(db, userId) {
@@ -185,7 +185,7 @@ async function _proofsCount(db, userId, cadreStep) {
 async function _getOverride(db, userId, sprintNumber) {
   return (await db.queryOne(`
     SELECT exception_type, reason FROM gate_overrides WHERE user_id = ? AND sprint_number = ?
-  `, [userId, sprintNumber])) ?? null;
+  `, [userId, String(sprintNumber)])) ?? null;
 }
 
 async function _s5DataSubmitted(db, userId) {

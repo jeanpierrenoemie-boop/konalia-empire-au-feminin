@@ -175,6 +175,12 @@ router.post('/gate/:n/pass', requireAuth, async (req, res) => {
           updated_at = datetime('now')
         WHERE user_id = ?
       `, [userId]);
+
+      await tx.execute(`
+        INSERT INTO graduation_records (id, user_id, cohort_id, passed_by, method, gate_snapshot)
+        VALUES (?, ?, ?, ?, 'self', ?)
+        ON CONFLICT (user_id) DO NOTHING
+      `, [randomUUID(), userId, cohort?.cohort_id ?? null, userId, JSON.stringify(gate)]);
     }
 
     await tx.writeAudit({
@@ -186,7 +192,77 @@ router.post('/gate/:n/pass', requireAuth, async (req, res) => {
     });
   });
 
-  res.json({ ok: true, passedSprint: sprintNumber, nextSprint: sprintNumber < 12 ? sprintNumber + 1 : null });
+  res.json({ ok: true, passedSprint: sprintNumber, nextSprint: sprintNumber < 12 ? sprintNumber + 1 : null, graduated: sprintNumber === 12 });
+});
+
+/* ── POST /api/parcours/gate/final/override ──────────────────── */
+/* Admin-only override for the Final (graduation) gate */
+router.post('/gate/final/override', requireAuth, requireAdmin, async (req, res) => {
+  const db = getAdapter();
+  const adminId = req.user.id;
+
+  const { target_user_id, reason, exception_type = 'VERT' } = req.body;
+  if (!target_user_id) return res.status(400).json({ error: 'target_user_id requis' });
+  if (!reason || reason.trim().length < 10) {
+    return res.status(400).json({ error: 'Une raison détaillée est obligatoire (min 10 caractères)' });
+  }
+  if (!['VERT', 'ORANGE'].includes(exception_type)) {
+    return res.status(400).json({ error: 'exception_type doit être VERT ou ORANGE' });
+  }
+
+  const targetUser = await db.queryOne(`SELECT id FROM users WHERE id = ?`, [target_user_id]);
+  if (!targetUser) return res.status(404).json({ error: 'Utilisatrice introuvable' });
+
+  const progress = await db.queryOne(`SELECT * FROM user_progress WHERE user_id = ? LIMIT 1`, [target_user_id]);
+  if (!progress) return res.status(400).json({ error: 'Aucune progression trouvée pour cette utilisatrice' });
+
+  if (progress.gate_status === 'passed') {
+    return res.status(409).json({ error: 'Cette utilisatrice a déjà été diplômée' });
+  }
+
+  const cohort = await db.queryOne(`
+    SELECT cohort_id FROM enrollments WHERE user_id = ? ORDER BY enrolled_at DESC LIMIT 1
+  `, [target_user_id]);
+
+  await db.transaction(async tx => {
+    await tx.execute(`
+      INSERT INTO gate_overrides (id, user_id, sprint_number, override_by, reason, exception_type)
+      VALUES (?, ?, 'final', ?, ?, ?)
+      ON CONFLICT (user_id, sprint_number) DO UPDATE SET
+        id = excluded.id, override_by = excluded.override_by,
+        reason = excluded.reason, exception_type = excluded.exception_type
+    `, [randomUUID(), target_user_id, adminId, reason.trim(), exception_type]);
+
+    await tx.execute(`
+      INSERT INTO sprint_gate_log (id, user_id, cohort_id, sprint_number, cadre_step, passed_by, method)
+      VALUES (?, ?, ?, 12, ?, ?, 'admin_override')
+      ON CONFLICT DO NOTHING
+    `, [randomUUID(), target_user_id, cohort?.cohort_id ?? null, progress.cadre_step, adminId]);
+
+    await tx.execute(`
+      UPDATE user_progress SET gate_status = 'passed', gate_passed_at = datetime('now'),
+        updated_at = datetime('now')
+      WHERE user_id = ?
+    `, [target_user_id]);
+
+    await tx.execute(`
+      INSERT INTO graduation_records (id, user_id, cohort_id, passed_by, method, gate_snapshot)
+      VALUES (?, ?, ?, ?, 'admin_override', ?)
+      ON CONFLICT (user_id) DO NOTHING
+    `, [randomUUID(), target_user_id, cohort?.cohort_id ?? null, adminId,
+        JSON.stringify({ exception_type, reason: reason.trim(), override_by: adminId })]);
+
+    await tx.writeAudit({
+      actorId: adminId,
+      targetUserId: target_user_id,
+      eventType: 'gate_manual_pass',
+      tableName: 'gate_overrides',
+      afterState: { sprint_number: 'final', exception_type, reason: reason.trim() },
+      reason: reason.trim(),
+    });
+  });
+
+  res.json({ ok: true, overriddenSprint: 'final', exception_type, graduated: true });
 });
 
 /* ── POST /api/parcours/gate/:n/override ────────────────────── */
@@ -232,7 +308,7 @@ router.post('/gate/:n/override', requireAuth, requireAdmin, async (req, res) => 
       ON CONFLICT (user_id, sprint_number) DO UPDATE SET
         id = excluded.id, override_by = excluded.override_by,
         reason = excluded.reason, exception_type = excluded.exception_type
-    `, [randomUUID(), target_user_id, sprintNumber, adminId, reason.trim(), exception_type]);
+    `, [randomUUID(), target_user_id, String(sprintNumber), adminId, reason.trim(), exception_type]);
 
     /* Pass the gate */
     await tx.execute(`
