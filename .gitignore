@@ -6,3 +6,4 @@ dist/
 *.db-wal
 data/
 .env.local
+naiom-platform/.next/
