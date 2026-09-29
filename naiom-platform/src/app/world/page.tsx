@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { listAgents } from "@/lib/agents";
+import { listAgentSync } from "@/lib/agents";
 import { Icon } from "@/components/Icon";
 
 interface Agent {
@@ -57,7 +57,7 @@ const MOODS = {
 };
 
 export default function WorldPage() {
-  const agents = listAgents();
+  const agents = listAgentSync();
   const [agentStates, setAgentStates] = useState<Agent[]>([]);
   const [events, setEvents] = useState<WorldEvent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listAgents } from "@/lib/agents";
+import { listAgents } from "@/lib/agents-server";
 import { countDeliverables } from "@/lib/deliverables";
 import { Icon } from "./Icon";
 import { cn } from "@/lib/utils";

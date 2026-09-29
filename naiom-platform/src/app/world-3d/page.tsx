@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import Link from "next/link";
 import { WorldScene } from "@/components/3d/WorldScene";
-import { listAgents } from "@/lib/agents";
+import { listAgentSync } from "@/lib/agents";
 
 interface AgentState {
   slug: string;
@@ -51,12 +51,12 @@ const MOODS = {
 };
 
 export default function World3DPage() {
-  const agents = listAgents();
+  const agents = listAgentSync();
   const [agentStates, setAgentStates] = useState<AgentState[]>([]);
   const [selectedAgentSlug, setSelectedAgentSlug] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
   const [speed, setSpeed] = useState(1);
-  const simulationRef = useRef<NodeJS.Timeout>();
+  const simulationRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
     // Initialize agents with 3D positions

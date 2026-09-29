@@ -17,7 +17,7 @@ import {
   getYouTubeSnapshot,
   getDriveSnapshot,
 } from "@/lib/dataSources";
-import { listAgents } from "@/lib/agents";
+import { listAgents } from "@/lib/agents-server";
 import { listAllDeliverables } from "@/lib/deliverables";
 import { getGoogleStatus } from "@/lib/integrations/google";
 import type { YTSnapshot } from "@/lib/integrations/youtube";

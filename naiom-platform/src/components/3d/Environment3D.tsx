@@ -60,12 +60,10 @@ export function Environment3D() {
               <bufferGeometry>
                 <bufferAttribute
                   attach="attributes-position"
-                  count={8}
-                  array={new Float32Array([
+                  args={[new Float32Array([
                     -4, 0.1, -4, 4, 0.1, -4, 4, 0.1, -4, 4, 0.1, 4, 4, 0.1,
                     4, -4, 0.1, 4, -4, 0.1, 4, -4, 0.1, -4,
-                  ])}
-                  itemSize={3}
+                  ]), 3]}
                 />
               </bufferGeometry>
               <lineBasicMaterial color={color} linewidth={2} />
@@ -105,9 +103,7 @@ export function Environment3D() {
       />
 
       <hemisphereLight
-        skyColor="#9333EA"
-        groundColor="#1F2937"
-        intensity={0.4}
+        args={["#9333EA", "#1F2937", 0.4]}
       />
 
       {/* Environment Info Text */}

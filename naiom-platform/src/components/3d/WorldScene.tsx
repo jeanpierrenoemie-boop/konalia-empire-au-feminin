@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import * as THREE from "three";
 import { Agent3D } from "./Agent3D";
 import { Environment3D } from "./Environment3D";
+import { ParticleSystem } from "./ParticleSystem";
+import { CollaborationLines } from "./CollaborationLines";
+import { VoiceIndicator } from "./VoiceIndicator";
 
 interface AgentState {
   slug: string;
@@ -74,18 +78,42 @@ export function WorldScene({
       {/* Scene Content */}
       <Environment3D />
 
+      {/* Phase 3: Particle Effects */}
+      <ParticleSystem
+        agentPositions={new Map(agents.map((a) => [a.slug, a.position]))}
+      />
+
+      {/* Phase 3: Collaboration Lines */}
+      <CollaborationLines
+        agents={agents.map((a) => ({
+          slug: a.slug,
+          position: a.position,
+          mood: a.mood,
+        }))}
+      />
+
       {/* Agents */}
       {agents.map((agent) => (
-        <Agent3D
-          key={agent.slug}
-          position={agent.position}
-          name={agent.name}
-          emoji={agent.emoji}
-          mood={agent.mood}
-          energy={agent.energy}
-          onClick={() => onSelectAgent(agent.slug)}
-          isSelected={agent.slug === selectedAgentSlug}
-        />
+        <group key={agent.slug}>
+          <Agent3D
+            position={agent.position}
+            name={agent.name}
+            emoji={agent.emoji}
+            mood={agent.mood}
+            energy={agent.energy}
+            onClick={() => onSelectAgent(agent.slug)}
+            isSelected={agent.slug === selectedAgentSlug}
+          />
+
+          {/* Phase 3: Voice Indicator */}
+          {agent.mood === "collaborating" && (
+            <VoiceIndicator
+              position={agent.position}
+              isActive={true}
+              agentName={agent.name}
+            />
+          )}
+        </group>
       ))}
 
       {/* Fog */}
@@ -93,6 +121,3 @@ export function WorldScene({
     </>
   );
 }
-
-import { useRef } from "react";
-import * as THREE from "three";

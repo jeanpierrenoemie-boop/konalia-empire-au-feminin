@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { listAgents } from "@/lib/agents";
+import { listAgents } from "@/lib/agents-server";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { Icon } from "@/components/Icon";
 
-export default function AgentsPage() {
-  const agents = listAgents();
+export default async function AgentsPage() {
+  const agents = await listAgents();
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 to-slate-100 py-12">
@@ -41,7 +41,7 @@ export default function AgentsPage() {
                     {agent.name}
                   </h3>
                   <p className="text-sm text-slate-600 mt-2 line-clamp-2">
-                    {agent.description}
+                    {agent.tagline}
                   </p>
 
                   {/* Meta */}

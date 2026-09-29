@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { listAgents, ownedSlug } from "@/lib/agents";
+import { ownedSlug } from "@/lib/agents";
 import { countDeliverables } from "@/lib/deliverables";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { Icon } from "@/components/Icon";

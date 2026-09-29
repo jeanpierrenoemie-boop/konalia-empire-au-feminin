@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { listAgents, ownedSlug } from "@/lib/agents";
+import { ownedSlug } from "@/lib/agents";
+import { listAgents } from "@/lib/agents-server";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { Icon } from "@/components/Icon";
 import { BrainGate } from "./BrainGate";
