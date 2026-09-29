@@ -1,4 +1,4 @@
-# 🌍 NAIOM World 3D Roadmap
+# 🌍 Konalia World 3D Roadmap
 
 ## Vision
 Créer un métaverse/univers immersif type Sims + Wakanda où les 15 agents IA vivent, travaillent et collaborent en 3D.

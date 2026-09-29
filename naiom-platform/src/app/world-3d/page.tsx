@@ -128,7 +128,7 @@ export default function World3DPage() {
       {/* Top Bar */}
       <div className="border-b border-slate-700 bg-slate-900/50 backdrop-blur px-4 py-3 flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">🌍 NAIOM World 3D</h1>
+          <h1 className="text-2xl font-bold">🌍 Konalia World 3D</h1>
           <p className="text-xs text-slate-400">Phase 2 • Three.js</p>
         </div>
         <div className="flex gap-2">

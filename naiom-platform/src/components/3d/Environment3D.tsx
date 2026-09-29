@@ -118,7 +118,7 @@ export function Environment3D() {
         anchorX="center"
         fontWeight="bold"
       >
-        🌍 NAIOM World 3D
+        🌍 Konalia World 3D
       </Text>
 
       <Text

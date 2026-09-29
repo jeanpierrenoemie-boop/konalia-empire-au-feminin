@@ -136,7 +136,7 @@ export default function WorldPage() {
       <div className="border-b border-slate-700 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">🌍 Monde NAIOM</h1>
+            <h1 className="text-3xl font-bold">🌍 Konalia World</h1>
             <p className="text-sm text-slate-400">
               Univers vivant de {agents.length} agents IA • {time.toLocaleTimeString("fr-FR")}
             </p>
@@ -366,7 +366,7 @@ export default function WorldPage() {
       {/* Footer Info */}
       <div className="border-t border-slate-700 bg-slate-900/50 mt-8 py-4">
         <div className="container mx-auto px-4 text-center text-sm text-slate-400">
-          <p>Le monde NAIOM 🌍 - Un univers où vos agents IA vivent et collaborent en temps réel</p>
+          <p>Konalia World 🌍 - Un univers où vos agents IA vivent et collaborent en temps réel</p>
           <p className="mt-1">Version 2D • 3D coming soon 🚀</p>
         </div>
       </div>
