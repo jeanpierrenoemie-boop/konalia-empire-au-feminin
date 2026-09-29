@@ -16,3 +16,15 @@ import {
   ShapeCubeBlue,
 } from "@/components/landing/Shapes";
 import type { AgentMeta } from "@/lib/types";
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen bg-white">
+      <LandingNav />
+      <main className="container mx-auto py-8">
+        <h1 className="text-4xl font-bold">NAIOM</h1>
+        <p className="mt-4">Your AI Employee Platform</p>
+      </main>
+    </div>
+  );
+}

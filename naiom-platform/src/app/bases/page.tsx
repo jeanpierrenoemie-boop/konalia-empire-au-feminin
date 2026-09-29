@@ -62,3 +62,28 @@ export default function BasesPage() {
             <div className="lv-analog">📚 c&apos;est comme un cerveau qui a lu toute la bibliothèque… mais sans bras</div>
           </div>
           <div className="lv-fig">
+            <svg viewBox="0 0 1200 520" className="w-full h-auto">
+              <rect width="1200" height="520" fill="none" />
+              <text x="600" y="260" textAnchor="middle" fontSize="24" fill="#5B4DEE">
+                LLM Explainer
+              </text>
+            </svg>
+          </div>
+          <div className="lv-why">
+            🎓 Un LLM (comme ChatGPT, Claude…) c&apos;est le <b>cerveau</b> : brillant pour comprendre
+            et rédiger, mais sans bras ni jambes. Pour qu&apos;il <b>fasse</b> des choses, il faut
+            lui donner des outils — c&apos;est là qu&apos;arrivent les agents.
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function Kbd({ children }: { children: React.ReactNode }) {
+  return (
+    <kbd className="rounded-md border border-[#0F0F0F] bg-white px-1.5 py-0.5 font-mono text-[0.9em]">
+      {children}
+    </kbd>
+  );
+}
