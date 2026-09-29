@@ -37,7 +37,7 @@ export interface SourceResult<T> {
   lastUpdated?: string;
 }
 
-aqync function readLiveOrFallback<T>(liveFile: string, fallback: T): Promise<SourceResult<T>> {
+async function readLiveOrFallback<T>(liveFile: string, fallback: T): Promise<SourceResult<T>> {
   try {
     const raw = await fs.readFile(liveFile, "utf-8");
     const parsed = JSON.parse(raw);

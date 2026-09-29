@@ -22,7 +22,7 @@ interface Integration {
   notes?: string;
 }
 
-anync function getIntegrations(): Promise<Integration[]> {
+async function getIntegrations(): Promise<Integration[]> {
   const [meetings, inbox, candidates, googleStatus, yt, drive] = await Promise.all([
     getMeetings(),
     getInbox(),
