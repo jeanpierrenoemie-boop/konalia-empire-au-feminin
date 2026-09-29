@@ -112,3 +112,7 @@ export function ThumbnailStudio() {
             </p>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}

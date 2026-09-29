@@ -15,6 +15,7 @@ interface Result {
 interface ContentPost {
   id: string; platform: Platform; format: Format; idea: string; template?: string;
   result: Result; status: "draft" | "scheduled" | "posted"; schedule?: { at: string } | null; createdAt: string;
+  visuals?: { images?: (string | null)[] };
 }
 
 /* ============ carousel templates (DA) ============ */
