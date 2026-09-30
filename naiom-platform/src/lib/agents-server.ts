@@ -99,7 +99,7 @@ export async function listAgents(): Promise<AgentMeta[]> {
   const activeAgents: AgentMeta[] = await Promise.all(
     ACTIVE_SLUGS.filter((slug) => slug !== "orchestrateur").map(async (slug) => {
       const data = await loadAgentFromMarkdown(slug);
-      const deliverableFolder = DELIVERABLE_FOLDERS[slug]?.rel;
+      const deliverableFolder = (DELIVERABLE_FOLDERS[slug] as any)?.rel || (DELIVERABLE_FOLDERS[slug] as any);
       return {
         slug,
         name: PRETTY_NAMES[slug],

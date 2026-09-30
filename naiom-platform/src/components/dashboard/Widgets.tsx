@@ -130,39 +130,44 @@ export function YouTubeWidget({
       </WidgetCard>
     );
   }
-  const { channel, analytics, videos } = snapshot;
-  const dailyData = analytics.dailySeries.slice(-30).map((d) => ({ x: d.date, y: d.views }));
+  const data = snapshot as any;
+  const channel = data?.channel || { name: "YouTube", subscribers: 0 };
+  const analytics = data?.analytics || { totals: { views: 0, subscribersGained: 0 }, dailySeries: [] };
+  const videos = data?.videos || [];
+  const dailyData = (analytics.dailySeries || []).slice(-30).map((d: any) => ({ x: d.date, y: d.views }));
 
   return (
     <WidgetCard
       title="YouTube"
       icon="Youtube"
-      subtitle={channel.title}
+      subtitle={channel.name || channel.title || "YouTube"}
       href="/agents/analyste"
       badgeLive={live}
       lastUpdated={lastUpdated}
     >
       <div className="grid grid-cols-3 gap-4 mb-4">
         <Stat label="Abonnés" value={channel.subscribers.toLocaleString("fr-FR")} />
-        <Stat label="Vues / 30j" value={analytics.totals.views.toLocaleString("fr-FR")} />
-        <Stat label="Nouveaux abonnés" value={`+${analytics.totals.subscribersGained}`} accent={ORANGE} />
+        <Stat label="Vues / 30j" value={(analytics.totals?.views || 0).toLocaleString("fr-FR")} />
+        <Stat label="Nouveaux abonnés" value={`+${analytics.totals?.subscribersGained || 0}`} accent={ORANGE} />
       </div>
       {dailyData.length > 1 && <MiniLineChart data={dailyData} />}
-      <div className="mt-4 border-t border-[var(--color-line)] pt-3">
-        <div className="text-[10px] font-semibold uppercase tracking-widest text-[var(--color-muted)] mb-2">
-          Dernières vidéos
+      {videos.length > 0 && (
+        <div className="mt-4 border-t border-[var(--color-line)] pt-3">
+          <div className="text-[10px] font-semibold uppercase tracking-widest text-[var(--color-muted)] mb-2">
+            Dernières vidéos
+          </div>
+          <ul className="space-y-1.5">
+            {videos.slice(0, 3).map((v: any) => (
+              <li key={v.id} className="flex items-baseline justify-between gap-2 text-xs">
+                <span className="truncate flex-1 font-medium text-[#0a1410]">{v.title}</span>
+                <span className="shrink-0 text-[var(--color-muted)] font-mono">
+                  {v.views.toLocaleString("fr-FR")} vues
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="space-y-1.5">
-          {videos.slice(0, 3).map((v) => (
-            <li key={v.id} className="flex items-baseline justify-between gap-2 text-xs">
-              <span className="truncate flex-1 font-medium text-[#0a1410]">{v.title}</span>
-              <span className="shrink-0 text-[var(--color-muted)] font-mono">
-                {v.views.toLocaleString("fr-FR")} vues
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      )}
     </WidgetCard>
   );
 }
@@ -273,7 +278,8 @@ export function DriveWidget({
   live: boolean;
   lastUpdated?: string;
 }) {
-  if (!snapshot || !snapshot.files.length) {
+  const files = (snapshot as any)?.files || [];
+  if (!snapshot || !files.length) {
     return (
       <WidgetCard title="Drive" icon="HardDrive" href="/settings">
         <EmptyState text="Pas encore synchronisé." ctaLabel="Connecter" ctaHref="/settings" />
@@ -285,13 +291,13 @@ export function DriveWidget({
     <WidgetCard
       title="Drive"
       icon="HardDrive"
-      subtitle={`${snapshot.files.length} fichiers récents`}
+      subtitle={`${files.length} fichiers récents`}
       href="/settings"
       badgeLive={live}
       lastUpdated={lastUpdated}
     >
       <ul className="space-y-1.5">
-        {snapshot.files.slice(0, 6).map((f) => (
+        {files.slice(0, 6).map((f: any) => (
           <li key={f.id} className="flex items-center gap-2 text-xs">
             <span className="shrink-0 flex h-6 w-6 items-center justify-center rounded bg-[#0a1410]/10 text-[#0a1410] text-[9px] font-bold uppercase">
               {labelForMime(f.mimeType).slice(0, 3)}
