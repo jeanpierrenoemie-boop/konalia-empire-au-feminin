@@ -1,4 +1,4 @@
-// KONALIA METAVERSE - CONFIGURATION CENTRALE
+// KONALIA METAVERSE - WAKANDA STYLE 👑
 export const QUARTIER_POSITIONS = {
   centre_ville: { x: 0, z: 0, label: "Centre-Ville", size: 20 },
   quartier_business: { x: -40, z: -40, label: "Quartier Business", size: 16 },
@@ -28,15 +28,26 @@ export const AGENT_QUARTIER_MAP: Record<string, string> = {
   cv: "quartier_innovation",
 };
 
-// COLORS POUR QUARTIERS
+// 🌍 WAKANDA COLORS - Vibrant & Futuristic African
 export const QUARTIER_COLORS = {
-  centre_ville: "#D4AF37",
-  quartier_business: "#3B82F6",
-  quartier_creativo: "#F59E0B",
-  quartier_marketing: "#EC4899",
-  quartier_consulting: "#10B981",
-  quartier_gaming: "#8B5CF6",
-  quartier_innovation: "#6B7280",
+  centre_ville: "#FFD700", // Or pur - Noémie Avatar
+  quartier_business: "#00D9FF", // Bleu électrique - Stratégie & Analyse
+  quartier_creativo: "#FF006E", // Rose vif - Design & Création
+  quartier_marketing: "#00FF88", // Vert émeraude - Community & Veille
+  quartier_consulting: "#9D4EDD", // Violet royal - Consulting
+  quartier_gaming: "#3A86FF", // Bleu profond - Gaming
+  quartier_innovation: "#FB5607", // Orange électrique - Innovation
+};
+
+// Couleurs secondaires pour glow
+export const QUARTIER_GLOWS = {
+  centre_ville: "#FFD700",
+  quartier_business: "#00D9FF",
+  quartier_creativo: "#FF006E",
+  quartier_marketing: "#00FF88",
+  quartier_consulting: "#9D4EDD",
+  quartier_gaming: "#3A86FF",
+  quartier_innovation: "#FB5607",
 };
 
 // TYPE SAFE QUARTIER KEYS

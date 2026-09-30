@@ -1,56 +1,64 @@
 import { useRef } from "react";
 import { Text } from "@react-three/drei";
 import * as THREE from "three";
+import { QUARTIER_COLORS, QUARTIER_GLOWS, AGENT_QUARTIER_MAP } from "@/lib/konalia-metaverse";
 
-// KONALIA METAVERSE - 7 QUARTIERS PRINCIPAUX
+// 🌍 KONALIA METAVERSE - WAKANDA STYLE
 const QUARTIERS_METAVERSE = {
   centre_ville: {
-    pos: [0, 0, 0],
+    pos: [0, 0, 0] as [number, number, number],
     label: "Centre-Ville",
-    description: "Résidence Noémie Avatar",
-    color: "#D4AF37",
+    description: "✨ Résidence Noémie Avatar ✨",
+    color: QUARTIER_COLORS.centre_ville,
+    glow: QUARTIER_GLOWS.centre_ville,
     size: 20,
   },
   quartier_business: {
-    pos: [-40, 0, -40],
+    pos: [-40, 0, -40] as [number, number, number],
     label: "Quartier Business",
-    description: "Orchestrateur • Strategiste • Analyste",
-    color: "#3B82F6",
+    description: "⚡ Stratégie & Analyse ⚡",
+    color: QUARTIER_COLORS.quartier_business,
+    glow: QUARTIER_GLOWS.quartier_business,
     size: 16,
   },
   quartier_creativo: {
-    pos: [40, 0, -40],
+    pos: [40, 0, -40] as [number, number, number],
     label: "Quartier Créatif",
-    description: "Designer • Createur_contenu • Fireflies",
-    color: "#F59E0B",
+    description: "🎨 Design & Création 🎨",
+    color: QUARTIER_COLORS.quartier_creativo,
+    glow: QUARTIER_GLOWS.quartier_creativo,
     size: 16,
   },
   quartier_marketing: {
-    pos: [-40, 0, 40],
+    pos: [-40, 0, 40] as [number, number, number],
     label: "Quartier Marketing",
-    description: "Community Manager • Prospection • Veille",
-    color: "#EC4899",
+    description: "🌿 Community & Veille 🌿",
+    color: QUARTIER_COLORS.quartier_marketing,
+    glow: QUARTIER_GLOWS.quartier_marketing,
     size: 16,
   },
   quartier_consulting: {
-    pos: [40, 0, 40],
+    pos: [40, 0, 40] as [number, number, number],
     label: "Quartier Consulting",
-    description: "Noémie.K • Bureau clients",
-    color: "#10B981",
+    description: "👑 Bureau clients 👑",
+    color: QUARTIER_COLORS.quartier_consulting,
+    glow: QUARTIER_GLOWS.quartier_consulting,
     size: 16,
   },
   quartier_gaming: {
-    pos: [-20, 0, -70],
+    pos: [-20, 0, -70] as [number, number, number],
     label: "Quartier Gaming",
-    description: "Connais-tu l'Afrique",
-    color: "#8B5CF6",
+    description: "🎮 Connais-tu l'Afrique 🎮",
+    color: QUARTIER_COLORS.quartier_gaming,
+    glow: QUARTIER_GLOWS.quartier_gaming,
     size: 14,
   },
   quartier_innovation: {
-    pos: [20, 0, -70],
+    pos: [20, 0, -70] as [number, number, number],
     label: "Quartier Innovation",
-    description: "Cerveau R&D • Proposition",
-    color: "#6B7280",
+    description: "🔬 R&D & Innovation 🔬",
+    color: QUARTIER_COLORS.quartier_innovation,
+    glow: QUARTIER_GLOWS.quartier_innovation,
     size: 14,
   },
 };
@@ -72,7 +80,8 @@ function QuartierZone({
   position,
   description,
   color,
-  size
+  size,
+  glow
 }: {
   quartier: string;
   label: string;
@@ -80,18 +89,33 @@ function QuartierZone({
   description: string;
   color: string;
   size: number;
+  glow?: string;
 }) {
+  const glowColor = glow || color;
+
   return (
     <group position={position}>
-      {/* Quartier Floor */}
+      {/* Quartier Floor - Metallic Wakanda Style */}
       <mesh position={[0, 0, 0]} receiveShadow>
         <boxGeometry args={[size, 0.2, size]} />
         <meshStandardMaterial
           color={color}
-          metalness={0.4}
-          roughness={0.4}
-          emissive={color}
-          emissiveIntensity={0.15}
+          metalness={0.7}
+          roughness={0.2}
+          emissive={glowColor}
+          emissiveIntensity={0.25}
+        />
+      </mesh>
+
+      {/* Glow Ring - Torus around quartier */}
+      <mesh position={[0, 0.25, 0]}>
+        <torusGeometry args={[size/2 + 1, 0.3, 16, 100]} />
+        <meshStandardMaterial
+          color={glowColor}
+          emissive={glowColor}
+          emissiveIntensity={0.6}
+          metalness={0.6}
+          roughness={0.3}
         />
       </mesh>
 
@@ -108,27 +132,41 @@ function QuartierZone({
             ]), 3]}
           />
         </bufferGeometry>
-        <lineBasicMaterial color={color} linewidth={3} />
+        <lineBasicMaterial color={glowColor} linewidth={3} />
       </lineSegments>
 
-      {/* Decorative Pillars at Corners */}
+      {/* Decorative Pillars at Corners - Enhanced */}
       {[
         [-size/2 + 1, 0, -size/2 + 1],
         [size/2 - 1, 0, -size/2 + 1],
         [size/2 - 1, 0, size/2 - 1],
         [-size/2 + 1, 0, size/2 - 1],
       ].map((pillarPos, idx) => (
-        <mesh key={`pillar-${idx}`} position={pillarPos as [number, number, number]}>
-          <cylinderGeometry args={[0.3, 0.4, 3, 8]} />
-          <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.2} />
-        </mesh>
+        <group key={`pillar-${idx}`} position={pillarPos as [number, number, number]}>
+          <mesh>
+            <cylinderGeometry args={[0.3, 0.4, 3, 8]} />
+            <meshStandardMaterial
+              color={color}
+              emissive={glowColor}
+              emissiveIntensity={0.3}
+              metalness={0.6}
+              roughness={0.3}
+            />
+          </mesh>
+          <pointLight
+            position={[0, 1.5, 0]}
+            color={glowColor}
+            intensity={0.6}
+            distance={6}
+          />
+        </group>
       ))}
 
       {/* Quartier Label */}
       <Text
         position={[0, 1, -size/2 - 2]}
         fontSize={1.2}
-        color={color}
+        color={glowColor}
         anchorX="center"
         anchorY="bottom"
         fontWeight="bold"
@@ -140,18 +178,30 @@ function QuartierZone({
       <Text
         position={[0, 0.5, -size/2 - 2]}
         fontSize={0.5}
-        color="#9CA3AF"
+        color={glowColor}
         anchorX="center"
         anchorY="top"
       >
         {description}
       </Text>
 
-      {/* Glow Light */}
+      {/* Multiple Glow Lights for Intense Effect */}
       <pointLight
         position={[0, 3, 0]}
-        color={color}
-        intensity={0.4}
+        color={glowColor}
+        intensity={0.8}
+        distance={size * 2}
+      />
+      <pointLight
+        position={[size/3, 2, size/3]}
+        color={glowColor}
+        intensity={0.5}
+        distance={size * 1.5}
+      />
+      <pointLight
+        position={[-size/3, 2, -size/3]}
+        color={glowColor}
+        intensity={0.5}
         distance={size * 1.5}
       />
     </group>
@@ -163,13 +213,15 @@ export function Environment3D() {
 
   return (
     <group ref={gridRef}>
-      {/* Huge Ground Plane */}
+      {/* Huge Ground Plane - Wakanda Dark Foundation */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
         <planeGeometry args={[200, 200]} />
         <meshStandardMaterial
-          color="#0F172A"
-          metalness={0.2}
-          roughness={0.9}
+          color="#0A0E27"
+          metalness={0.3}
+          roughness={0.8}
+          emissive="#0F1B3F"
+          emissiveIntensity={0.1}
         />
       </mesh>
 
@@ -186,21 +238,23 @@ export function Environment3D() {
           description={quartier.description}
           color={quartier.color}
           size={quartier.size}
+          glow={quartier.glow}
         />
       ))}
 
-      {/* Lighting */}
-      <ambientLight intensity={0.7} />
+      {/* Lighting - Wakanda Ambience */}
+      <ambientLight intensity={0.8} color="#1a1a3f" />
 
       <directionalLight
         position={[50, 50, 50]}
-        intensity={0.9}
+        intensity={1.0}
         shadow-mapSize={[4096, 4096]}
         castShadow
+        color="#ffffff"
       />
 
       <hemisphereLight
-        args={["#D4AF37", "#1F2937", 0.5]}
+        args={["#4A90E2", "#0A0E27", 0.6]}
       />
 
       {/* Metaverse Info - Top Center */}
