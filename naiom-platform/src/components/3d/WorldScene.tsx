@@ -18,13 +18,15 @@ interface AgentState {
   position: [number, number, number];
 }
 
-const ZONE_POSITIONS = {
-  bureau: { x: -15, z: -15 },
-  labo: { x: 0, z: -15 },
-  creative: { x: 15, z: -15 },
-  reflection: { x: -15, z: 0 },
-  collaboration: { x: 0, z: 0 },
-  rest: { x: 15, z: 0 },
+// KONALIA METAVERSE - POSITIONS QUARTIERS
+const QUARTIER_POSITIONS = {
+  centre_ville: { x: 0, z: 0 },
+  quartier_business: { x: -40, z: -40 },
+  quartier_creativo: { x: 40, z: -40 },
+  quartier_marketing: { x: -40, z: 40 },
+  quartier_consulting: { x: 40, z: 40 },
+  quartier_gaming: { x: -20, z: -70 },
+  quartier_innovation: { x: 20, z: -70 },
 };
 
 interface WorldSceneProps {

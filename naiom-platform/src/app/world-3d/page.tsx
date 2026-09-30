@@ -34,13 +34,34 @@ const AGENT_EMOJIS: Record<string, string> = {
   cerveau: "🧠",
 };
 
-const ZONE_POSITIONS = {
-  bureau: { x: -15, z: -15 },
-  labo: { x: 0, z: -15 },
-  creative: { x: 15, z: -15 },
-  reflection: { x: -15, z: 0 },
-  collaboration: { x: 0, z: 0 },
-  rest: { x: 15, z: 0 },
+// KONALIA METAVERSE - QUARTIERS & POSITIONS
+const QUARTIER_POSITIONS = {
+  centre_ville: { x: 0, z: 0 },
+  quartier_business: { x: -40, z: -40 },
+  quartier_creativo: { x: 40, z: -40 },
+  quartier_marketing: { x: -40, z: 40 },
+  quartier_consulting: { x: 40, z: 40 },
+  quartier_gaming: { x: -20, z: -70 },
+  quartier_innovation: { x: 20, z: -70 },
+};
+
+// ASSIGNATION AGENTS RÉELS AUX QUARTIERS
+const AGENT_QUARTIER_MAP: Record<string, string> = {
+  orchestrateur: "quartier_business",
+  strategiste: "quartier_business",
+  analyste: "quartier_business",
+  designer: "quartier_creativo",
+  createur_contenu: "quartier_creativo",
+  fireflies: "quartier_creativo",
+  community_manager: "quartier_marketing",
+  prospection: "quartier_marketing",
+  veille: "quartier_marketing",
+  gmail: "quartier_consulting",
+  noemie_k: "quartier_consulting",
+  presentateur: "quartier_gaming",
+  proposition: "quartier_gaming",
+  cerveau: "quartier_innovation",
+  cv: "quartier_innovation",
 };
 
 const MOODS = {
@@ -59,13 +80,14 @@ export default function World3DPage() {
   const simulationRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
-    // Initialize agents with 3D positions
+    // Initialize agents with 3D positions in their assigned quartiers
     const initialStates: AgentState[] = agents.map((agent, idx) => {
-      const zoneKeys = Object.keys(ZONE_POSITIONS);
-      const zone = zoneKeys[idx % zoneKeys.length];
-      const zonePos = ZONE_POSITIONS[zone as keyof typeof ZONE_POSITIONS];
-      const offsetX = (idx % 3 - 1) * 2;
-      const offsetZ = Math.floor(idx / 3) * 2 - 2;
+      const quartier = AGENT_QUARTIER_MAP[agent.slug] || "quartier_business";
+      const quartierPos = QUARTIER_POSITIONS[quartier as keyof typeof QUARTIER_POSITIONS];
+
+      // Spread agents within their quartier (3x3 grid)
+      const offsetX = (idx % 3 - 1) * 3;
+      const offsetZ = (Math.floor(idx / 3) % 3 - 1) * 3;
 
       const moods = Object.keys(MOODS) as (
         | "productive"
@@ -78,13 +100,13 @@ export default function World3DPage() {
         slug: agent.slug,
         name: agent.name,
         emoji: AGENT_EMOJIS[agent.slug] || "🤖",
-        zone,
+        zone: quartier,
         mood: moods[Math.floor(Math.random() * moods.length)],
         energy: Math.random() * 60 + 40,
         position: [
-          zonePos.x + offsetX,
+          quartierPos.x + offsetX,
           0,
-          zonePos.z + offsetZ,
+          quartierPos.z + offsetZ,
         ] as [number, number, number],
       };
     });

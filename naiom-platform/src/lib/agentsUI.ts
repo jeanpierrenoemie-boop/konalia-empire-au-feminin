@@ -20,7 +20,7 @@ export function agentGlow(slug: string): string {
   }
 }
 
-const AVATAM_VERSION = "5-cutout";
+const AVATAR_VERSION = "5-cutout";
 const v = `?v=${AVATAR_VERSION}`;
 
 export const AVATAR_MAP: Record<string, string> = {
