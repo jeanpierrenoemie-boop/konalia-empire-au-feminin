@@ -8,6 +8,7 @@ import { ParticleSystem } from "./ParticleSystem";
 import { CollaborationLines } from "./CollaborationLines";
 import { VoiceIndicator } from "./VoiceIndicator";
 import { AvatarNoemie3D } from "./AvatarNoemie3D";
+import { TaskBoard3D } from "./TaskBoard3D";
 
 interface AgentState {
   slug: string;
@@ -130,6 +131,17 @@ export function WorldScene({
               agentName={agent.name}
             />
           )}
+
+          {/* Phase 3: Task Board - Affiche ce que l'agent fait */}
+          <TaskBoard3D
+            position={[
+              agent.position[0],
+              agent.position[1] + 2.5,
+              agent.position[2],
+            ]}
+            agentSlug={agent.slug}
+            quartier={agent.zone}
+          />
         </group>
       ))}
 
