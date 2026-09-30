@@ -143,7 +143,18 @@ export default function World3DPage() {
     return () => clearInterval(simulationRef.current);
   }, [paused, speed]);
 
-  const selectedAgent = agentStates.find((a) => a.slug === selectedAgentSlug);
+  const selectedAgent =
+    selectedAgentSlug === "noemie-avatar"
+      ? {
+          slug: "noemie-avatar",
+          name: "Noémie Avatar",
+          emoji: "✨",
+          zone: "centre_ville",
+          mood: "talking" as const,
+          energy: 100,
+          position: [0, 0, 0] as [number, number, number],
+        }
+      : agentStates.find((a) => a.slug === selectedAgentSlug);
 
   return (
     <div className="w-full h-screen flex flex-col bg-slate-900">
@@ -210,10 +221,53 @@ export default function World3DPage() {
                 <h2 className="text-xl font-bold">
                   {selectedAgent.emoji} {selectedAgent.name}
                 </h2>
-                <p className="text-sm text-slate-400">
-                  Zone: {selectedAgent.zone}
-                </p>
+                {selectedAgent.slug === "noemie-avatar" ? (
+                  <p className="text-sm text-slate-400">
+                    Cœur du metaverse Konalia
+                  </p>
+                ) : (
+                  <p className="text-sm text-slate-400">
+                    Zone: {selectedAgent.zone}
+                  </p>
+                )}
               </div>
+
+              {/* Noémie Avatar Special Panel */}
+              {selectedAgent.slug === "noemie-avatar" && (
+                <div className="space-y-3 border-t border-slate-700 pt-3">
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">Rôle</p>
+                    <p className="text-sm font-semibold">
+                      Orchestratrice du Metaverse
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">Statut</p>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                      <span className="text-sm">LIVE - En communication</span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">
+                      Agents sous supervision
+                    </p>
+                    <p className="text-sm">{agentStates.length} agents actifs</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">Tâches en cours</p>
+                    <div className="space-y-1">
+                      <p className="text-xs">
+                        • Orchestrer workflow {agentStates.length}
+                      </p>
+                      <p className="text-xs">
+                        • Monitorer collaborations
+                      </p>
+                      <p className="text-xs">• Recevoir visiteurs</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Stats */}
               <div className="space-y-3 border-t border-slate-700 pt-3">
@@ -240,8 +294,24 @@ export default function World3DPage() {
             </div>
           ) : (
             <div className="p-4 space-y-4">
-              <h3 className="font-bold text-sm">👥 Agents en ligne</h3>
+              <h3 className="font-bold text-sm">👥 Univers Konalia</h3>
               <div className="space-y-2 max-h-96 overflow-y-auto">
+                {/* Noémie Avatar Card */}
+                <button
+                  onClick={() => setSelectedAgentSlug("noemie-avatar")}
+                  className="w-full text-left p-3 rounded bg-gradient-to-r from-slate-700/50 to-slate-600/50 hover:from-slate-600 hover:to-slate-500 transition border border-amber-500/30 group"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">✨</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-amber-300">Noémie Avatar</p>
+                      <p className="text-xs text-slate-300">Cœur du metaverse</p>
+                    </div>
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                  </div>
+                </button>
+
+                {/* Agents List */}
                 {agentStates.map((agent) => (
                   <button
                     key={agent.slug}

@@ -7,6 +7,7 @@ import { Environment3D } from "./Environment3D";
 import { ParticleSystem } from "./ParticleSystem";
 import { CollaborationLines } from "./CollaborationLines";
 import { VoiceIndicator } from "./VoiceIndicator";
+import { AvatarNoemie3D } from "./AvatarNoemie3D";
 
 interface AgentState {
   slug: string;
@@ -79,6 +80,20 @@ export function WorldScene({
 
       {/* Scene Content */}
       <Environment3D />
+
+      {/* Phase 2: Noémie Avatar - Centre du Metaverse */}
+      <AvatarNoemie3D
+        position={[0, 0, 0]}
+        isActive={selectedAgentSlug === "noemie-avatar"}
+        mood={
+          selectedAgentSlug === "noemie-avatar"
+            ? "talking"
+            : agents.some((a) => a.mood === "collaborating")
+            ? "celebrating"
+            : "idle"
+        }
+        onClick={() => onSelectAgent("noemie-avatar")}
+      />
 
       {/* Phase 3: Particle Effects */}
       <ParticleSystem
