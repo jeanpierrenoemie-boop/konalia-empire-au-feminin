@@ -32,7 +32,9 @@ Pas de produit pour l'instant : informer, éduquer, construire l'audience.
 
 ## PRIORITÉ 3 — AGENCE IA D'AUTOMATISATION (en construction)
 Cibles : BTP et centres de formation ; ensuite nettoyage B2B et événementiel B2B/B2C.
-- [ ] Rassembler les recherches de Noémie (marché, cibles, offres) dans le dépôt
+- [x] Rassembler les recherches de Noémie : voir `01-BY-NOEMIE/Agence-IA/SYNTHESE_VALIDATION_TERRAIN.md`
+- [ ] Décision prise : une agence par secteur ; première niche = CVC (BTP). Nom de l'agence CVC à choisir
+- [ ] Premiers entretiens CVC (PROGECLIM, SOLVAC, Terras CVC) puis grille de dépouillement
 - [ ] Définir l'offre, les tarifs et le nom de l'agence
 - [ ] Connecter Apify (recherche d'entreprises sur Google Maps) puis Gmail (envoi)
 - [ ] Première recherche : entreprises du BTP et centres de formation dans une zone choisie
