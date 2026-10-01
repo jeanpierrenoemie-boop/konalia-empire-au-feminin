@@ -22,10 +22,10 @@ statut: actif
 
 | Marque | Univers | Promesse | Statut |
 |--------|---------|----------|--------|
-| **KatalyMode** | Mode afro-européenne | L'élégance, l'assurance, l'expression de soi | En lancement (Année 2) |
-| **KatalyBeauty** | Cosmétique & bien-être | Le soin, les rituels du quotidien | Année 4 |
-| **Connais-tu l'Afrique ?** | Jeu de société éducatif | La transmission par le jeu | Année 3 |
-| **Sébé** | Lieux & expériences immersives | Le temps retrouvé, la reconnexion | Année 5 |
+| **KatalyMode** | Mode afro-européenne | L'élégance, l'assurance, l'expression de soi | Construction d'audience (pas encore de produit) |
+| **KatalyBeauty** | Cosmétique & bien-être | Le soin, les rituels du quotidien | Construction d'audience (pas encore de produit) |
+| **Connais-tu l'Afrique ?** | Jeu de société éducatif | La transmission par le jeu | Hors priorité actuelle |
+| **Sébé** | Lieux & expériences immersives | Le temps retrouvé, la reconnexion | Hors priorité actuelle |
 
 ## 3. Les 3 Piliers
 
@@ -38,7 +38,9 @@ statut: actif
 - **Adjectifs** : chaleureux, lucide, structurant, direct
 - **Registre** : proche sans être familier, inspirant sans être creux, concret sans être froid
 - **À éviter** : jargon marketing vide, promesses vagues, ton condescendant, anglicismes gratuits
-- **S'adresse à** : femmes entrepreneures, créatrices, femmes qui construisent quelque chose qui leur ressemble
+- **S'adresse à** (selon la marque) :
+  - **Reprise de Contrôle** : salarié·e·s du tertiaire (assistantes de direction, assistantes administratives, conseillères clientèle…) qui veulent un revenu complémentaire sans quitter leur emploi
+  - **KatalyMode / KatalyBeauty** : femmes sensibles à la mode afro-européenne, aux savoir-faire et aux rituels de soin — deux comptes séparés
 
 ## 5. Valeurs & engagement
 
@@ -51,18 +53,19 @@ statut: actif
 ## 6. Informations opérationnelles
 
 - **Domaine** : katalymode.com (acheté)
-- **Première marque active** : KatalyMode
-- **Modèle économique KatalyMode** : précommande / made-to-order
+- **Offre principale** : Reprise de Contrôle — 497 € (3 fois possible), salarié·e·s du tertiaire
+- **KatalyMode / KatalyBeauty** : audience d'abord (contenu éducatif, liste d'attente), aucune promesse de vente tant qu'il n'y a pas de produit
+- **Modèle économique KatalyMode (à terme)** : précommande / made-to-order
 - **Protection INPI** : en cours pour KONALIA, KATALYMODE, KATALYBEAUTY, SÉBÉ
 - **Email** : jeanpierrenoemie@gmail.com
 
 ## 7. Ce que les agents produisent pour Konalia
 
-- Contenu réseaux sociaux (Léa) : LinkedIn, Instagram, X — ton chaleureux et structurant
-- Prospection (Sacha) : partenaires créateurs, distributeurs, presse afro-européenne
-- Veille (Nina) : mode afro-européenne, cosmétique naturelle, jeux éducatifs, expériences immersives
-- Propositions commerciales (Victor) : partenariats, collaborations, boutiques
+- Contenu réseaux sociaux (Léa) : contenu pour Reprise de Contrôle (LinkedIn, Instagram) et contenu éducatif séparé pour KatalyMode et KatalyBeauty — ton chaleureux et structurant
+- Prospection (Sacha) : salarié·e·s du tertiaire pour Reprise de Contrôle ; partenaires créateurs et presse afro-européenne pour les marques Kataly
+- Veille (Nina) : freelancing administratif pour TPE/artisans, besoins des assistantes et conseillères clientèle ; mode afro-européenne et cosmétique naturelle
+- Propositions commerciales (Victor) : offre Reprise de Contrôle 497 € ; partenariats pour les marques Kataly
 - Analyse (Antoine/Léo/Hugo/Clara/Clément) : stratégie, roadmap, finances, RH, mémoire d'entreprise
 
 ---
-*Dernière mise à jour : 2026-09-29 — Noémie Jean-Pierre*
+*Dernière mise à jour : 2026-10-01 — recalibrage des priorités (Reprise de Contrôle + communauté Kataly)*

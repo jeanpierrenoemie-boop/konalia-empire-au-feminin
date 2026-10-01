@@ -1,29 +1,31 @@
 # Prochaines Étapes
 
-## PRIORITÉ IMMÉDIATE — BY NOEMIE (cette semaine)
-- [ ] Publier le post "Les 3 erreurs" — Mercredi selon le planning
-- [ ] Ajouter le Guide Ultime des Réels sur Beacons (49€)
-- [ ] Transformer les 16 ressources Canva restantes en ebooks
-- [ ] Créer les pages de vente Systeme.io pour les nouveaux ebooks
-- [ ] Continuer le planning contenu 3 posts/semaine
-- [ ] Préparer les stories Instagram depuis le téléphone
-- [ ] Mettre le lien Beacons dans la bio TikTok quand 1000 abonnés atteints
+*Recalibré le 2026-10-01. Deux priorités : Reprise de Contrôle + communauté KatalyMode/KatalyBeauty.*
 
-## MOYEN TERME — BY NOEMIE (avant août)
-- [ ] Créer un lead magnet gratuit pour collecter des emails
-- [ ] Atteindre les premières ventes d'ebooks et Code Liberté
-- [ ] Créer un tunnel de vente simple pour l'ebook prioritaire
-- [ ] Publier le post manifeste sur Instagram
-- [ ] Construire une audience de 500+ abonnés engagés
-- [ ] Objectif revenus : 500-1000€/mois avant août
+## PRIORITÉ 1 — REPRISE DE CONTRÔLE (nouvelle cible)
+Cible : salarié·e·s du tertiaire (assistantes de direction, assistantes administratives, conseillères clientèle…).
+Promesse : un revenu complémentaire sans quitter son emploi, en devenant prestataire administratif pour les dirigeants de TPE/PME et artisans (10 à 15 h/mois), avec un agent IA fourni.
+Prix : 497 € (3 fois possible).
 
-## KONALIA — À FAIRE (pas urgent)
-- [ ] Vérification disponibilité INPI : KONALIA, KATALYMODE, KATALYBEAUTY, SÉBÉ
-- [ ] Dépôt marque INPI (190€ par classe) — classes 25, 3, 41, 43
-- [ ] Nom de domaine konalia.com à vérifier et acheter
-- [ ] Créer le site Lovable KatalyMode (directives déjà prêtes)
-- [ ] Lancer les comptes Instagram/TikTok KatalyMode
-- [ ] Prototype papier du jeu "Connais-tu l'Afrique ?" — tester avec 5 personnes
-- [ ] Créer compte Instagram pour "Connais-tu l'Afrique ?"
-- [ ] Déposer le nom "Connais-tu l'Afrique ?" à l'INPI (190€)
-- [ ] Recruter un illustrateur africain (800-1500€)
+- [ ] Décider quelles étapes du programme (12 actuelles, supports 07 à 12) restent nécessaires pour cette cible
+- [ ] Définir les 3 à 5 services administratifs vendables aux patrons de TPE et artisans
+- [ ] Définir l'agent IA mis à disposition des participantes (quelles tâches, quel format)
+- [ ] Réécrire la page d'offre (promesse, cible, 497 € en 3 fois)
+- [ ] Parler à 5 assistantes / conseillères clientèle et à 3 patrons de TPE ou artisans pour valider le besoin
+- [ ] Adapter les exemples et le vocabulaire des supports existants
+
+## PRIORITÉ 2 — COMMUNAUTÉ KATALYMODE ET KATALYBEAUTY (2 comptes séparés)
+Pas de produit pour l'instant : informer, éduquer, construire l'audience.
+
+- [ ] Créer / finaliser le compte Instagram + TikTok KatalyMode
+- [ ] Créer / finaliser le compte Instagram + TikTok KatalyBeauty
+- [ ] Définir la ligne éditoriale de chaque compte (3 à 4 piliers chacun)
+- [ ] Calendrier de contenu éducatif sur 4 semaines pour chaque compte
+- [ ] Liste d'attente (page de capture + email de bienvenue) pour chaque marque
+- [ ] Vérification INPI : KATALYMODE, KATALYBEAUTY (avant de communiquer largement)
+
+## EN PAUSE / HORS PRIORITÉ
+- Konalia World (metaverse 3D) — abandonné
+- Projet Mali (jus, snacking, événementiel)
+- Connais-tu l'Afrique ? et SÔBÈ
+- Anciens e-books By Noémie, Code Liberté, templates Canva — statut à confirmer avant de les promouvoir

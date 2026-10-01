@@ -1,6 +1,7 @@
 /**
  * Contexte propriétaire — injecté dans tous les system prompts des agents.
  * Modifie ce fichier pour mettre à jour le contexte de toute la plateforme.
+ * Dernière recalibration : 2026-10-01.
  */
 
 export const OWNER_NAME = "Noémie";
@@ -18,37 +19,33 @@ Slogans : « Liberté · Puissance · Équilibre », « Reprise de Contrôle »,
 `.trim();
 
 export const BUSINESS_CONTEXT = `
-## Mon écosystème — deux univers
+## Mes deux priorités actuelles (octobre 2026)
 
-### By Noémie (revenu immédiat)
-Infoproduits sur l'entrepreneuriat, le mindset et l'IA. Cible : femmes ambitieuses, mamans et salariées.
-Hub : Beacons (noemieentrepreneuse.com). Vente : Systeme.io + Stripe. Livraison : Google Drive.
-Charte : vert sauge, or, marbre, style féminin élégant.
+### Priorité 1 — Reprise de Contrôle (programme, offre principale)
+**Cible** : les salarié·e·s du tertiaire, surtout les métiers d'assistanat — assistantes de direction, assistantes administratives, conseillères clientèle et postes similaires.
+**Promesse** : bâtir un revenu complémentaire SANS quitter son emploi, en monétisant ses compétences administratives et relationnelles.
+**Le modèle enseigné** : devenir prestataire administratif à distance pour les dirigeants de TPE/PME et les artisans (gestion administrative, relances, devis/factures, emails, organisation), avec environ 10 à 15 h de travail par mois. Les participantes disposent d'un agent IA pour les aider à produire plus vite.
+**Prix** : 497 € (paiement possible en 3 fois).
+**Vision long terme** : aider tout salarié qui veut se lancer dans le digital sans quitter le salariat tout de suite (promesse d'origine de l'offre).
+**En cours de décision** : le programme actuel compte 12 étapes (supports 07 à 12 dans le dossier supports/) ; on vérifie lesquelles restent nécessaires pour la nouvelle cible. Ne présente pas le format en 12 étapes comme définitif.
 
-Offres actuelles :
-- Pack Complet « L'Empire au Féminin » (5 e-books) → 199 €
-- Libère-toi de tes Barrières Mentales → 67 €
-- Trouve ta Niche Idéale / Crée ta Communauté / Automatise ton Business / 30 Prompts ChatGPT → 49 € chacun
-- 100 Idées de Hooks / Le Guide Ultime des Réels V2 → 49 €
-- Code Liberté (affiliation 90 %) → ≈447 € par vente
-- 18 templates Canva (droits de revente illimités) → prix e-books ou plus
+### Priorité 2 — Communauté KatalyMode et KatalyBeauty (avant les produits)
+Je n'ai pas encore de produit à vendre. Objectif : informer et éduquer sur le sujet pour avoir un public déjà là au lancement.
+- **KatalyMode** : mode afro-européenne haut de gamme (Bogolan, Kente), capsule sur commande, sans stock. Domaine katalymode.com acheté.
+- **KatalyBeauty** : cosmétique et bien-être.
+- Ce sont **deux comptes séparés** (Instagram/TikTok), chacun avec sa propre ligne éditoriale. Ne les mélange jamais dans un même contenu.
+- Contenu attendu : éducatif et inspirant (histoire des tissus, savoir-faire, rituels, coulisses de création), jamais de promesse de vente ou de date de livraison tant qu'il n'y a pas de produit. Récupération d'audience via une liste d'attente.
 
-Réseaux : Instagram @noemie.k @bynoemie · TikTok @noemie.k
-Rythme éditorial : lundi motivation, mercredi valeur, vendredi vente.
+## Cadre long terme (ne pas mettre en avant sauf demande)
+Konalia est la maison mère d'un écosystème de marques premium à ancrage africain : KatalyMode, KatalyBeauty, Connais-tu l'Afrique ? (jeu de société éducatif), SÔBÈ (lieux immersifs, horizon année 5). Le projet de metaverse « Konalia World » est ABANDONNÉ : ne le propose plus et ne t'en sers pas comme référence.
 
-### Konalia (long terme, 5 ans)
-Maison mère d'un écosystème de marques premium à ancrage africain.
-- **KatalyMode** : mode afro-européenne haut de gamme (Bogolan, Kente), capsule 4 pièces sur commande, sans stock. Domaine katalymode.com acheté.
-- **KatalyBeauty** : cosmétique et bien-être. 4 contrats créateurs rédigés.
-- **SÔBÈ** : espaces physiques immersifs (horizon année 5).
-- **Connais-tu l'Afrique ?** : jeu de société éducatif, business plan complet.
+## Hors priorité actuelle (à ne pas travailler sauf demande explicite)
+- Projet Mali / Afrique de l'Ouest (jus, snacking, location événementielle)
+- Connais-tu l'Afrique ? et SÔBÈ
+- Anciens e-books By Noémie (Pack Empire au Féminin, Barrières Mentales, Guide des Réels, etc.), Code Liberté (affiliation) et templates Canva : offres existantes dont le statut est à confirmer avec Noémie avant de les promouvoir.
 
-### Projet Mali / Afrique de l'Ouest
-Vente ambulante de jus + snacking (priorité), location événementielle (phase 2).
-Budget départ : 500 € max. Zone : Bamako recommandée. Paiement mobile money.
-
-## Décision structurante
-By Noémie finance Konalia. Un seul chantier prioritaire à la fois. Pas de remboursement sur produits digitaux.
+## Règle de fonctionnement
+Un seul chantier prioritaire à la fois. Si une demande touche un sujet « hors priorité », signale-le en une phrase et demande confirmation avant de produire. Pas de remboursement sur produits digitaux.
 `.trim();
 
 export const OWNER_CONTEXT = `
