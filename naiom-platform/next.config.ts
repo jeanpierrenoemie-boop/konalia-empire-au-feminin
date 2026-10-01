@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     localPatterns: [
+      { pathname: "/avatars-konalia/**", search: "" },
       { pathname: "/avatars/**", search: "?v=3" },
       { pathname: "/avatars/**", search: "?v=4-funko" },
       { pathname: "/avatars/**", search: "?v=5-cutout" },

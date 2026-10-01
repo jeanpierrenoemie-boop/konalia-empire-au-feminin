@@ -20,24 +20,11 @@ export function agentGlow(slug: string): string {
   }
 }
 
-const AVATAR_VERSION = "5-cutout";
-const v = `?v=${AVATAR_VERSION}`;
+export const AVATAR_MAP: Record<string, string> = Object.fromEntries(
+  [
+    "orchestrateur", "strategiste", "createur-contenu", "designer", "analyste", "presentateur", "gmail",
+    "fireflies", "cv", "ecommerce", "prospection", "proposition", "comptabilite", "cerveau", "veille",
+  ].map((slug) => [slug, `/avatars-konalia/${slug}.svg`])
+);
 
-export const AVATAR_MAP: Record<string, string> = {
-  orchestrateur: `/avatars/funko-bearded-headset.png${v}`,
-  strategiste: `/avatars/funko-glasses-pen.png${v}`,
-  "createur-contenu": `/avatars/funko-curly-book.png${v}`,
-  designer: `/avatars/funko-glasses-laptop.png${v}`,
-  analyste: `/avatars/funko-glasses-pen.png${v}`,
-  presentateur: `/avatars/funko-clean-wave.png${v}`,
-  gmail: `/avatars/funko-curly-phone.png${v}`,
-  fireflies: `/avatars/funko-bearded-headset.png${v}`,
-  cv: `/avatars/funko-blonde-headset.png${v}`,
-  ecommerce: `/avatars/funko-curly-phone.png${v}`,
-  prospection: `/avatars/funko-glasses-pen.png${v}`,
-  proposition: `/avatars/funko-bearded-headset.png${v}`,
-  comptabilite: `/avatars/funko-blonde-headset.png${v}`,
-  cerveau: `/avatars/funko-glasses-pen.png${v}`,
-};
-
-export const DEFAULT_AVATAR = `/avatars/funko-clean-wave.png${v}`;
+export const DEFAULT_AVATAR = "/avatars-konalia/orchestrateur.svg";

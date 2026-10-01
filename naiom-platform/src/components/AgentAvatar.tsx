@@ -53,6 +53,7 @@ export function AgentAvatar({
   crop = "full",
 }: AvatarProps) {
   const src = AVATAR_MAP[slug] ?? DEFAULT_AVATAR;
+  const round = src.endsWith(".svg");
   // L'aura verte est désactivée par défaut quand on détoure (la palette
   // Althea n'a pas de halo coloré derrière le sujet).
   const showAura = aura ?? (size >= 100 && !cutout);
@@ -83,8 +84,9 @@ export function AgentAvatar({
   // Bug précédent : `scale(S) translateY(-22%)` faisait translate-EN-PREMIER
   // (multiplié par le scale ensuite), donc la tête finissait hors-écran et il
   // ne restait visibles que les pieds.
-  const innerCropStyle: React.CSSProperties =
-    crop === "head"
+  const innerCropStyle: React.CSSProperties = round
+    ? {}
+    : crop === "head"
       ? {
           // S = 2.8 (zoom assez serré pour bien voir la tête) ; T = 13 × 2.8 ≈ 36 %
           transform: "translateY(36%) scale(2.8)",
@@ -119,7 +121,7 @@ export function AgentAvatar({
           // En mode head-crop, on ne joue pas la zen breathing (la scale du crop
           // est dominante, l'animation serait à peine visible et risquerait de
           // découper la tête en dehors du wrapper)
-          animate && crop !== "head" && (zen ? "avatar-zen" : "avatar-alive")
+          animate && (round || crop !== "head") && (round || zen ? "avatar-zen" : "avatar-alive")
         )}
         style={{ ...innerCropStyle }}
       >
@@ -130,8 +132,8 @@ export function AgentAvatar({
           height={size}
           priority={priority}
           className={cn(
-            "object-contain",
-            !cutout && "drop-shadow-[0_10px_28px_rgba(0,0,0,0.55)]",
+            round ? "rounded-full object-cover" : "object-contain",
+            !cutout && !round && "drop-shadow-[0_10px_28px_rgba(0,0,0,0.55)]",
             bottomFade && "avatar-bottom-fade"
           )}
           style={{
