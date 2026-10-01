@@ -39,3 +39,13 @@ Grille maître : faits d'abord, verbatim, score d'opportunité /100 (douleur + i
 - Une seule agence ou une par secteur ? Nom de l'agence ?
 - Niche à tester en premier (BTP/CVC et centres de formation en priorité).
 - Offre et tarifs : à définir **après** les entretiens. Aucun prix ni résultat chiffré n'est à annoncer d'ici là.
+
+## Détail du lot CVC / chauffage / plomberie (BTP)
+Le lot montre que « CVC = appels manqués et devis non relancés » est trop simple. Trois modèles opérationnels ressortent, avec des gains différents :
+| Modèle | Workflow dominant |
+|---|---|
+| Projet / installation | Appel d'offres → étude → chiffrage → achats → chantier → réception (DOE) |
+| Maintenance contractuelle | Contrat → préventif → planning → intervention → rapport → renouvellement |
+| Dépannage / urgence | Appel → qualification → priorité → technicien → intervention → facture |
+
+Conséquence : ne pas présenter l'offre comme un « standard téléphonique IA » universel. À l'entretien, identifier d'abord le modèle de l'entreprise. Entreprises les mieux classées pour un entretien (présélection, pas une preuve) : PROGECLIM Services, SOLVAC, DOMOTEC, P.G.C., CLIMAT SYSTEMS. Les autres lots (formation, nettoyage, événementiel) sont sur le Drive dans `Phase_4_1_Lot_0X_*.pdf`.
