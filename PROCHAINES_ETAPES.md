@@ -14,6 +14,10 @@ Prix : 497 € (3 fois possible).
 - [ ] Parler à 5 assistantes / conseillères clientèle et à 3 patrons de TPE ou artisans pour valider le besoin
 - [ ] Adapter les exemples et le vocabulaire des supports existants
 
+## PRIORITÉ 1 BIS — CODE LIBERTÉ (affiliation, ≈447 € par vente)
+- [ ] Préciser le lien avec la cible de Reprise de Contrôle (même public ou public différent ?)
+- [ ] Définir où et comment la promouvoir (contenu, email, page)
+
 ## PRIORITÉ 2 — COMMUNAUTÉ KATALYMODE ET KATALYBEAUTY (2 comptes séparés)
 Pas de produit pour l'instant : informer, éduquer, construire l'audience.
 
@@ -28,4 +32,4 @@ Pas de produit pour l'instant : informer, éduquer, construire l'audience.
 - Konalia World (metaverse 3D) — abandonné
 - Projet Mali (jus, snacking, événementiel)
 - Connais-tu l'Afrique ? et SÔBÈ
-- Anciens e-books By Noémie, Code Liberté, templates Canva — statut à confirmer avant de les promouvoir
+- Anciens e-books By Noémie, templates Canva — statut à confirmer avant de les promouvoir

@@ -19,7 +19,7 @@ Slogans : « Liberté · Puissance · Équilibre », « Reprise de Contrôle »,
 `.trim();
 
 export const BUSINESS_CONTEXT = `
-## Mes deux priorités actuelles (octobre 2026)
+## Mes priorités actuelles (octobre 2026)
 
 ### Priorité 1 — Reprise de Contrôle (programme, offre principale)
 **Cible** : les salarié·e·s du tertiaire, surtout les métiers d'assistanat — assistantes de direction, assistantes administratives, conseillères clientèle et postes similaires.
@@ -28,6 +28,9 @@ export const BUSINESS_CONTEXT = `
 **Prix** : 497 € (paiement possible en 3 fois).
 **Vision long terme** : aider tout salarié qui veut se lancer dans le digital sans quitter le salariat tout de suite (promesse d'origine de l'offre).
 **En cours de décision** : le programme actuel compte 12 étapes (supports 07 à 12 dans le dossier supports/) ; on vérifie lesquelles restent nécessaires pour la nouvelle cible. Ne présente pas le format en 12 étapes comme définitif.
+
+### Priorité 1 bis — Code Liberté (affiliation)
+Offre en affiliation (commission de 90 %, environ 447 € par vente). Elle reste une priorité, au même titre que Reprise de Contrôle. Les agents peuvent produire du contenu et des séquences pour la promouvoir. Le lien exact avec la cible de Reprise de Contrôle est à préciser avec Noémie : en cas de doute, demande avant de les mélanger dans un même message.
 
 ### Priorité 2 — Communauté KatalyMode et KatalyBeauty (avant les produits)
 Je n'ai pas encore de produit à vendre. Objectif : informer et éduquer sur le sujet pour avoir un public déjà là au lancement.
@@ -42,7 +45,7 @@ Konalia est la maison mère d'un écosystème de marques premium à ancrage afri
 ## Hors priorité actuelle (à ne pas travailler sauf demande explicite)
 - Projet Mali / Afrique de l'Ouest (jus, snacking, location événementielle)
 - Connais-tu l'Afrique ? et SÔBÈ
-- Anciens e-books By Noémie (Pack Empire au Féminin, Barrières Mentales, Guide des Réels, etc.), Code Liberté (affiliation) et templates Canva : offres existantes dont le statut est à confirmer avec Noémie avant de les promouvoir.
+- Anciens e-books By Noémie (Pack Empire au Féminin, Barrières Mentales, Guide des Réels, etc.) et templates Canva : offres existantes dont le statut est à confirmer avec Noémie avant de les promouvoir.
 
 ## Règle de fonctionnement
 Un seul chantier prioritaire à la fois. Si une demande touche un sujet « hors priorité », signale-le en une phrase et demande confirmation avant de produire. Pas de remboursement sur produits digitaux.
