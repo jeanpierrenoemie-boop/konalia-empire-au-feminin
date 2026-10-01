@@ -12,12 +12,10 @@ const LINKS = [
   { href: "/bases", label: "Les bases", key: "bases" },
   { href: "/live", label: "Coulisses", key: "coulisses" },
   { href: "/calendrier", label: "Calendrier", key: "calendrier" },
-  { href: "/install", label: "Installer", key: "install" },
-  { href: "/vps", label: "Héberger", key: "vps" },
   { href: "/settings", label: "Connexions", key: "connexions" },
 ] as const;
 
-export type AppNavKey = (typeof LINKS)[number]["key"] | "agents";
+export type AppNavKey = (typeof LINKS)[number]["key"] | "agents" | "install" | "vps";
 
 export function AppNav({ active }: { active: AppNavKey }) {
   return (
