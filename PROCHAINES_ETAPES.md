@@ -15,7 +15,7 @@ Prix : 497 € (3 fois possible).
 - [ ] Parler à 5 assistantes / conseillères clientèle et à 3 patrons de TPE ou artisans pour valider le besoin
 - [ ] Adapter les exemples et le vocabulaire des supports existants
 
-## PRIORITÉ 1 BIS — CODE LIBERTÉ (affiliation, ≈447 € par vente)
+## PRIORITÉ 1 BIS — CODE LIBERTÉ (affiliation, 372 € nets par vente)
 Cible : mamans solo qui veulent apprendre une compétence et se lancer dans le digital (programme complet). Public différent de Reprise de Contrôle.
 - [ ] Définir où et comment la promouvoir (contenu, email, page)
 - [ ] Définir l'avatar « maman solo » (distinct de celui des salarié·e·s du tertiaire)

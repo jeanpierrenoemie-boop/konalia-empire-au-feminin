@@ -72,7 +72,7 @@
 21. "Tu veux auditer ton Instagram gratuitement ? Télécharge mon guide (lien en bio)."
 22. "Ce que tu vas apprendre dans le Pack Empire au Féminin — et pourquoi je l'ai créé."
 23. "Avant / après : à quoi ressemble un compte Instagram optimisé avec mon audit."
-24. "Comment le Code Liberté peut te rapporter 447€ par vente sans créer un seul produit."
+24. "Comment le Code Liberté peut te rapporter 372€ par vente sans créer un seul produit."
 25. "Témoignage : [prénom] a téléchargé mon IG Audit et voilà ce qu'elle a changé."
 
 ### PILIER 5 — DIASPORA & FIERTÉ AFRICAINE (niche identitaire)

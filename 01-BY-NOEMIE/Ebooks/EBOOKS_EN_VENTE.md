@@ -17,4 +17,4 @@
 - **16 autres ebooks** à transformer depuis les ressources Canva avec droits de revente
 
 ## Affiliation Code Liberté
-- Affiliée à 90% — Commission ~447€ par vente sur 497€
+- Affiliée à 90% — Commission brute ~447€ par vente sur 497€ ; montant net affiché dans les visuels : 372€ (après déductions)

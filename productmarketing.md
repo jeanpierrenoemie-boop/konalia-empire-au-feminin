@@ -7,7 +7,7 @@
 **What it does:** By Noemie propose des ebooks, formations et ressources digitales pour apprendre à créer son business en ligne, trouver sa niche, créer du contenu et automatiser ses revenus. Elle propose aussi l'affiliation Code Liberté à 90% de commission.
 **Product category:** Business digital / Infopreneuriat / Formations en ligne
 **Product type:** Produits digitaux (ebooks, PDF, formations) + affiliation
-**Business model:** Vente directe d'ebooks (49€ à 199€) + affiliation Code Liberté (~447€ de commission par vente)
+**Business model:** Vente directe d'ebooks (49€ à 199€) + affiliation Code Liberté (~372€ nets par vente après déductions, 447€ de commission brute)
 
 ## Target Audience
 **Target companies:** N/A — cible des particuliers
@@ -105,7 +105,7 @@
 - BTS obtenu en 6 mois à 38 ans avec 14 de moyenne
 - Maman de 6 enfants et entrepreneuse en parallèle
 - 272 vues dès la première vidéo TikTok
-- Affiliation Code Liberté à 90% (~447€ par vente)
+- Affiliation Code Liberté à 90% (~372€ nets par vente après déductions ; 447€ de commission brute)
 
 **Customers:** Communauté à construire from scratch — Instagram @noemie.entrepreneuse + TikTok @noemie.k75 — PRIORITÉ ACTUELLE
 **Testimonials:** À collecter
@@ -114,9 +114,9 @@
 |-------|--------|
 | C'est possible même avec des contraintes | BTS à 38 ans + 6 enfants |
 | Des outils accessibles à toutes | Canva, Systeme.io, Beacons — gratuits ou peu chers |
-| Un revenu réel avec de petits produits | Commission 447€ par vente Code Liberté |
+| Un revenu réel avec de petits produits | 372€ nets par vente Code Liberté (après déductions) |
 
 ## Goals
 **Business goal:** Atteindre 1 000-2 000€/mois de revenus digitaux d'ici fin 2026, pour financer la construction de Konalia
-**Conversion action:** Achat d'un ebook (49€) ou du Pack Empire au Féminin (199€), ou vente Code Liberté (447€ de commission)
+**Conversion action:** Achat d'un ebook (49€) ou du Pack Empire au Féminin (199€), ou vente Code Liberté (372€ nets après déductions)
 **Current metrics:** Budget disponible < 1 000€ (augmente à 2 000€ en août 2026)
