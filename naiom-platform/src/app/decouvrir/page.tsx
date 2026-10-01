@@ -31,7 +31,7 @@ export default async function DecouvrirPage() {
     <div className="relative min-h-screen w-full overflow-x-clip">
       <header className="sticky top-0 z-30">
         <div className="mx-auto max-w-[1400px] flex items-center justify-between gap-4 px-6 sm:px-10 py-6">
-          <Link href="/" className="althea-logo hover:opacity-70 transition">naiom</Link>
+          <Link href="/" className="althea-logo hover:opacity-70 transition">Noémie.K</Link>
           {mine && (
             <Link href={`/agents/${mine.slug}`} className="althea-pill-cta">
               <Icon name="ArrowLeft" size={12} />

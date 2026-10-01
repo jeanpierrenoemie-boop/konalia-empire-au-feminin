@@ -2,8 +2,8 @@
  * Mocks d'interface pour les schémas de la page Coulisses (/live).
  * Reproductions SVG fidèles mais simplifiées de :
  *  - la fenêtre Claude Code (sidebar Nouvelle session / Artéfacts / Routines,
- *    titre "✳ Quoi de prévu, Zeyneb ?", barre de prompt, badge Opus 4.8)
- *  - le chat de la plateforme NAIOM (conversation avec un agent)
+ *    titre "✳ Quoi de prévu, Noémie ?", barre de prompt, badge Opus 4.8)
+ *  - le chat de la plateforme Noémie.K (conversation avec un agent)
  *  - un panneau de dossiers/fichiers (façon Finder)
  * Composants serveur, à utiliser DANS un <svg> (ce sont des <g>).
  */
@@ -116,10 +116,10 @@ export function ClaudeWin({ x, y, s = 1, prompt, caption, children }: WinProps) 
       <text x="36" y="140" fontSize="13" fill="#5A564E">Routines</text>
       <text x="36" y="168" fontSize="13" fill="#5A564E">Personnaliser</text>
       <text x="36" y="196" fontSize="13" fill="#8A867C">Plus…</text>
-      <text x="36" y="322" fontSize="12" fill="#8A867C">Zeyneb · Max</text>
+      <text x="36" y="322" fontSize="12" fill="#8A867C">Noémie · Konalia</text>
       {/* titre principal */}
       <text x="188" y="86" fontSize="21" fontWeight="700" fill="#241F1A">
-        <tspan fill="#E0764B">✳ </tspan>Quoi de prévu, Zeyneb ?
+        <tspan fill="#E0764B">✳ </tspan>Quoi de prévu, Noémie ?
       </text>
       {/* zone de contenu (bulles, lignes de progression…) */}
       {children}
@@ -150,7 +150,7 @@ type ChatProps = {
   children?: React.ReactNode;
 };
 
-/** Chat de la plateforme NAIOM — base 460 × 330. */
+/** Chat de la plateforme Noémie.K — base 460 × 330. */
 export function ChatWin({ x, y, s = 1, agent = "Kélan", slug = "orchestrateur", caption, children }: ChatProps) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>

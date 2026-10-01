@@ -178,7 +178,7 @@ export default async function SettingsPage({
       <header className="sticky top-0 z-30">
         <div className="mx-auto max-w-[1400px] flex items-center justify-between gap-4 px-6 sm:px-10 py-6">
           <Link href="/" className="althea-logo hover:opacity-70 transition">
-            naiom
+            Noémie.K
           </Link>
           <nav className="hidden md:flex items-center gap-1">
             <Link href="/" className="althea-nav-link">Accueil</Link>
@@ -254,8 +254,8 @@ export default async function SettingsPage({
       {/* ============ FOOTER ============ */}
       <footer className="relative px-6 sm:px-10 py-10 border-t border-[var(--color-line)]">
         <div className="mx-auto max-w-[1400px] flex flex-wrap items-center justify-between gap-3 text-[12px] text-[var(--color-ink-soft)]">
-          <span className="althea-logo" style={{ fontSize: 22 }}>naiom</span>
-          <span>NAIOM L.L.C-FZ · Dubaï · © 2026</span>
+          <span className="althea-logo" style={{ fontSize: 22 }}>Noémie.K</span>
+          <span>Noémie.K · Konalia · © 2026</span>
           <Link href="/" className="hover:text-[var(--color-ink)] transition">
             Retour à l&apos;accueil
           </Link>

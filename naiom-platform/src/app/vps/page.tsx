@@ -2,7 +2,7 @@ import { AppNav } from "@/components/landing/AppNav";
 import { FigTabs } from "@/components/landing/FigTabs";
 
 export const metadata = {
-  title: "Héberger sur un VPS · naiom",
+  title: "Héberger sur un VPS · Noémie.K",
   description:
     "Tutoriel débutant : mettre son site en ligne sur un serveur — chaque commande traduite en français.",
 };

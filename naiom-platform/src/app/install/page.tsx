@@ -3,7 +3,7 @@ import { ClaudeWin, FileWindow, AgentPic } from "@/components/landing/LiveMocks"
 import { FigTabs } from "@/components/landing/FigTabs";
 
 export const metadata = {
-  title: "Installer · naiom",
+  title: "Installer · Noémie.K",
   description:
     "Guide pas à pas pour installer ton équipe d'employés IA sur ton ordinateur avec Claude Code — pour débutants, sans écrire de code.",
 };

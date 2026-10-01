@@ -32,7 +32,7 @@ const sacramento = Sacramento({
 });
 
 export const metadata: Metadata = {
-  title: "NAIOM · Une équipe d'employés IA",
+  title: "Noémie.K · Ton équipe d'agents IA",
   description: "Mon équipe d'employés IA, sous la main — Konalia par Noémie.",
 };
 

@@ -201,8 +201,8 @@ export default async function DashboardPage() {
       {/* ============ FOOTER mini ============ */}
       <footer className="relative px-6 sm:px-10 py-10 border-t border-[#EEEDF6]">
         <div className="mx-auto max-w-[1400px] flex items-center justify-between gap-3 text-[12px] text-[#8A8A8A]">
-          <span className="althea-logo">naiom</span>
-          <span>NAIOM L.L.C-FZ · Dubaï · © 2026</span>
+          <span className="althea-logo">Noémie.K</span>
+          <span>Noémie.K · Konalia · © 2026</span>
         </div>
       </footer>
     </div>
