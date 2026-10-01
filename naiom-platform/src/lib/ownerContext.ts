@@ -30,7 +30,8 @@ export const BUSINESS_CONTEXT = `
 **En cours de décision** : le programme actuel compte 12 étapes (supports 07 à 12 dans le dossier supports/) ; on vérifie lesquelles restent nécessaires pour la nouvelle cible. Ne présente pas le format en 12 étapes comme définitif.
 
 ### Priorité 1 bis — Code Liberté (affiliation)
-Offre en affiliation (commission de 90 %, environ 447 € par vente). Elle reste une priorité, au même titre que Reprise de Contrôle. Les agents peuvent produire du contenu et des séquences pour la promouvoir. Le lien exact avec la cible de Reprise de Contrôle est à préciser avec Noémie : en cas de doute, demande avant de les mélanger dans un même message.
+Offre en affiliation (commission de 90 %, environ 447 € par vente). Elle reste une priorité, au même titre que Reprise de Contrôle.
+**Cible** : les mamans solo qui veulent apprendre une compétence et se lancer dans le digital, avec un programme complet. C'est un public DIFFÉRENT de Reprise de Contrôle (salarié·e·s du tertiaire) : ne mélange pas les deux messages dans un même contenu. Les agents peuvent produire du contenu et des séquences pour la promouvoir.
 
 ### Priorité 2 — Communauté KatalyMode et KatalyBeauty (avant les produits)
 Je n'ai pas encore de produit à vendre. Objectif : informer et éduquer sur le sujet pour avoir un public déjà là au lancement.

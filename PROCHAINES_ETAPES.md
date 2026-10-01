@@ -7,7 +7,8 @@ Cible : salarié·e·s du tertiaire (assistantes de direction, assistantes admin
 Promesse : un revenu complémentaire sans quitter son emploi, en devenant prestataire administratif pour les dirigeants de TPE/PME et artisans (10 à 15 h/mois), avec un agent IA fourni.
 Prix : 497 € (3 fois possible).
 
-- [ ] Décider quelles étapes du programme (12 actuelles, supports 07 à 12) restent nécessaires pour cette cible
+- [ ] Valider le tri des étapes (voir `01-BY-NOEMIE/Reprise-de-Controle/TRI_DES_ETAPES.md`) et ajouter les supports 01 à 06 au dépôt
+- [ ] Faire les entretiens de validation (voir `GUIDES_ENTRETIENS_VALIDATION.md`)
 - [ ] Définir les 3 à 5 services administratifs vendables aux patrons de TPE et artisans
 - [ ] Définir l'agent IA mis à disposition des participantes (quelles tâches, quel format)
 - [ ] Réécrire la page d'offre (promesse, cible, 497 € en 3 fois)
@@ -15,8 +16,9 @@ Prix : 497 € (3 fois possible).
 - [ ] Adapter les exemples et le vocabulaire des supports existants
 
 ## PRIORITÉ 1 BIS — CODE LIBERTÉ (affiliation, ≈447 € par vente)
-- [ ] Préciser le lien avec la cible de Reprise de Contrôle (même public ou public différent ?)
+Cible : mamans solo qui veulent apprendre une compétence et se lancer dans le digital (programme complet). Public différent de Reprise de Contrôle.
 - [ ] Définir où et comment la promouvoir (contenu, email, page)
+- [ ] Définir l'avatar « maman solo » (distinct de celui des salarié·e·s du tertiaire)
 
 ## PRIORITÉ 2 — COMMUNAUTÉ KATALYMODE ET KATALYBEAUTY (2 comptes séparés)
 Pas de produit pour l'instant : informer, éduquer, construire l'audience.
