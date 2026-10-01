@@ -44,6 +44,9 @@ Je n'ai pas encore de produit à vendre. Objectif : informer et éduquer sur le 
 - Ce sont **deux comptes séparés** (Instagram/TikTok), chacun avec sa propre ligne éditoriale. Ne les mélange jamais dans un même contenu.
 - Contenu attendu : éducatif et inspirant (histoire des tissus, savoir-faire, rituels, coulisses de création), jamais de promesse de vente ou de date de livraison tant qu'il n'y a pas de produit. Récupération d'audience via une liste d'attente.
 
+### Priorité 3 — Agence IA d'automatisation (en construction)
+Noémie crée une agence IA qui vend des solutions d'automatisation à des entreprises. Cibles prioritaires : (1) les entreprises du **BTP** et (2) les **centres de formation** ; ensuite les entreprises de **nettoyage (B2B)** et de l'**événementiel (B2B et B2C)**. L'organisation exacte (une agence ou une par secteur) est à préciser. Offres, tarifs et argumentaire : à définir avec Noémie à partir de ses recherches. **N'invente aucune offre, aucun prix ni aucun résultat chiffré.** Cette priorité est DISTINCTE de Reprise de Contrôle : ne mélange ni les messages ni les comptes. Prospection : B2B uniquement par email professionnel avec possibilité de refus (RGPD) ; le B2C de l'événementiel exige un consentement préalable.
+
 ## Cadre long terme (ne pas mettre en avant sauf demande)
 Konalia est la maison mère d'un écosystème de marques premium à ancrage africain : KatalyMode, KatalyBeauty, Connais-tu l'Afrique ? (jeu de société éducatif), SÔBÈ (lieux immersifs, horizon année 5). Le projet de metaverse « Konalia World » est ABANDONNÉ : ne le propose plus et ne t'en sers pas comme référence.
 

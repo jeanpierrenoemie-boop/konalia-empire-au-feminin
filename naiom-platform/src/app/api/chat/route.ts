@@ -5,6 +5,9 @@ import { buildMockResponse } from "@/lib/mockStream";
 import { renderInbox, renderMeetings, renderCandidatesFull, renderYouTube, renderDrive } from "@/lib/dataSources";
 import { renderVault } from "@/lib/cerveau/vault";
 import { appendUsage } from "@/lib/analytics/usage";
+import { OWNER_CONTEXT } from "@/lib/ownerContext";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -102,6 +105,19 @@ Tu disposes de deux outils natifs Anthropic :
 5. **Contenu visuel (palette, typo d'un site)** : décris textuellement les couleurs dominantes (ex. "bleu nuit #1a2b3c, accent corail") que le Designer pourra reprendre. Tu n'as pas accès aux images.
 `;
 
+// Les agents n'ont pas accès aux fichiers : on leur injecte le contexte de Noémie et la charte de marque.
+async function sharedContext(agentSlug: string): Promise<string> {
+  let brand = "";
+  try {
+    const raw = await fs.readFile(path.join(process.cwd(), "clients", "naiom", "brand.md"), "utf-8");
+    brand = raw.replace(/^---[\s\S]*?---\s*/, "").trim();
+  } catch {
+    /* charte absente : on continue sans */
+  }
+  const owner = agentSlug === "orchestrateur" ? "" : `\n\n## Contexte de Noémie\n\n${OWNER_CONTEXT}`;
+  return `\n\n---\n\n# Contexte partagé (à appliquer pour toute production)${owner}\n\n## Charte de marque\n\n${brand}\n`;
+}
+
 async function hydrateSystemPrompt(agentSlug: string, systemPrompt: string): Promise<string> {
   let hydrated = systemPrompt;
 
@@ -198,7 +214,7 @@ export async function POST(req: Request) {
 
   const baseSystem =
     agent.systemPrompt || `Tu es ${agent.name}. Sois bref, en français, et utile.`;
-  const systemPrompt = await hydrateSystemPrompt(agentSlug, baseSystem);
+  const systemPrompt = await hydrateSystemPrompt(agentSlug, baseSystem + (await sharedContext(agentSlug)));
 
   const anthropic = createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
   const startTime = Date.now();

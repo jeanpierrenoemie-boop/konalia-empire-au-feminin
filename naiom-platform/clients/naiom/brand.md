@@ -55,6 +55,7 @@ statut: actif
 - **Domaine** : katalymode.com (acheté)
 - **Offre principale** : Reprise de Contrôle — 497 € (3 fois possible), salarié·e·s du tertiaire
 - **Code Liberté** : formation d'un tiers à 497 €, Noémie est affiliée (90 %, 372 € nets par vente). Public : mamans solo qui veulent apprendre une compétence et se lancer dans le digital. Public différent de Reprise de Contrôle : ne jamais mélanger les deux messages, ne jamais confondre les deux offres (même prix)
+- **Agence IA d'automatisation** (en construction) : cibles BTP et centres de formation, puis nettoyage B2B et événementiel B2B/B2C. Offres et tarifs à définir : ne rien inventer. Activité distincte de Reprise de Contrôle
 - **Mots à éviter** : « devenir riche rapidement », « revenus passifs sans effort », « quitter ton job en 30 jours », toute promesse de revenu chiffrée sans base réelle
 - **Konalia World** (metaverse 3D) : abandonné
 - **KatalyMode / KatalyBeauty** : audience d'abord (contenu éducatif, liste d'attente), aucune promesse de vente tant qu'il n'y a pas de produit
