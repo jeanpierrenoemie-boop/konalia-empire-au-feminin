@@ -8,3 +8,4 @@ dist/
 naiom-platform/src/data/live-*.json
 .env.local
 naiom-platform/.next/
+analytics/usage/
