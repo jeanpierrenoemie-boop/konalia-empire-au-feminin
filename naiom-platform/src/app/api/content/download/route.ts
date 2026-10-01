@@ -15,13 +15,13 @@ const esc = (s: string) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, 
 function slideHTML(t: { bg: string; fg: string; accent: string; sub: string; font: string }, title: string, body: string, i: number, total: number) {
   const cover = i === 0, last = i === total - 1;
   return `<div class="slide" style="background:${t.bg};color:${t.fg};font-family:${t.font}">
-    <div class="row"><span class="brand" style="color:${t.accent}">NAIOM</span>${!cover ? `<span class="pg" style="color:${t.sub}">${i + 1}/${total}</span>` : ""}</div>
+    <div class="row"><span class="brand" style="color:${t.accent}">Noémie.K</span>${!cover ? `<span class="pg" style="color:${t.sub}">${i + 1}/${total}</span>` : ""}</div>
     <div class="mid">
       ${!cover && !last ? `<span class="num" style="background:${t.accent};color:${t.bg.includes("gradient") ? "#F5411C" : t.bg}">${i}</span>` : ""}
       <div class="title" style="font-size:${cover ? 64 : 46}px">${esc(title)}</div>
       ${body ? `<div class="body" style="color:${t.sub};font-size:${cover ? 30 : 28}px">${esc(body)}</div>` : ""}
     </div>
-    <div class="row foot" style="color:${t.sub}"><span>@naiom.agency</span><span style="color:${t.accent}">${cover ? "Swipe →" : last ? "↗ Contactez-nous" : "→"}</span></div>
+    <div class="row foot" style="color:${t.sub}"><span>@noemie.k</span><span style="color:${t.accent}">${cover ? "Swipe →" : last ? "↗ Écris-moi" : "→"}</span></div>
   </div>`;
 }
 
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
       return new Response(new Uint8Array(pdf), {
         headers: {
           "Content-Type": "application/pdf",
-          "Content-Disposition": `attachment; filename="naiom-${post.platform}-${post.id}.pdf"`,
+          "Content-Disposition": `attachment; filename="noemie-k-${post.platform}-${post.id}.pdf"`,
         },
       });
     } finally { await browser.close(); }

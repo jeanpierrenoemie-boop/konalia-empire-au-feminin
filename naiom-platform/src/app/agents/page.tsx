@@ -15,7 +15,7 @@ export default async function AgentsPage() {
             Votre équipe d'employés IA
           </h1>
           <p className="text-lg text-slate-600">
-            Découvrez les {agents.length} agents spécialisés qui composent votre écosystème NAIOM
+            Découvrez les {agents.length} agents spécialisés qui composent votre écosystème Noémie.K
           </p>
         </div>
 

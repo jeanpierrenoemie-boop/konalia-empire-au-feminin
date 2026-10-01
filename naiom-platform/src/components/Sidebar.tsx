@@ -20,7 +20,7 @@ export async function Sidebar({ activeSlug }: { activeSlug?: string }) {
           N
         </div>
         <div className="flex flex-col leading-tight">
-          <span className="text-[15px] font-black tracking-tight text-[var(--color-ink)]">NAIOM</span>
+          <span className="text-[15px] font-black tracking-tight text-[var(--color-ink)]">Noémie.K</span>
           <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--color-muted)]">
             Multi-Agent Platform
           </span>

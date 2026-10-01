@@ -173,7 +173,7 @@ function PlatformPanel({ platform, saved, onSaved }: { platform: Platform; saved
       if (!r.ok) throw new Error("Téléchargement impossible");
       const blob = await r.blob();
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a"); a.href = url; a.download = `naiom-${platform}.pdf`; a.click();
+      const a = document.createElement("a"); a.href = url; a.download = `noemie-k-${platform}.pdf`; a.click();
       URL.revokeObjectURL(url);
     } catch (e) { alert(e instanceof Error ? e.message : "Erreur"); } finally { setDownloading(false); }
   }
@@ -316,9 +316,9 @@ function MiniVisual({ post }: { post: ContentPost }) {
     return (
       <div className="relative aspect-square w-full overflow-hidden" style={{ background: t.bg, color: t.fg, fontFamily: t.font }}>
         <div className="flex h-full flex-col justify-between p-4">
-          <span className="text-[9px] font-black tracking-widest" style={{ color: t.accent }}>NAIOM</span>
+          <span className="text-[9px] font-black tracking-widest" style={{ color: t.accent }}>Noémie.K</span>
           <div className="line-clamp-4 text-[15px] font-black leading-tight">{s.title}</div>
-          <span className="text-[9px] font-bold" style={{ color: t.sub }}>@naiom.agency</span>
+          <span className="text-[9px] font-bold" style={{ color: t.sub }}>@noemie.k</span>
         </div>
       </div>
     );
@@ -330,7 +330,7 @@ function MiniVisual({ post }: { post: ContentPost }) {
       <div className="flex h-full flex-col justify-between">
         <span>{post.platform === "twitter" ? <XLogo s={16} /> : <span className="text-[13px] font-black">in</span>}</span>
         <div className="line-clamp-5 text-[12px] font-semibold leading-snug">{txt}</div>
-        <span className="text-[9px] opacity-80">@naiom</span>
+        <span className="text-[9px] opacity-80">@noemie.k</span>
       </div>
     </div>
   );
@@ -437,7 +437,7 @@ function SlideCard({ slide, i, total, tmpl }: { slide: Slide; i: number; total: 
   return (
     <div className="relative flex h-full w-full flex-col justify-between p-7" style={{ background: tmpl.bg, color: tmpl.fg, fontFamily: tmpl.font }}>
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-black tracking-widest" style={{ color: tmpl.accent }}>NAIOM</span>
+        <span className="text-[11px] font-black tracking-widest" style={{ color: tmpl.accent }}>Noémie.K</span>
         {!isCover && <span className="text-[11px] font-bold" style={{ color: tmpl.sub }}>{i + 1}/{total}</span>}
       </div>
       <div className="flex-1 flex flex-col justify-center py-4">
@@ -446,7 +446,7 @@ function SlideCard({ slide, i, total, tmpl }: { slide: Slide; i: number; total: 
         {slide.body && <p className={cn("mt-3 leading-snug", isCover ? "text-[15px]" : "text-[14px]")} style={{ color: tmpl.sub }}>{slide.body}</p>}
       </div>
       <div className="flex items-center justify-between text-[11px] font-bold" style={{ color: tmpl.sub }}>
-        <span>@naiom.agency</span>
+        <span>@noemie.k</span>
         {isCover ? <span style={{ color: tmpl.accent }}>Swipe →</span> : isLast ? <span style={{ color: tmpl.accent }}>↗ Contactez-nous</span> : <span>→</span>}
       </div>
     </div>
@@ -485,7 +485,7 @@ function InstagramPreview({ res, tmpl, images }: { res: Result; tmpl: Tmpl; imag
     <div className="w-full max-w-[400px] overflow-hidden rounded-2xl border border-[#dbdbdb] bg-white">
       <div className="flex items-center gap-2.5 px-3 py-2.5">
         <div className="flex h-8 w-8 items-center justify-center rounded-full text-[13px] font-black text-white" style={{ background: "linear-gradient(135deg,#F5411C,#5B4DEE)" }}>N</div>
-        <div className="flex-1"><div className="text-[13px] font-bold leading-none text-black">naiom.agency</div><div className="mt-0.5 text-[11px] text-neutral-500">Sponsorisé</div></div>
+        <div className="flex-1"><div className="text-[13px] font-bold leading-none text-black">noemie.k</div><div className="mt-0.5 text-[11px] text-neutral-500">Sponsorisé</div></div>
         <Icon name="MoreHorizontal" size={18} className="text-black" />
       </div>
       <div className="w-full bg-neutral-100" style={{ aspectRatio: images?.some((x) => x) ? "4/5" : "1/1" }}>
@@ -499,7 +499,7 @@ function InstagramPreview({ res, tmpl, images }: { res: Result; tmpl: Tmpl; imag
         <div className="text-[13px] font-bold text-black">1 248 J&apos;aime</div>
         {(res.caption || res.headline) && (
           <p className="mt-1 text-[13px] leading-snug text-black">
-            <span className="font-bold">naiom.agency</span>{" "}
+            <span className="font-bold">noemie.k</span>{" "}
             <span className="whitespace-pre-wrap">{res.caption ?? ""}</span>
           </p>
         )}
@@ -520,7 +520,7 @@ function LinkedInPreview({ res, tmpl, images }: { res: Result; tmpl: Tmpl; image
       <div className="flex items-start gap-2.5 p-3">
         <div className="flex h-12 w-12 items-center justify-center rounded-full text-[15px] font-black text-white" style={{ background: "#141414" }}>N</div>
         <div className="flex-1">
-          <div className="flex items-center gap-1 text-[14px] font-bold leading-tight text-[#000000e0]">NAIOM <span className="text-[12px] font-normal text-neutral-500">• Vous</span></div>
+          <div className="flex items-center gap-1 text-[14px] font-bold leading-tight text-[#000000e0]">Noémie.K <span className="text-[12px] font-normal text-neutral-500">• Vous</span></div>
           <div className="text-[12px] leading-tight text-neutral-500">Ingénierie d&apos;agents IA & automatisations · 4 380 abonnés</div>
           <div className="flex items-center gap-1 text-[12px] text-neutral-500">2 h · <Icon name="Globe" size={11} /></div>
         </div>
@@ -542,7 +542,7 @@ function LinkedInPreview({ res, tmpl, images }: { res: Result; tmpl: Tmpl; image
         ) : (
           <div className="mx-0 mb-0 aspect-[1.91/1] w-full" style={{ background: tmpl.bg, fontFamily: tmpl.font }}>
             <div className="flex h-full flex-col justify-center p-7" style={{ color: tmpl.fg }}>
-              <span className="text-[11px] font-black tracking-widest" style={{ color: tmpl.accent }}>NAIOM</span>
+              <span className="text-[11px] font-black tracking-widest" style={{ color: tmpl.accent }}>Noémie.K</span>
               <div className="mt-2 text-[26px] font-black leading-tight" style={{ letterSpacing: "-.01em" }}>{res.headline}</div>
             </div>
           </div>
@@ -575,9 +575,9 @@ function TwitterPreview({ res, images }: { res: Result; images?: (string | null)
           </div>
           <div className="flex-1 pb-3">
             <div className="flex items-center gap-1 text-[15px] leading-tight">
-              <span className="font-bold text-black">NAIOM</span>
+              <span className="font-bold text-black">Noémie.K</span>
               <Icon name="BadgeCheck" size={15} className="text-[#1d9bf0]" />
-              <span className="text-neutral-500">@naiom_agency · 2h</span>
+              <span className="text-neutral-500">@noemie_k · 2h</span>
               <span className="ml-auto text-black"><XLogo s={15} /></span>
             </div>
             <p className="mt-1 whitespace-pre-wrap text-[15px] leading-snug text-black">{t}</p>

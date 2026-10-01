@@ -3,7 +3,7 @@ import { AppNav } from "@/components/landing/AppNav";
 import { Icon } from "@/components/Icon";
 
 export const metadata = {
-  title: "Les bases · naiom",
+  title: "Les bases · Noémie.K",
   description:
     "C'est quoi un LLM, une automatisation, un agent IA ? La différence expliquée simplement, avec des schémas animés.",
 };

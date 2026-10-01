@@ -171,7 +171,7 @@ export function CarouselSlidesPanel({
           </div>
           <div className="min-w-0">
             <div className="text-sm font-semibold text-[#0a1410]">
-              Carrousel — style éditorial NAIOM
+              Carrousel — style éditorial
             </div>
             <div className="text-[11px] text-[#1e3a2c]">
               {detection.slideCount} slides · rendu HTML → PNG (texte 100 % fidèle)

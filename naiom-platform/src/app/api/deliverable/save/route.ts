@@ -50,7 +50,7 @@ export async function POST(req: Request) {
 
     const date = nowDateStr();
     const titleSlug = slugify(title);
-    const filename = `${date}-naiom-${agentSlug}-${titleSlug}.md`;
+    const filename = `${date}-noemie-k-${agentSlug}-${titleSlug}.md`;
     const absPath = path.join(folder.abs, filename);
 
     const frontmatter = [
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
       `date: ${date}`,
       `version: 1`,
       `statut: draft`,
-      `source: "Produit depuis la plateforme NAIOM"`,
+      `source: "Produit depuis la plateforme Noémie.K"`,
       `titre: "${title.replace(/"/g, '\\"')}"`,
       "---",
       "",
