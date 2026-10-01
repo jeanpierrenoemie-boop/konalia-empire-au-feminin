@@ -5,38 +5,82 @@ import { useRouter } from "next/navigation";
 import { Icon } from "./Icon";
 import { cn } from "@/lib/utils";
 
-export function SyncButton({
-  className,
-  endpoint,
-  label,
-  disabled,
-  disabledReason,
-}: {
-  className?: string;
-  endpoint?: string;
-  label?: string;
+export interface SyncButtonProps {
+  endpoint: string;
+  label: string;
   disabled?: boolean;
   disabledReason?: string;
-}) {
-  const [isPending, startTransition] = useTransition();
+}
 
-  const handleSync = () => {
-    startTransition(async () => {
-      // Sync implementation
-    });
+export function SyncButton({ endpoint, label, disabled, disabledReason }: SyncButtonProps) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ kind: "success" | "error"; text: string } | null>(null);
+
+  const onClick = async () => {
+    if (disabled) return;
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await fetch(endpoint, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error ?? `HTTP ${res.status}`);
+      }
+      setResult({
+        kind: "success",
+        text: `${data.synced ?? "—"} éléments synchronisés`,
+      });
+      startTransition(() => router.refresh());
+    } catch (e) {
+      setResult({
+        kind: "error",
+        text: e instanceof Error ? e.message : "Erreur",
+      });
+    } finally {
+      setLoading(false);
+      setTimeout(() => setResult(null), 6000);
+    }
   };
 
   return (
-    <button
-      onClick={handleSync}
-      disabled={disabled || isPending}
-      title={disabledReason}
-      className={cn(
-        "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50",
-        className
+    <div className="flex flex-col items-end gap-1">
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={!!disabled || loading || pending}
+        title={disabled ? disabledReason : undefined}
+        className={cn(
+          "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium border transition-colors",
+          disabled
+            ? "border-[var(--color-line)] bg-[var(--color-surface)] text-[var(--color-muted)] cursor-not-allowed"
+            : "border-[var(--color-marine-700)] bg-[#0a1410] text-white hover:bg-[#0a1410]"
+        )}
+      >
+        {loading ? (
+          <>
+            <Icon name="Loader" size={12} className="animate-spin" /> Synchronisation…
+          </>
+        ) : (
+          <>
+            <Icon name="RefreshCw" size={12} /> {label}
+          </>
+        )}
+      </button>
+      {disabled && disabledReason && (
+        <span className="text-[10px] text-[var(--color-muted)] italic">{disabledReason}</span>
       )}
-    >
-      {isPending ? "Syncing..." : label || "Sync"}
-    </button>
+      {result && (
+        <span
+          className={cn(
+            "text-[10px] font-medium",
+            result.kind === "success" ? "text-emerald-700" : "text-red-700"
+          )}
+        >
+          {result.text}
+        </span>
+      )}
+    </div>
   );
 }

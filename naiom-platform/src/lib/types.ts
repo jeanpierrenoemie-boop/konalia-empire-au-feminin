@@ -19,35 +19,35 @@ export type AgentStatus = "active" | "coming-soon" | "locked";
 
 export interface AgentMeta {
   slug: AgentSlug;
-  name: string;
-  role: string;
-  tagline: string;
+  name: string; // prénom de l'agent (ex. "Antoine")
+  role: string; // fonction (ex. "Stratège", "Designer")
+  tagline: string; // description courte
   model: string;
   tools: string[];
   status: AgentStatus;
   accent: "marine" | "nude" | "muted";
-  icon: string;
+  icon: string; // nom d'icône lucide
   systemPrompt: string;
-  deliverableFolder?: string;
+  deliverableFolder?: string; // dossier racine relatif (ex. "briefs")
 }
 
 export interface Deliverable {
-  slug: string;
+  slug: string; // nom de fichier sans extension
   filename: string;
-  title: string;
+  title: string; // premier H1 ou nom fichier
   folder: string;
   absolutePath: string;
   bytes: number;
-  modifiedAt: string;
+  modifiedAt: string; // ISO
   frontmatter: Record<string, unknown>;
 }
 
 export interface CalendarSlot {
-  day: string;
+  day: string; // "Lundi 20 avr."
   channel: "LinkedIn" | "Instagram" | "YouTube" | "Email";
-  time: string;
+  time: string; // "07:45"
   title: string;
-  author: string;
+  author: string; // Zeyneb, Maxim, Page NAIOM
   status: "programmé" | "brouillon" | "publié";
-  deliverableRef?: string;
+  deliverableRef?: string; // filename dans content/
 }
