@@ -1,3 +1,4 @@
+import { BRAND_NAME } from "@/lib/ownerContext";
 /**
  * Générateur HTML de présentations — reproduit fidèlement le template NAIOM
  * (fond crème, typo Inter Black extra-bold, gradients flous orange/rose/violet,
@@ -134,7 +135,7 @@ export type Slide =
 
 export interface Presentation {
   title: string; // pour metadata PDF
-  brand?: string; // footer droit — défaut "NAIOM"
+  brand?: string; // footer droit — défaut : nom de la marque
   date?: string; // footer gauche — défaut mois/année courant
   slides: Slide[];
 }
@@ -172,7 +173,7 @@ function pageNum(i: number, total: number): string {
 
 function renderFooter(i: number, total: number, p: Presentation): string {
   const date = fmtDate(p.date);
-  const brand = (p.brand ?? "NAIOM").toUpperCase();
+  const brand = (p.brand ?? BRAND_NAME).toUpperCase();
   return `<footer class="footer">
     <span class="footer-left">${escapeHtml(date)}</span>
     <span class="footer-center">${pageNum(i, total)}</span>
@@ -241,7 +242,7 @@ function renderTitle(s: SlideTitle, i: number, total: number, p: Presentation): 
   const size = calcHeroSize(s.title);
   return `<section class="slide slide-title">
     ${multiGradientBackground("title")}
-    <div class="title-category">${escapeHtml(s.category ?? (p.brand ?? "NAIOM").toUpperCase())}</div>
+    <div class="title-category">${escapeHtml(s.category ?? (p.brand ?? BRAND_NAME).toUpperCase())}</div>
     <h1 class="title-hero" style="font-size:${size}px">${escapeHtml(s.title)}</h1>
     ${s.subtitle ? `<p class="title-subtitle">${escapeHtml(s.subtitle)}</p>` : ""}
     ${renderFooter(i, total, p)}

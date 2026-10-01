@@ -10,6 +10,7 @@ import puppeteer from "puppeteer";
 import { getLogos, type Logo } from "./logos";
 import { getIcons } from "./icons";
 import type { T1Content, T1Slide } from "./type1";
+import { BRAND_NAME } from "@/lib/ownerContext";
 
 const OUT_DIR = path.join(process.cwd(), "public", "content-out");
 const W = 1080, H = 1350;
@@ -132,7 +133,7 @@ function noteCardHTML(s: T1Slide, ctx: Ctx): string {
 type Ctx = { icons: Record<string, string>; logoByName: Map<string, Logo> };
 
 function head(i: number, total: number): string {
-  return `<div class="top"><span class="brand">NAIOM</span><span class="pg">${String(i + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}</span></div>`;
+  return `<div class="top"><span class="brand">${BRAND_NAME}</span><span class="pg">${String(i + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}</span></div>`;
 }
 function foot(i: number, total: number, swipe = true): string {
   return `<div class="dots">${Array.from({ length: total }).map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("")}</div>${swipe && i < total - 1 ? '<div class="swipe">Swipe →</div>' : ""}`;
@@ -147,7 +148,7 @@ function cover(s: T1Slide, ctx: Ctx, logos: Logo[]): string {
     ? `<div class="combo">${logos.map((l, k) => `${logoTile(l, 84)}${k < logos.length - 1 ? '<span class="plus">+</span>' : ""}`).join("")}</div>`
     : "";
   return `<div class="body cover">
-    <div class="kick">CARROUSEL · NAIOM</div>
+    <div class="kick">CARROUSEL · ${BRAND_NAME}</div>
     <div class="th"><h1 class="serif big">${titleHTML(s.title, ORANGE)}</h1>${underline(ORANGE)}</div>
     ${s.sub ? `<p class="lead">${esc(s.sub)}</p>` : ""}
     ${combo}

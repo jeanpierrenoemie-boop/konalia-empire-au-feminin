@@ -25,9 +25,11 @@ export async function POST(req: Request) {
     const anthropic = createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const { text } = await generateText({
       model: anthropic("claude-sonnet-5"),
-      prompt: `Tu es Sacha, l'agent prospection de NAIOM Agency (agence d'ingénierie d'agents IA et d'automatisations n8n pour PME, basée à Dubaï, clientèle francophone).
+      prompt: `Tu es Sacha, l'agent prospection de Noémie (Noémie.K, marque Konalia).
 
-Rédige une approche de prospection B2B personnalisée pour ce prospect :
+Contexte : Noémie prépare un programme pour des salariées du tertiaire (assistantes, conseillères clientèle) qui veulent devenir prestataires administratifs pour des TPE et des artisans. Avant de construire quoi que ce soit, elle veut COMPRENDRE comment les patrons de TPE et les artisans gèrent aujourd'hui leur administratif (devis, factures, relances, mails). Elle ne vend rien.
+
+Rédige une demande d'échange personnalisée pour ce prospect :
 
 - Entreprise : ${lead.name}
 - Activité : ${lead.category ?? lead.niche} à ${lead.ville}
@@ -35,10 +37,10 @@ Rédige une approche de prospection B2B personnalisée pour ce prospect :
 - Réputation : ${lead.reviewsCount ?? 0} avis Google, note ${lead.rating ?? "?"}/5
 - Ce qu'on sait : ${lead.insights ?? "rien de plus"}
 
-Objectif : proposer un audit gratuit de leurs process (ce qu'une équipe d'agents IA + automatisations pourrait leur faire gagner).
+Objectif : obtenir 20 minutes d'échange (téléphone ou visio) pour comprendre comment il ou elle gère l'administratif. AUCUNE vente, AUCUN prix, AUCUNE offre, AUCUNE promesse de résultat.
 
 Règles STRICTES :
-- Email : objet ≤ 8 mots, corps ≤ 120 mots, vouvoiement. 1re phrase = un fait PRÉCIS sur eux (leurs avis, leur activité, leur ville — pas de flatterie générique). 1 seul bénéfice concret lié à leur métier. CTA doux : proposer l'audit gratuit ou une question ouverte. Signature "Zeyneb — NAIOM Agency".
+- Email : objet ≤ 8 mots, corps ≤ 120 mots, vouvoiement. 1re phrase = un fait PRÉCIS sur eux (leurs avis, leur activité, leur ville — pas de flatterie générique). 1 seule demande : 20 minutes pour comprendre leur quotidien administratif. CTA doux. Signer « Noémie ». Mentionner qu'ils peuvent refuser d'être recontactés.
 - LinkedIn : ≤ 280 caractères, ton direct, pas de "j'espère que vous allez bien".
 - Aucun chiffre inventé, aucun jargon creux.
 

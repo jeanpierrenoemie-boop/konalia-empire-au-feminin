@@ -26,34 +26,34 @@ import type { AgentSlug } from "@/lib/types";
 
 const SUGGESTIONS: Partial<Record<AgentSlug, string[]>> = {
   orchestrateur: [
-    "Je veux lancer une campagne autour de Lina (agent IA content)",
-    "Prépare un post LinkedIn pour l'annonce de la Masterclass",
-    "Qui devrait produire un deck pour pitcher Davide à un prospect ?",
+    "Prépare un post LinkedIn pour présenter Reprise de Contrôle aux assistantes de direction",
+    "Calendrier de contenu éducatif sur 4 semaines pour KatalyMode",
+    "Quelles questions poser à 5 assistantes pour valider mon offre ?",
   ],
   strategiste: [
-    "Produis un brief pour lancer Lina (AI Content Creator) sur LinkedIn",
-    "ICP détaillé pour les agences immobilières intéressées par Davide",
-    "Positionnement concurrentiel vs Webconversion sur l'IA marketing",
+    "Produis un brief pour valider Reprise de Contrôle auprès des assistantes et conseillères clientèle",
+    "Brief de lancement de la liste d'attente KatalyBeauty (sans produit à vendre)",
+    "Positionnement de Reprise de Contrôle : revenu complémentaire sans quitter son emploi",
   ],
   "createur-contenu": [
-    "1 post LinkedIn long pour Maxim sur 'ChatGPT outil vs Davide collègue'",
-    "3 hooks à tester pour une campagne Sophia (AI Executive Assistant)",
-    "Un email de nurturing post-Masterclass (J+1)",
+    "Un carrousel : 3 questions avant de vendre ses services administratifs à un artisan",
+    "3 hooks à tester pour présenter Reprise de Contrôle sur Instagram",
+    "Un post éducatif sur le Bogolan pour le compte KatalyMode",
   ],
   designer: [
-    "Une campagne créative complète (Higgsfield) à partir de ma marque",
+    "Une série de visuels à partir de ma charte (vert sauge, or, marbre)",
     "Décline ce concept en 1:1, 4:5 et 9:16",
-    "3 angles créatifs pour mon prochain lancement + plan de publication",
+    "3 angles créatifs pour le compte KatalyBeauty (textures et rituels, sans produit)",
   ],
   analyste: [
-    "Rapport LinkedIn des posts de la semaine dernière",
-    "Plan d'optim 30j pour Zeyneb sur YouTube",
-    "Quels KPIs prioritaires pour tracker le lancement Davide ?",
+    "Rapport Instagram des posts de la semaine dernière",
+    "Plan d'optimisation sur 30 jours pour le compte Noémie.K",
+    "Quels indicateurs suivre pour valider Reprise de Contrôle ?",
   ],
   presentateur: [
-    "Deck 10 slides pour pitcher Alex à une SaaS e-commerce",
-    "Deck interne 'Roadmap Q3 NAIOM' pour le board",
-    "Pitch investisseur 5 slides (Problem/Solution/Market/Why now/Ask)",
+    "Deck 8 slides pour présenter Reprise de Contrôle",
+    "Synthèse des entretiens de validation en 6 slides",
+    "Présentation d'un partenariat pour KatalyMode",
   ],
   gmail: [
     "Donne-moi ma to-do du jour, priorités en tête",

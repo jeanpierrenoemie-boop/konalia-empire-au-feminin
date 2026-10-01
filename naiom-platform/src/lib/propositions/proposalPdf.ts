@@ -9,6 +9,7 @@ import path from "node:path";
 import puppeteer from "puppeteer";
 import { DELIVERABLE_FOLDERS } from "@/lib/paths";
 import type { Proposal, Solution } from "./proposal";
+import { BRAND_NAME, BRAND_EMAIL } from "@/lib/ownerContext";
 
 const C = { orange: "#F5411C", violet: "#5B4DEE", ink: "#141414", soft: "#5b6170", line: "#e8e8ee", wash: "#FAF6F4" };
 const eur = (n: number) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n || 0);
@@ -30,7 +31,7 @@ function solutionBlock(s: Solution, i: number): string {
     <p class="sol-how">${esc(s.how)}</p>
     <div class="ba">
       <div><div class="ba-label ba-before">Aujourd'hui — manuel</div>${flow(s.before, "muted")}</div>
-      <div style="margin-top:8px"><div class="ba-label ba-after">Avec NAIOM — automatisé</div>${flow(s.after, "accent")}</div>
+      <div style="margin-top:8px"><div class="ba-label ba-after">Avec ${BRAND_NAME} — automatisé</div>${flow(s.after, "accent")}</div>
     </div>
     <div class="sol-foot">
       <div class="tools">${s.tools.map((t) => `<span class="tool">${esc(t)}</span>`).join("")}</div>
@@ -125,7 +126,7 @@ table.price td{ padding:10px 12px;border-bottom:1px solid ${C.line};font-size:12
 </style></head><body>
 
 <div class="cover">
-  <div><div class="brand">NAIOM<span class="dot">.</span></div><div class="brand-tag">Ingénierie d'agents IA & automatisations</div></div>
+  <div><div class="brand">${BRAND_NAME}<span class="dot">.</span></div><div class="brand-tag">Konalia</div></div>
   <div class="kicker">Proposition commerciale — ${esc(p.reference)}</div>
   <h1>${esc(p.prospect)} :<br>automatiser vos process, récupérer votre temps.</h1>
   <div class="promise">${esc(p.executiveSummary)}</div>
@@ -186,7 +187,7 @@ table.price td{ padding:10px 12px;border-bottom:1px solid ${C.line};font-size:12
   <h2 class="sec"><span class="bar"></span>Prochaines étapes</h2>
   <div class="steps">${p.nextSteps.map((s, i) => `<div class="step"><span class="n">${i + 1}</span><span>${esc(s)}</span></div>`).join("")}</div>
   <div class="cta">Une question, un ajustement du périmètre ? <b>Répondez simplement à ce message</b> — on cale un point de 15 min.</div>
-  <div class="sign">NAIOM Agency · naiomagency@gmail.com · Proposition ${esc(p.reference)} — ${esc(p.prospect)}</div>
+  <div class="sign">${BRAND_NAME} · ${BRAND_EMAIL} · Proposition ${esc(p.reference)} — ${esc(p.prospect)}</div>
 </div>
 
 </body></html>`;

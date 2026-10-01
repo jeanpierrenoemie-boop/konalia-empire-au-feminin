@@ -21,17 +21,17 @@ export async function POST(req: Request) {
     return Response.json({ error: "ANTHROPIC_API_KEY absente" }, { status: 412 });
   }
 
-  const system = `Tu es un rédacteur d'emails professionnels pour NAIOM Agency.
+  const system = `Tu es un rédacteur d'emails professionnels pour Noémie (Noémie.K, marque Konalia).
 
 CONSIGNES :
 - Français, vouvoiement B2B
 - Ton : ${tone ?? "professionnel, empathique, direct"}
 - Pas de jargon creux (disruptif, game-changer, etc.)
-- Signature : "Zeyneb Madi, NAIOM Agency"
+- Signature : "Noémie"
 - RÉPONSE OBLIGATOIRE en JSON strict, pas de markdown, pas de préambule.
 
 Format de réponse :
-{"subject": "...", "body": "Bonjour ...,\\n\\n[corps]\\n\\nBien à vous,\\nZeyneb"}`;
+{"subject": "...", "body": "Bonjour ...,\\n\\n[corps]\\n\\nBien à vous,\\nNoémie"}`;
 
   const userPrompt = `Objectif : ${purpose}
 

@@ -1,4 +1,5 @@
 import { markdownToHtml } from "./markdownToHtml";
+import { BRAND_NAME } from "@/lib/ownerContext";
 
 export interface Report {
   title: string;
@@ -347,7 +348,7 @@ html, body {
 `;
 
 export function renderReportHTML(report: Report): string {
-  const brand = (report.brand ?? "NAIOM").toUpperCase();
+  const brand = (report.brand ?? BRAND_NAME).toUpperCase();
   const date = fmtDate(report.date);
   const category = (report.category ?? "RAPPORT").toUpperCase();
   const contentHtml = markdownToHtml(report.markdown);
@@ -377,7 +378,7 @@ export function renderReportHTML(report: Report): string {
     <div class="cover-footer">
       <div class="cover-footer-meta">
         <span class="cover-footer-label">Produit par</span>
-        <span>${escapeHtml(report.author ?? "Plateforme NAIOM — Agents IA")}</span>
+        <span>${escapeHtml(report.author ?? `${BRAND_NAME} — Agents IA`)}</span>
       </div>
       <div class="cover-footer-meta" style="text-align:right">
         <span class="cover-footer-label">Référence</span>

@@ -27,15 +27,16 @@ export interface ContentResult {
   tweets?: string[]; // thread twitter
 }
 
-const VOICE = `Voix NAIOM : experte mais accessible, zéro jargon creux (pas de "synergie", "game-changer"), phrases courtes, on parle AU lecteur ("vous"/"tu" selon le réseau). NAIOM = agence d'ingénierie d'agents IA + automatisations n8n.`;
+const VOICE = `Voix de Noémie (Noémie.K) : chaleureuse, lucide, structurante, directe. Proche sans être familière, inspirante sans être creuse, concrète sans être froide. Zéro jargon creux (pas de "synergie", "game-changer"), phrases courtes, tutoiement. Jamais de promesse de revenu ni de "revenus passifs sans effort".`;
 
-// Voix LinkedIn de Zeyneb (d'après ses posts réels)
-const LI_VOICE = `VOIX ZEYNEB (à respecter absolument) :
-- 1re ligne = HOOK choc / breaking-news / affirmation forte (ex. "🚨 ALERTE : Anthropic vient de sortir Claude…", "Claude vient de tuer la recherche de clients."). Court, ça claque, ça donne envie de cliquer "voir plus".
-- Ligne vide, puis corps TRÈS AÉRÉ : une idée par ligne, phrases courtes, beaucoup de sauts de ligne (\\n\\n).
+// Voix LinkedIn de Noémie (d'après la charte de marque)
+const LI_VOICE = `VOIX DE NOÉMIE (à respecter absolument) :
+- 1re ligne = HOOK clair et concret (une question, un constat vécu, une phrase qui touche). Court, sans sensationnalisme ni « ALERTE ».
+- Ligne vide, puis corps AÉRÉ : une idée par ligne, phrases courtes, sauts de ligne (\\n\\n).
 - Utilise des flèches "→" pour énumérer des points concrets.
-- Ton direct, tutoiement, zéro corporate, zéro jargon creux. Concret, orienté résultat.
-- Termine par un CTA clair : soit "Commente « MOT » et je t'envoie X en DM", soit une question ouverte.
+- Ton chaleureux, direct, tutoiement, zéro corporate, zéro jargon creux. Concret et rassurant.
+- Aucune promesse de revenu chiffrée, jamais « devenir riche rapidement » ni « quitter ton job en 30 jours ».
+- Termine par un CTA clair : une question ouverte ou une invitation à répondre en commentaire.
 - Pas de hashtags dans le body (ils vont dans "hashtags").`;
 
 function instructions(platform: Platform, format: Format, template?: string): string {
@@ -57,7 +58,7 @@ Réponds en JSON: {"tweets":["tweet1","tweet2",...]}.`;
 Réponds en JSON: {"body":"le tweet","hashtags":["#..."]}.`;
   }
   if (platform === "linkedin" && format === "image") {
-    return `Format : POST LinkedIn IMAGE + texte. "headline" = accroche forte qui ira EN GROS sur le visuel (≤ 12 mots). "body" = le post LinkedIn dans la VOIX de Zeyneb.
+    return `Format : POST LinkedIn IMAGE + texte. "headline" = accroche forte qui ira EN GROS sur le visuel (≤ 12 mots). "body" = le post LinkedIn dans la VOIX de Noémie.
 ${LI_VOICE}
 Réponds en JSON: {"headline":"","body":"","hashtags":["#..."]}.${tmpl}`;
   }
@@ -66,7 +67,7 @@ Réponds en JSON: {"headline":"","body":"","hashtags":["#..."]}.${tmpl}`;
 Réponds en JSON: {"headline":"","body":"","hashtags":["#..."]}.${tmpl}`;
   }
   if (platform === "linkedin") {
-    return `Format : POST LinkedIn texte, dans la VOIX de Zeyneb.
+    return `Format : POST LinkedIn texte, dans la VOIX de Noémie.
 ${LI_VOICE}
 Réponds en JSON: {"body":"le post complet avec sauts de ligne \\n","hashtags":["#..."]}.`;
   }

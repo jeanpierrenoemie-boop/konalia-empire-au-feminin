@@ -1,4 +1,5 @@
 import type { Presentation, Slide } from "./template";
+import { BRAND_HANDLE } from "@/lib/ownerContext";
 
 /**
  * Parse un deck en markdown produit par l'agent Présentateur et le convertit
@@ -493,8 +494,8 @@ export function parseDeckMarkdown(markdown: string, fallbackTitle = "Présentati
     slides.push({
       kind: "thanks",
       title: "merci",
-      body: "Cette présentation a été générée automatiquement par la plateforme NAIOM.",
-      resources: ["naiomagency.com"],
+      body: "Présentation préparée avec les agents de Noémie.K.",
+      resources: [BRAND_HANDLE],
     });
   }
 

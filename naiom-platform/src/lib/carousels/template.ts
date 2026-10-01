@@ -15,6 +15,7 @@
  */
 
 import type { Slide, Presentation } from "../presentations/template";
+import { BRAND_NAME, BRAND_HANDLE } from "@/lib/ownerContext";
 
 export type CarouselRatio = "1:1" | "4:5" | "9:16";
 
@@ -86,17 +87,17 @@ function brandHeader(variant: "compact" | "centered" = "compact"): string {
   if (variant === "centered") {
     return `<div class="brand-centered">
       <span class="brand-dot">✳</span>
-      <span class="brand-name">NAIOM</span>
+      <span class="brand-name">${BRAND_NAME}</span>
     </div>`;
   }
   return `<div class="brand-compact">
     <span class="brand-dot">✳</span>
-    <span class="brand-name">NAIOM</span>
+    <span class="brand-name">${BRAND_NAME}</span>
   </div>`;
 }
 
 function handleFooter(): string {
-  return `<div class="handle-footer">@naiomagency</div>`;
+  return `<div class="handle-footer">${BRAND_HANDLE}</div>`;
 }
 
 // --- Renderers par type de slide ---

@@ -18,7 +18,7 @@ const ACTION_ORIENTED_INSTRUCTION = `
 **Produis DIRECTEMENT le livrable demandé dans ta première réponse.**
 
 - Ne pose PAS de question de clarification si l'intention est raisonnablement claire.
-- Commence ta réponse par un titre markdown (\`# ...\`) qui reflète le livrable (ex. \`# Post LinkedIn — lancement Davide\`, \`# Brief de campagne — Q2 2026\`).
+- Commence ta réponse par un titre markdown (\`# ...\`) qui reflète le livrable (ex. \`# Post LinkedIn — Reprise de Contrôle\`, \`# Brief de campagne — Q2 2026\`).
 - Si un détail manque (public exact, canal, ton, deadline), fais une **hypothèse raisonnable** et note-la clairement à la fin dans une section "## Hypothèses" — plutôt que de demander.
 - Livre un produit fini, pas un plan d'action : du contenu prêt à copier, un brief complet, un prompt image utilisable, pas une promesse.
 - Ne pose une question QUE si la demande est réellement ambigüe (ex. "help me", "fais un truc", "aide").

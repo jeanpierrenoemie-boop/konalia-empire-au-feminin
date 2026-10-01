@@ -204,7 +204,9 @@ export async function getYouTubeSnapshot(): Promise<{ live: boolean; lastUpdated
   try {
     const raw = await fs.readFile(LIVE_YOUTUBE_FILE, "utf-8");
     const stat = await fs.stat(LIVE_YOUTUBE_FILE);
-    return { live: true, lastUpdated: stat.mtime.toISOString(), data: JSON.parse(raw) };
+    const data = JSON.parse(raw);
+    if (!data || Object.keys(data).length === 0) return { live: false };
+    return { live: true, lastUpdated: stat.mtime.toISOString(), data };
   } catch {
     return { live: false };
   }
@@ -225,7 +227,9 @@ export async function getDriveSnapshot(): Promise<{ live: boolean; lastUpdated?:
   try {
     const raw = await fs.readFile(LIVE_DRIVE_FILE, "utf-8");
     const stat = await fs.stat(LIVE_DRIVE_FILE);
-    return { live: true, lastUpdated: stat.mtime.toISOString(), data: JSON.parse(raw) };
+    const data = JSON.parse(raw);
+    if (!data || Object.keys(data).length === 0) return { live: false };
+    return { live: true, lastUpdated: stat.mtime.toISOString(), data };
   } catch {
     return { live: false };
   }

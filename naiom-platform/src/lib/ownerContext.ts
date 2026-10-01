@@ -6,6 +6,9 @@
 
 export const OWNER_NAME = "Noémie";
 export const OWNER_HANDLE = "Noémie.K";
+export const BRAND_NAME = "Noémie.K";
+export const BRAND_HANDLE = "@noemie.k";
+export const BRAND_EMAIL = "jeanpierrenoemie@gmail.com";
 
 export const OWNER_BIO = `
 ## Qui je suis — Noémie.K
