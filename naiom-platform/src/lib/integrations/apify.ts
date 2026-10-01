@@ -1,5 +1,5 @@
 /**
- * Client Apify — scraping pour l'agent prospection (Sékou / IAcquisition™).
+ * Client Apify — scraping pour l'agent prospection (Sacha / IAcquisition™).
  *
  * Auth : APIFY_TOKEN dans .env.local (Apify → Settings → Integrations → API token).
  * Acteur utilisé pour la DÉTECTION : compass/crawler-google-places
@@ -37,4 +37,113 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const text = await res.text();
   if (!res.ok) throw new Error(`Apify ${path.split("?")[0]} → ${res.status} : ${text.slice(0, 300)}`);
   return JSON.parse(text) as T;
+}
+
+export interface GmapsPlace {
+  title?: string;
+  address?: string;
+  city?: string;
+  phone?: string;
+  website?: string;
+  totalScore?: number;
+  reviewsCount?: number;
+  categoryName?: string;
+  url?: string; // fiche Google Maps
+  emails?: string[];
+  instagrams?: string[];
+  linkedIns?: string[];
+  facebooks?: string[];
+}
+
+/**
+ * DÉTECTION : lance le scraper Google Maps sur « {niche} {ville} » et attend
+ * le résultat (poll toutes les 5 s, ~4 min max).
+ */
+export async function detectLeads(params: {
+  niche: string;
+  ville: string;
+  max?: number;
+}): Promise<GmapsPlace[]> {
+  const input = {
+    searchStringsArray: [`${params.niche} ${params.ville}`],
+    maxCrawledPlacesPerSearch: Math.min(params.max ?? 10, 300),
+    language: "fr",
+    skipClosedPlaces: true,
+    // récupère emails + réseaux sociaux depuis le site web des fiches
+    scrapeContacts: true,
+    scrapeDirectEmailAndPhone: true,
+  };
+
+  // 1. démarre le run
+  const run = await api<{ data: { id: string; defaultDatasetId: string } }>(
+    `/acts/${GMAPS_ACTOR}/runs`,
+    { method: "POST", body: JSON.stringify(input) }
+  );
+  const runId = run.data.id;
+
+  // 2. poll jusqu'à la fin (jusqu'à ~9 min pour les gros volumes)
+  const deadline = Date.now() + 9 * 60_000;
+  let datasetId = run.data.defaultDatasetId;
+  for (;;) {
+    await new Promise((r) => setTimeout(r, 5000));
+    const st = await api<{ data: { status: string; defaultDatasetId: string } }>(
+      `/actor-runs/${runId}`
+    );
+    datasetId = st.data.defaultDatasetId ?? datasetId;
+    if (st.data.status === "SUCCEEDED") break;
+    if (["FAILED", "ABORTED", "TIMED-OUT"].includes(st.data.status)) {
+      throw new Error(`Le scraping Apify a échoué (statut ${st.data.status}).`);
+    }
+    if (Date.now() > deadline) {
+      // on abandonne le run pour ne pas consommer inutilement
+      await api(`/actor-runs/${runId}/abort`, { method: "POST" }).catch(() => undefined);
+      throw new Error("Scraping trop long — réduisez le nombre de résultats.");
+    }
+  }
+
+  // 3. lit les résultats
+  const items = await api<GmapsPlace[]>(`/datasets/${datasetId}/items?clean=true&limit=300`);
+  return items;
+}
+
+/* ------- Détection EN DIRECT (streaming incrémental) ------- */
+/** Démarre le run Apify sans attendre — renvoie l'id du run + du dataset. */
+export async function startDetectRun(params: { niche: string; ville: string; max?: number }): Promise<{ runId: string; datasetId: string }> {
+  const input = {
+    searchStringsArray: [`${params.niche} ${params.ville}`],
+    maxCrawledPlacesPerSearch: Math.min(params.max ?? 100, 300),
+    language: "fr",
+    countryCode: "fr", // géolocalise en France (sinon « restaurant Lyon » remonte des chaînes US)
+    skipClosedPlaces: true,
+    // DÉTECTION rapide : on NE scrape PAS les sites ici (emails/réseaux) — c'est
+    // ce qui prenait 30-90 s. Les contacts sont récupérés à l'étape Enrichissement.
+    scrapeContacts: false,
+    scrapeDirectEmailAndPhone: false,
+    maxImages: 0,
+    maxReviews: 0,
+    maxQuestions: 0,
+  };
+  // memory=4096 : le scraper démarre et scrolle beaucoup plus vite (→ plus de
+  // résultats, plus rapidement) que le défaut 1024.
+  const run = await api<{ data: { id: string; defaultDatasetId: string } }>(
+    `/acts/${GMAPS_ACTOR}/runs?memory=4096`,
+    { method: "POST", body: JSON.stringify(input) }
+  );
+  return { runId: run.data.id, datasetId: run.data.defaultDatasetId };
+}
+
+/** Statut courant d'un run. */
+export async function runStatus(runId: string): Promise<{ status: string; datasetId?: string }> {
+  const st = await api<{ data: { status: string; defaultDatasetId: string } }>(`/actor-runs/${runId}`);
+  return { status: st.data.status, datasetId: st.data.defaultDatasetId };
+}
+
+/** Lit une tranche du dataset (les items déjà produits par le run). */
+export async function datasetItems(datasetId: string, offset: number, limit = 50): Promise<GmapsPlace[]> {
+  return api<GmapsPlace[]>(`/datasets/${datasetId}/items?clean=true&offset=${offset}&limit=${limit}`);
+}
+
+/** Coupe un run (pour ne pas consommer inutilement). */
+export async function abortRun(runId: string): Promise<void> {
+  await api(`/actor-runs/${runId}/abort`, { method: "POST" }).catch(() => undefined);
 }
