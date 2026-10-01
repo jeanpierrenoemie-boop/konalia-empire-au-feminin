@@ -4,6 +4,7 @@ dist/
 *.db
 *.db-shm
 *.db-wal
-data/
+/server/data/
+naiom-platform/src/data/live-*.json
 .env.local
 naiom-platform/.next/
