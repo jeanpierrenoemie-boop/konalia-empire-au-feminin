@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { listAgentSync } from "@/lib/agents";
+import { listAgentSync } from "@/lib/agentsList";
 import { Icon } from "@/components/Icon";
 
 interface Agent {

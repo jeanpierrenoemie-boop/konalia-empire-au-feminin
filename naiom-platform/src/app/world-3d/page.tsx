@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import Link from "next/link";
 import { WorldScene } from "@/components/3d/WorldScene";
-import { listAgentSync } from "@/lib/agents";
+import { listAgentSync } from "@/lib/agentsList";
 
 interface AgentState {
   slug: string;
@@ -274,7 +274,7 @@ export default function World3DPage() {
                 <div>
                   <p className="text-xs text-slate-500 mb-1">État</p>
                   <p className="text-sm">
-                    {MOODS[selectedAgent.mood].label}
+                    {(MOODS as Record<string, { label: string; color: string }>)[selectedAgent.mood]?.label}
                   </p>
                 </div>
 

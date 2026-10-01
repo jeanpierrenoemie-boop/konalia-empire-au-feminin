@@ -22,7 +22,7 @@ function token(): string {
 }
 
 async function at<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${APII}${path}`, {
+  const res = await fetch(`${API}${path}`, {
     ...init,
     headers: { Authorization: `Bearer ${token()}`, "Content-Type": "application/json", ...(init?.headers ?? {}) },
     cache: "no-store",

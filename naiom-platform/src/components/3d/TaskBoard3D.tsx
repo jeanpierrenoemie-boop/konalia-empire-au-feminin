@@ -100,7 +100,7 @@ export function TaskBoard3D({ position, agentSlug, quartier }: TaskBoard3DProps)
         fontSize={0.2}
         color="#FFFFFF"
         anchorX="right"
-        anchorY="center"
+        anchorY="middle"
         fontWeight="bold"
       >
         {progress}%
@@ -112,7 +112,7 @@ export function TaskBoard3D({ position, agentSlug, quartier }: TaskBoard3DProps)
         fontSize={0.15}
         color="#9CA3AF"
         anchorX="left"
-        anchorY="center"
+        anchorY="middle"
       >
         Status: {currentTask.status === "in_progress" ? "🟢 EN COURS" : "✅ COMPLÉTÉ"}
       </Text>
