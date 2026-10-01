@@ -24,7 +24,7 @@ export default async function AgentsPage() {
           {agents.map((agent) => (
             <Link
               key={agent.slug}
-              href={`/agent/${agent.slug}`}
+              href={`/agents/${agent.slug}`}
               className="group relative"
             >
               <div className="h-full bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 p-6 flex flex-col">
