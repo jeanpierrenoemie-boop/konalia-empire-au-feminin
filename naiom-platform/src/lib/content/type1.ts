@@ -1,6 +1,6 @@
 /**
  * Contenu STRUCTURÉ pour des carrousels ÉDUCATIFS (explicatifs, ludiques).
- * Léa choisit le meilleur layout pour EXPLIQUER chaque idée : schéma de flux,
+ * Aïna choisit le meilleur layout pour EXPLIQUER chaque idée : schéma de flux,
  * avant/après, stat/graph, tableau d'outils, liste illustrée, diagramme.
  * Rendu ensuite en HTML éditorial (style template) — sans photo, sans hors-sujet.
  */
@@ -36,7 +36,7 @@ export interface T1Slide {
 }
 export interface T1Content { slides: T1Slide[]; tools: string[]; idea: string }
 
-const SYS = `Tu es Léa, créatrice de contenu de Noémie (Noémie.K). Tu conçois des CARROUSELS INSTAGRAM ÉDUCATIFS : explicatifs, clairs, ludiques. On doit COMPRENDRE ce que tu racontes. Tu tutoies, zéro jargon creux.
+const SYS = `Tu es Aïna, créatrice de contenu de Noémie (Noémie.K). Tu conçois des CARROUSELS INSTAGRAM ÉDUCATIFS : explicatifs, clairs, ludiques. On doit COMPRENDRE ce que tu racontes. Tu tutoies, zéro jargon creux.
 Tu choisis, pour chaque idée, le layout qui l'EXPLIQUE le mieux (schéma, avant/après, chiffre, tableau, liste, diagramme). Rien de hors-sujet.
 Tu réponds UNIQUEMENT avec un JSON valide (aucun texte autour, pas de bloc markdown, échappe les retours-ligne dans les chaînes).`;
 

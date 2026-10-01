@@ -1,5 +1,5 @@
 /**
- * Mia formule un prompt Higgsfield Soul (text-to-image) à partir d'une idée
+ * Zayna formule un prompt Higgsfield Soul (text-to-image) à partir d'une idée
  * + du brand kit. Sortie : prompt EN ANGLAIS (Soul rend mieux en anglais),
  * cadré marque, + un negative prompt.
  */
@@ -35,7 +35,7 @@ export async function formulatePrompt(input: FormulateInput): Promise<FormulateO
     bk.notes ? `Constraints & must-haves: ${bk.notes}` : "",
   ].filter(Boolean).join("\n");
 
-  const system = `Tu es Mia, Creative Strategist. Tu écris des prompts pour Higgsfield Soul (générateur d'images photoréaliste haut de gamme).
+  const system = `Tu es Zayna, Creative Strategist. Tu écris des prompts pour Higgsfield Soul (générateur d'images photoréaliste haut de gamme).
 Règles:
 - Sors UNIQUEMENT un JSON { "prompt": "...", "negative_prompt": "..." } — rien d'autre.
 - Le "prompt" est en ANGLAIS, dense et visuel (une seule phrase riche à quelques phrases), format ${input.format} (${FORMAT_HINT[input.format] ?? ""}).

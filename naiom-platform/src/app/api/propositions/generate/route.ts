@@ -10,7 +10,7 @@ const INTERNAL = /zeyneb|maxim|naiom/i;
 
 /**
  * POST /api/propositions/generate { callId }
- * Victor reprend le call (Fireflies) → proposition STRUCTURÉE → PDF pro (schémas + prix).
+ * Idriss reprend le call (Fireflies) → proposition STRUCTURÉE → PDF pro (schémas + prix).
  * Renvoie le PDF (downloadUrl) + l'email d'accompagnement SÉPARÉ.
  */
 interface LeadInput {
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     let proposal;
 
     if (body.lead?.name) {
-      // ---- Source : LEAD détecté par Sacha (prospection) ----
+      // ---- Source : LEAD détecté par Sékou (prospection) ----
       const l = body.lead;
       const prospect = l.name;
       const sizeLabel = (l.reviewsCount ?? 0) >= 300 ? "grande" : (l.reviewsCount ?? 0) >= 50 ? "moyenne" : "petite";
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         l.rating != null ? `Note Google ${l.rating}/5 sur ${l.reviewsCount ?? 0} avis (entreprise ${sizeLabel}).` : "",
         l.website ? `Site web : ${l.website}.` : "Pas de site web détecté — fort besoin de digitalisation.",
         l.phone ? `Téléphone : ${l.phone}.` : "",
-        l.insights ? `Notes de Sacha : ${l.insights}` : "",
+        l.insights ? `Notes de Sékou : ${l.insights}` : "",
       ].filter(Boolean).join(" ");
       const keyPoints = [
         l.website ? "Présence digitale : site web existant" : "Pas de site web → opportunité de digitalisation",

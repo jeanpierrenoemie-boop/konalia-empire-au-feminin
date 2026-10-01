@@ -111,7 +111,7 @@ async function hydrateSystemPrompt(agentSlug: string, systemPrompt: string): Pro
   if (agentSlug === "fireflies" || agentSlug === "orchestrateur") {
     hydrated = hydrated.replace("{{MEETINGS_SNAPSHOT}}", await renderMeetings());
   }
-  // Victor (proposition) : on lui donne les vrais calls Fireflies pour qu'il rédige
+  // Idriss (proposition) : on lui donne les vrais calls Fireflies pour qu'il rédige
   // directement la proposition à partir du call demandé (pas de "je vérifie d'abord").
   if (agentSlug === "proposition") {
     const meetings = await renderMeetings();
@@ -120,7 +120,7 @@ async function hydrateSystemPrompt(agentSlug: string, systemPrompt: string): Pro
   if (agentSlug === "cv" || agentSlug === "orchestrateur") {
     hydrated = hydrated.replace("{{CANDIDATES_SNAPSHOT}}", await renderCandidatesFull());
   }
-  // Clément (cerveau) : on lui injecte tout le vault Obsidian de l'entreprise.
+  // Kéïta (cerveau) : on lui injecte tout le vault Obsidian de l'entreprise.
   if (agentSlug === "cerveau") {
     const vault = await renderVault();
     hydrated += `\n\n---\n\n# Vault de l'entreprise (ta connaissance interne — notes Obsidian)\n\nVoici TOUTES les notes internes. Réponds uniquement à partir d'elles, cite les faits exacts (prix, dates, noms), et indique la ou les notes utilisées.\n\n${vault}`;

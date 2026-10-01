@@ -1,5 +1,5 @@
 /**
- * Intégration Higgsfield pour l'agent Creative Strategist (Mia).
+ * Intégration Higgsfield pour l'agent Creative Strategist (Zayna).
  * Pilote le **CLI Higgsfield** (authentifié en OAuth : `higgsfield auth login`),
  * pas une paire de clés REST. Le CLI stocke ses creds dans ~/.config/higgsfield/.
  */

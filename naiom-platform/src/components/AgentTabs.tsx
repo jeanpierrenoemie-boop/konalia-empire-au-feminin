@@ -17,16 +17,16 @@ interface AgentTabsProps {
   deliverablesCount: number;
   filesPanel: React.ReactNode; // pré-rendu côté serveur (DeliverablesPanel)
   contextPanel?: React.ReactNode; // InboxPreview / MeetingsPreview / CandidatesPreview (optionnel)
-  thumbnailPanel?: React.ReactNode; // ThumbnailStudio — uniquement pour le Designer (Mia)
+  thumbnailPanel?: React.ReactNode; // ThumbnailStudio — uniquement pour le Designer (Zayna)
   videoPanel?: React.ReactNode; // EcommerceStudio — uniquement pour l'agente e-commerce (Emma)
   pipelinePanel?: React.ReactNode;
-  veillePanel?: React.ReactNode; // VeilleStudio — uniquement pour l'agente veille (Nina) // ProspectionStudio — uniquement pour l'agent prospection (Sacha)
-  proposalPanel?: React.ReactNode; // PropositionStudio — uniquement pour Victor (proposition)
-  suiviPanel?: React.ReactNode; // PropositionDashboard — suivi des propositions (Victor)
+  veillePanel?: React.ReactNode; // VeilleStudio — uniquement pour l'agente veille (Nali) // ProspectionStudio — uniquement pour l'agent prospection (Sékou)
+  proposalPanel?: React.ReactNode; // PropositionStudio — uniquement pour Idriss (proposition)
+  suiviPanel?: React.ReactNode; // PropositionDashboard — suivi des propositions (Idriss)
   comptaPanel?: React.ReactNode; // ComptaStudio — uniquement pour Chloé (comptabilite)
-  creativePanel?: React.ReactNode; // CreativeStudio — uniquement pour Mia (designer / Creative Strategist)
-  contentPanel?: React.ReactNode; // ContentStudio — uniquement pour Léa (createur-contenu)
-  cerveauPanel?: React.ReactNode; // CerveauStudio — uniquement pour Clément (cerveau)
+  creativePanel?: React.ReactNode; // CreativeStudio — uniquement pour Zayna (designer / Creative Strategist)
+  contentPanel?: React.ReactNode; // ContentStudio — uniquement pour Aïna (createur-contenu)
+  cerveauPanel?: React.ReactNode; // CerveauStudio — uniquement pour Kéïta (cerveau)
   coulissesPanel?: React.ReactNode; // « Coulisses » — explication de l'agent
 }
 

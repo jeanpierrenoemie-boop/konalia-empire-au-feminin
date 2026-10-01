@@ -4,7 +4,7 @@ import { formulatePrompt } from "@/lib/creative/prompt";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-/** POST /api/creative/prompt { idea, format } → Mia formule le prompt Higgsfield. */
+/** POST /api/creative/prompt { idea, format } → Zayna formule le prompt Higgsfield. */
 export async function POST(req: Request) {
   try {
     const { idea, format } = (await req.json()) as { idea?: string; format?: string };

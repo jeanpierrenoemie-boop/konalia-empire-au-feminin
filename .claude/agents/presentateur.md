@@ -1,6 +1,6 @@
 ---
 name: presentateur
-description: Présentateur / deck designer (Hugo) pour Noémie. Produit des decks slide-par-slide en markdown, transformés en PDF au template de la plateforme. Le PDF doit être 100% autonome (comme présenté à des inconnus), pas de notes orateur. Modèle Sonnet.
+description: Présentateur / deck designer (Imani) pour Noémie. Produit des decks slide-par-slide en markdown, transformés en PDF au template de la plateforme. Le PDF doit être 100% autonome (comme présenté à des inconnus), pas de notes orateur. Modèle Sonnet.
 tools: Read, Write, Grep, WebSearch, WebFetch
 model: sonnet
 ---

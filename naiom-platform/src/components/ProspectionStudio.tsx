@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Pipeline IAcquisition™ de l'agent prospection (Sacha) — CRM Kanban.
+ * Pipeline IAcquisition™ de l'agent prospection (Sékou) — CRM Kanban.
  *
  * DÉTECTION (Apify) → ENRICHISSEMENT (site) → PERSONNALISATION (Claude)
  * → CONTACT (Gmail). Vue en 4 colonnes façon CRM ; clic sur un prospect →
@@ -89,7 +89,7 @@ const FIT_THRESHOLD = 70; // au-dessus → pré-coché
 const ACTION_HELP: Record<LeadStatus, { title: string; desc: string } | null> = {
   detecte: {
     title: "Enrichir ce prospect",
-    desc: "Sacha visite son site web pour récupérer son adresse email, ses réseaux sociaux et comprendre son activité. Gratuit, ~10 secondes.",
+    desc: "Sékou visite son site web pour récupérer son adresse email, ses réseaux sociaux et comprendre son activité. Gratuit, ~10 secondes.",
   },
   enrichi: {
     title: "Personnaliser l'approche",
@@ -401,7 +401,7 @@ APIFY_TOKEN=apify_api_...
         <div className="flex items-center gap-2.5 flex-wrap">
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5B4DEE] text-[12px] font-black text-white">1</span>
           <h3 className="bronx-name" style={{ fontSize: 17 }}>Trouver de nouveaux prospects</h3>
-          <span className="hidden sm:inline text-[12px] text-[#8A8A8A]">— Sacha fait remonter les entreprises <b>une par une, en direct</b></span>
+          <span className="hidden sm:inline text-[12px] text-[#8A8A8A]">— Sékou fait remonter les entreprises <b>une par une, en direct</b></span>
           {leads.length > 0 && !detecting && (
             <button
               type="button"
@@ -487,7 +487,7 @@ APIFY_TOKEN=apify_api_...
         {detecting && (
           <div className="mt-3">
             <div className="flex items-center justify-between text-[12.5px] font-bold text-[#5B4DEE]">
-              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#5B4DEE] animate-pulse" /> {found === 0 ? "Connexion à Google Maps… le scan démarre" : `Sacha remonte les prospects en direct — ${niche} à ${ville}`}</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#5B4DEE] animate-pulse" /> {found === 0 ? "Connexion à Google Maps… le scan démarre" : `Sékou remonte les prospects en direct — ${niche} à ${ville}`}</span>
               <span className="tabular-nums">{found} / {max}</span>
             </div>
             <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-[#EDEBFF]">
@@ -747,7 +747,7 @@ function LeadDetail({
         {/* insights (après enrichissement) */}
         {lead.insights && (
           <div className="rounded-xl border border-[#EEEDF6] p-3.5">
-            <div className="text-[10.5px] font-black uppercase tracking-wider text-[#8A8A8A] mb-1">🔎 Ce que Sacha a compris</div>
+            <div className="text-[10.5px] font-black uppercase tracking-wider text-[#8A8A8A] mb-1">🔎 Ce que Sékou a compris</div>
             <p className="text-[12.5px] leading-relaxed text-[#3A3A3A]">{lead.insights}</p>
           </div>
         )}

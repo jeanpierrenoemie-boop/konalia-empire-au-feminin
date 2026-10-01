@@ -128,7 +128,7 @@ export default async function AgentPage({
     agent.slug === "cv" ? <CandidatesPreview /> :
     null;
 
-  // Studio Proposition (Victor) : branché aux calls Fireflies.
+  // Studio Proposition (Idriss) : branché aux calls Fireflies.
   const proposalPanel =
     agent.slug === "proposition"
       ? (
@@ -193,11 +193,11 @@ export default async function AgentPage({
         </div>
       </header>
 
-      {/* ============ Layout : 2 colonnes par défaut ; pleine largeur + bandeau horizontal pour Clément (cerveau) ============ */}
+      {/* ============ Layout : 2 colonnes par défaut ; pleine largeur + bandeau horizontal pour Kéïta (cerveau) ============ */}
       <div className={`mx-auto ${(agent.slug === "cerveau" || agent.slug === "prospection") ? "max-w-[1720px]" : "max-w-[1400px]"} px-4 sm:px-6 pt-8 pb-16`}>
         <div className={(agent.slug === "cerveau" || agent.slug === "prospection") ? "flex flex-col gap-6" : "grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 lg:gap-10 items-start"}>
 
-          {/* ============ Colonne gauche : avatar + identité + stats (bandeau horizontal pour Clément & Sacha) ============ */}
+          {/* ============ Colonne gauche : avatar + identité + stats (bandeau horizontal pour Kéïta & Sékou) ============ */}
           {(agent.slug === "cerveau" || agent.slug === "prospection") ? (
           <div className="althea-card p-5 flex items-center gap-5 flex-wrap">
             <div className="relative shrink-0" style={{ width: 88, height: 88 }}>

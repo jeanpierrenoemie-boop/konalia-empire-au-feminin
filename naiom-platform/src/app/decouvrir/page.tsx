@@ -13,12 +13,12 @@ import { BrainGate } from "./BrainGate";
 
 // Agents offerts gratuitement à une date (les autres → rejoindre brAIn)
 const RELEASE: Record<string, string> = {
-  "createur-contenu": "13 septembre", // Léa
+  "createur-contenu": "13 septembre", // Aïna
   ecommerce: "13 septembre",           // Emma
-  prospection: "14 septembre",         // Sacha
-  fireflies: "14 septembre",           // Jules
-  proposition: "14 septembre",         // Victor
-  veille: "14 septembre",              // Nina
+  prospection: "14 septembre",         // Sékou
+  fireflies: "14 septembre",           // Sira
+  proposition: "14 septembre",         // Idriss
+  veille: "14 septembre",              // Nali
 };
 
 export default async function DecouvrirPage() {

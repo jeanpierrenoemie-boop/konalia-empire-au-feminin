@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CerveauOverview } from "./CerveauOverview";
 
 /**
- * CerveauStudio — le "cerveau de l'entreprise" de Clément.
+ * CerveauStudio — le "cerveau de l'entreprise" de Kéïta.
  * Rend le vault Obsidian sous forme de graphe force-directed, et ANIME la
  * recherche : quand on pose une question, on voit le cerveau parcourir les
  * notes une à une (nœuds qui s'allument, arêtes qui pulsent, lecture affichée).
@@ -325,7 +325,7 @@ export function CerveauStudio() {
               </div>
               {phase === "done" && resp && (
                 <div className="cv-answer">
-                  <div className="cv-answer-hd"><span className="cv-clem">C</span> Clément répond</div>
+                  <div className="cv-answer-hd"><span className="cv-clem">C</span> Kéïta répond</div>
                   <div className="cv-answer-body">{resp.answer}</div>
                   {!!resp.actions?.length && (
                     <div className="cv-actions">
@@ -397,7 +397,7 @@ export function CerveauStudio() {
                 </div>
               </>
             ) : (
-              <div className="cv-sent"><div className="cv-sent-ic">✓</div><b>C'est fait !</b><span>{ACT_CTA[action.type]} — action exécutée par Clément.</span></div>
+              <div className="cv-sent"><div className="cv-sent-ic">✓</div><b>C'est fait !</b><span>{ACT_CTA[action.type]} — action exécutée par Kéïta.</span></div>
             )}
           </div>
         </div>

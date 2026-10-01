@@ -74,7 +74,7 @@ export function ContentStudio() {
     <div className="space-y-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-xl font-black tracking-tight text-[var(--color-ink)]">Studio contenu — Léa</h2>
+          <h2 className="text-xl font-black tracking-tight text-[var(--color-ink)]">Studio contenu — Aïna</h2>
           <p className="text-[13px] text-[var(--color-muted)]">Crée du contenu adapté à chaque réseau et visualise le rendu final comme sur la plateforme.</p>
         </div>
         <div className="flex rounded-xl border border-[var(--color-line)] p-0.5 text-[12px] font-bold">
@@ -243,7 +243,7 @@ function PlatformPanel({ platform, saved, onSaved }: { platform: Platform; saved
           className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-[13px] font-bold text-white transition hover:opacity-90 disabled:opacity-40"
           style={{ background: PLAT[platform].color }}>
           <Icon name={loading ? "Loader" : "Sparkles"} size={15} className={loading ? "animate-spin" : ""} />
-          {phase === "text" ? "Léa rédige le contenu…"
+          {phase === "text" ? "Aïna rédige le contenu…"
             : phase === "visuals" ? `Higgsfield crée les visuels… ${progress ? `(${progress.done}/${progress.total})` : ""}`
             : res ? "Regénérer" : "Générer"}
         </button>

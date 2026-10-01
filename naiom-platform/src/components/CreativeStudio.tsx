@@ -33,7 +33,7 @@ export function CreativeStudio() {
     <div className="space-y-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-xl font-black tracking-tight text-[var(--color-ink)]">Studio créa — Mia</h2>
+          <h2 className="text-xl font-black tracking-tight text-[var(--color-ink)]">Studio créa — Zayna</h2>
           <p className="text-[13px] text-[var(--color-muted)]">Ton identité → un prompt Higgsfield → tes créatives, prêtes à programmer.</p>
         </div>
         <div className="flex rounded-xl border border-[var(--color-line)] p-0.5 text-[12px] font-bold">
@@ -195,7 +195,7 @@ function CreerTab({ configured, onGenerated }: { configured: boolean; onGenerate
         </div>
         <div className="mt-3 flex justify-end">
           <button onClick={formulate} disabled={!idea.trim() || phase === "formulating"} className="flex items-center gap-1.5 rounded-lg border border-[var(--color-ink)] px-3.5 py-2 text-[13px] font-black text-[var(--color-ink)] disabled:opacity-50">
-            <Icon name="Sparkles" size={14} /> {phase === "formulating" ? "Mia rédige…" : "Formuler le prompt"}
+            <Icon name="Sparkles" size={14} /> {phase === "formulating" ? "Zayna rédige…" : "Formuler le prompt"}
           </button>
         </div>
       </div>

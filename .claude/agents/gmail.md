@@ -1,6 +1,6 @@
 ---
 name: gmail
-description: Agent Gmail (Inès) de Noémie. Lit les emails, identifie les urgences, produit une to-do list priorisée, rédige des réponses. Modèle Sonnet.
+description: Agent Gmail (Lina) de Noémie. Lit les emails, identifie les urgences, produit une to-do list priorisée, rédige des réponses. Modèle Sonnet.
 tools: Read, Write, WebSearch, WebFetch
 model: sonnet
 ---

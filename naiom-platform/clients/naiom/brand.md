@@ -64,11 +64,11 @@ statut: actif
 
 ## 7. Ce que les agents produisent pour Konalia
 
-- Contenu réseaux sociaux (Léa) : contenu pour Reprise de Contrôle (LinkedIn, Instagram) et contenu éducatif séparé pour KatalyMode et KatalyBeauty — ton chaleureux et structurant
-- Prospection (Sacha) : salarié·e·s du tertiaire pour Reprise de Contrôle ; partenaires créateurs et presse afro-européenne pour les marques Kataly
-- Veille (Nina) : freelancing administratif pour TPE/artisans, besoins des assistantes et conseillères clientèle ; mode afro-européenne et cosmétique naturelle
-- Propositions commerciales (Victor) : offre Reprise de Contrôle 497 € ; partenariats pour les marques Kataly
-- Analyse (Antoine/Léo/Hugo/Clara/Clément) : stratégie, roadmap, finances, RH, mémoire d'entreprise
+- Contenu réseaux sociaux (Aïna) : contenu pour Reprise de Contrôle (LinkedIn, Instagram) et contenu éducatif séparé pour KatalyMode et KatalyBeauty — ton chaleureux et structurant
+- Prospection (Sékou) : salarié·e·s du tertiaire pour Reprise de Contrôle ; partenaires créateurs et presse afro-européenne pour les marques Kataly
+- Veille (Nali) : freelancing administratif pour TPE/artisans, besoins des assistantes et conseillères clientèle ; mode afro-européenne et cosmétique naturelle
+- Propositions commerciales (Idriss) : offre Reprise de Contrôle 497 € ; partenariats pour les marques Kataly
+- Analyse (Amara/Malik/Imani/Clara/Kéïta) : stratégie, roadmap, finances, RH, mémoire d'entreprise
 
 ---
 *Dernière mise à jour : 2026-10-01 — recalibrage des priorités (Reprise de Contrôle + communauté Kataly)*

@@ -1,5 +1,5 @@
 /**
- * Client Apify — scraping pour l'agent prospection (Sacha / IAcquisition™).
+ * Client Apify — scraping pour l'agent prospection (Sékou / IAcquisition™).
  *
  * Auth : APIFY_TOKEN dans .env.local (Apify → Settings → Integrations → API token).
  * Acteur utilisé pour la DÉTECTION : compass/crawler-google-places

@@ -1,5 +1,5 @@
 /**
- * Store JSON de l'agent prospection (Sacha) — le pipeline IAcquisition™.
+ * Store JSON de l'agent prospection (Sékou) — le pipeline IAcquisition™.
  * Fichier : {repo}/prospection/store.json.
  *
  * Statuts du pipeline : detecte (Ciblé) → enrichi (Profilé) → pret (Prêt) → contacte.

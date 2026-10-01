@@ -45,21 +45,21 @@ const ACTIVE_SLUGS: AgentSlug[] = [
 const PLACEHOLDER_SLUGS: AgentSlug[] = [];
 
 const PRETTY_NAMES: Record<AgentSlug, string> = {
-  orchestrateur: "Noam",
-  strategiste: "Antoine",
-  "createur-contenu": "Léa",
-  designer: "Mia",
-  analyste: "Léo",
-  presentateur: "Hugo",
-  gmail: "Inès",
-  fireflies: "Jules",
-  proposition: "Victor",
+  orchestrateur: "Kélan",
+  strategiste: "Amara",
+  "createur-contenu": "Aïna",
+  designer: "Zayna",
+  analyste: "Malik",
+  presentateur: "Imani",
+  gmail: "Lina",
+  fireflies: "Sira",
+  proposition: "Idriss",
   cv: "Clara",
   ecommerce: "Emma",
-  prospection: "Sacha",
-  veille: "Nina",
+  prospection: "Sékou",
+  veille: "Nali",
   comptabilite: "Chloé",
-  cerveau: "Clément",
+  cerveau: "Kéïta",
 };
 
 const ROLES: Record<AgentSlug, string> = {
@@ -96,7 +96,7 @@ ${a.systemPrompt}
     })
     .join("\n\n");
 
-  return `Tu es **Noam, l'Orchestrateur multi-agent de NAIOM** — l'équipe IA personnelle de ${OWNER_NAME}.
+  return `Tu es **Kélan, l'Orchestrateur multi-agent de NAIOM** — l'équipe IA personnelle de ${OWNER_NAME}.
 
 ## Qui tu accompagnes
 

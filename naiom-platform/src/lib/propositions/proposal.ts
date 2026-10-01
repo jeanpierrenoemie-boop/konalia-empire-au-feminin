@@ -1,6 +1,6 @@
 /**
- * Génération STRUCTURÉE d'une proposition commerciale (Victor) à partir d'un call.
- * Victor renvoie un JSON complet → rendu ensuite en PDF pro (schémas + prix).
+ * Génération STRUCTURÉE d'une proposition commerciale (Idriss) à partir d'un call.
+ * Idriss renvoie un JSON complet → rendu ensuite en PDF pro (schémas + prix).
  * L'email d'envoi est renvoyé SÉPARÉMENT (jamais dans le PDF).
  */
 import { createAnthropic } from "@ai-sdk/anthropic";
@@ -43,7 +43,7 @@ export interface CallContext {
   summary: string; keyPoints?: string[]; actionItems?: string[]; transcript?: string;
 }
 
-const SYSTEM = `Tu es Victor, closer et ingénieur solutions chez NAIOM (agence d'ingénierie d'agents IA + automatisations n8n).
+const SYSTEM = `Tu es Idriss, closer et ingénieur solutions chez NAIOM (agence d'ingénierie d'agents IA + automatisations n8n).
 À partir d'un call prospect analysé, tu produis une PROPOSITION COMMERCIALE structurée, concrète et chiffrée.
 
 Tu réponds UNIQUEMENT avec un objet JSON valide (aucun texte autour, pas de bloc markdown), conforme à ce schéma :
@@ -138,7 +138,7 @@ function buildPricing(sols: Partial<Solution>[]): Proposal["pricing"] {
 export async function generateProposal(call: CallContext, prospect: string, source: "call" | "lead" = "call"): Promise<Proposal> {
   if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY absente dans .env.local.");
   const context = source === "lead"
-    ? `Prospect détecté par Sacha (prospection Google Maps) — PAS ENCORE d'appel. Tu écris une proposition d'APPROCHE, personnalisée à partir de ce qu'on sait du prospect.
+    ? `Prospect détecté par Sékou (prospection Google Maps) — PAS ENCORE d'appel. Tu écris une proposition d'APPROCHE, personnalisée à partir de ce qu'on sait du prospect.
 # ${call.title}
 Date: ${call.date}
 

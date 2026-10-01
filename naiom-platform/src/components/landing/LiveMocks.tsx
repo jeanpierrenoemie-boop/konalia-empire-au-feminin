@@ -143,7 +143,7 @@ type ChatProps = {
   y: number;
   s?: number;
   agent?: string;
-  /** Slug de l'avatar affiché dans le header (défaut : Noam/orchestrateur). */
+  /** Slug de l'avatar affiché dans le header (défaut : Kélan/orchestrateur). */
   slug?: string;
   caption?: string;
   /** Bulles du chat (coordonnées 0→460 / 60→255). */
@@ -151,7 +151,7 @@ type ChatProps = {
 };
 
 /** Chat de la plateforme NAIOM — base 460 × 330. */
-export function ChatWin({ x, y, s = 1, agent = "Noam", slug = "orchestrateur", caption, children }: ChatProps) {
+export function ChatWin({ x, y, s = 1, agent = "Kélan", slug = "orchestrateur", caption, children }: ChatProps) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
       <rect width="460" height="330" rx="20" fill="#FFFFFF" stroke="#0F0F0F" strokeWidth="3" />

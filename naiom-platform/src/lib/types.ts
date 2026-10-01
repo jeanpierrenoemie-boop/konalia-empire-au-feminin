@@ -19,7 +19,7 @@ export type AgentStatus = "active" | "coming-soon" | "locked";
 
 export interface AgentMeta {
   slug: AgentSlug;
-  name: string; // prénom de l'agent (ex. "Antoine")
+  name: string; // prénom de l'agent (ex. "Amara")
   role: string; // fonction (ex. "Stratège", "Designer")
   tagline: string; // description courte
   model: string;

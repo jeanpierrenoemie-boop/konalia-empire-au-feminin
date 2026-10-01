@@ -1,5 +1,5 @@
 /**
- * Store JSON du Creative Strategist (Mia) : brand kit + créatives générées + programmation.
+ * Store JSON du Creative Strategist (Zayna) : brand kit + créatives générées + programmation.
  * Fichier : creatives/store.json à la racine du repo.
  */
 import fs from "node:fs/promises";

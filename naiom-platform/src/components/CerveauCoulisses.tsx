@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Onglet « Coulisses » de Clément — UNE seule scène 3D, même univers/DA que le
+ * Onglet « Coulisses » de Kéïta — UNE seule scène 3D, même univers/DA que le
  * cerveau du dashboard (fond beige en dégradé + texture pointillée, accents
  * terracotta). Tout est en 3D et bouge (rotation + flottement). On clique sur
  * l'objet, il se transforme :

@@ -1,7 +1,7 @@
 /**
  * Génération des VISUELS via Higgsfield (nano_banana_pro) à partir des templates
  * de Zeyneb : chaque slide de carrousel est rendue en reproduisant le template
- * choisi, avec le texte de la slide. Léa écrit le texte, Higgsfield fait le visuel.
+ * choisi, avec le texte de la slide. Aïna écrit le texte, Higgsfield fait le visuel.
  */
 import fs from "node:fs";
 import path from "node:path";

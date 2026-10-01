@@ -1,5 +1,5 @@
 /**
- * Génération de contenu structuré par plateforme (agent Léa — createur-contenu).
+ * Génération de contenu structuré par plateforme (agent Aïna — createur-contenu).
  * Instagram / LinkedIn / Twitter(X). Claude renvoie un JSON adapté au réseau,
  * ensuite affiché dans un aperçu qui imite le rendu réel du réseau.
  */
@@ -100,7 +100,7 @@ export async function generateContent(
   template?: string
 ): Promise<ContentResult> {
   if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY absente dans .env.local.");
-  const system = `Tu es Léa, copywriter senior chez NAIOM. Tu écris du contenu réseaux sociaux qui performe.
+  const system = `Tu es Aïna, copywriter senior chez NAIOM. Tu écris du contenu réseaux sociaux qui performe.
 ${VOICE}
 Tu réponds UNIQUEMENT avec un objet JSON valide conforme au format demandé (aucun texte autour, pas de bloc markdown).`;
   const prompt = `Plateforme : ${platform}

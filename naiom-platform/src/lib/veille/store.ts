@@ -1,5 +1,5 @@
 /**
- * Store JSON de l'agent veille (Nina) — les Reels Instagram récupérés.
+ * Store JSON de l'agent veille (Nali) — les Reels Instagram récupérés.
  * Fichier : {repo}/veille/store.json.
  * Même pattern que prospection/ecommerce : verrou d'écriture + écriture
  * atomique, pour ne pas perdre de posts quand deux requêtes écrivent en

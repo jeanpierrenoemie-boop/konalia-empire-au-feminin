@@ -1,5 +1,5 @@
 /**
- * Store JSON des propositions commerciales de Victor.
+ * Store JSON des propositions commerciales de Idriss.
  * Fichier : {repo}/propositions/store.json.
  * Sert au tableau de bord de suivi (stats + graphes).
  */

@@ -117,15 +117,15 @@ export function PropositionStudio({ calls: allCalls }: { calls: PropCall[] }) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-black tracking-tight text-[var(--color-ink)]">Studio Proposition — Victor</h2>
-        <p className="text-[13px] text-[var(--color-muted)]">Choisis la source, coche <b>un ou plusieurs prospects</b>, et Victor génère toutes les propositions d&apos;un coup. Tu les relis et les envoies par mail.</p>
+        <h2 className="text-xl font-black tracking-tight text-[var(--color-ink)]">Studio Proposition — Idriss</h2>
+        <p className="text-[13px] text-[var(--color-muted)]">Choisis la source, coche <b>un ou plusieurs prospects</b>, et Idriss génère toutes les propositions d&apos;un coup. Tu les relis et les envoies par mail.</p>
       </div>
 
       {/* sélecteur de source (2 agents) */}
       <div className="grid gap-3 sm:grid-cols-2">
         {([
-          { key: "lead" as Source, slug: "prospection", name: "Sacha", role: "Leads détectés", desc: "Prospection à froid — coche les prospects chauds à démarcher.", count: leads.length, unit: "leads" },
-          { key: "call" as Source, slug: "fireflies", name: "Jules", role: "Calls analysés", desc: "Après rendez-vous — la propal reprend les besoins du call.", count: calls.length, unit: "calls" },
+          { key: "lead" as Source, slug: "prospection", name: "Sékou", role: "Leads détectés", desc: "Prospection à froid — coche les prospects chauds à démarcher.", count: leads.length, unit: "leads" },
+          { key: "call" as Source, slug: "fireflies", name: "Sira", role: "Calls analysés", desc: "Après rendez-vous — la propal reprend les besoins du call.", count: calls.length, unit: "calls" },
         ]).map((sc) => {
           const on = source === sc.key;
           return (
@@ -146,11 +146,11 @@ export function PropositionStudio({ calls: allCalls }: { calls: PropCall[] }) {
       {source === "lead" ? (
         <div>
           <div className="mb-2 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2"><AgentAvatar slug="prospection" size={22} animate={false} /><span className="text-[10px] font-black uppercase tracking-[0.14em] text-[var(--color-muted)]">Coche les leads les plus chauds de Sacha</span></div>
+            <div className="flex items-center gap-2"><AgentAvatar slug="prospection" size={22} animate={false} /><span className="text-[10px] font-black uppercase tracking-[0.14em] text-[var(--color-muted)]">Coche les leads les plus chauds de Sékou</span></div>
             {hotLeads.length > 0 && <button onClick={() => setLeadSel((s) => s.size === hotLeads.length ? new Set() : new Set(hotLeads.map((l) => l.id)))} className="text-[11px] font-bold text-[var(--color-accent)] hover:underline">{leadSel.size === hotLeads.length ? "Tout décocher" : "Tout cocher"}</button>}
           </div>
           {!leadsLoaded ? <div className="althea-card p-4 text-[13px] text-[var(--color-muted)]">Chargement des leads…</div>
-            : hotLeads.length === 0 ? <div className="althea-card p-4 text-[13px] text-[var(--color-muted)]">Aucun lead — lance une détection dans l&apos;agent Sacha.</div>
+            : hotLeads.length === 0 ? <div className="althea-card p-4 text-[13px] text-[var(--color-muted)]">Aucun lead — lance une détection dans l&apos;agent Sékou.</div>
             : (
               <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", maxHeight: 340, overflowY: "auto" }}>
                 {hotLeads.map((l) => {
@@ -171,7 +171,7 @@ export function PropositionStudio({ calls: allCalls }: { calls: PropCall[] }) {
       ) : (
         <div>
           <div className="mb-2 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2"><AgentAvatar slug="fireflies" size={22} animate={false} /><span className="text-[10px] font-black uppercase tracking-[0.14em] text-[var(--color-muted)]">Coche les calls analysés par Jules</span></div>
+            <div className="flex items-center gap-2"><AgentAvatar slug="fireflies" size={22} animate={false} /><span className="text-[10px] font-black uppercase tracking-[0.14em] text-[var(--color-muted)]">Coche les calls analysés par Sira</span></div>
             {calls.length > 0 && <button onClick={() => setCallSel((s) => s.size === calls.length ? new Set() : new Set(calls.map((c) => c.id)))} className="text-[11px] font-bold text-[var(--color-accent)] hover:underline">{callSel.size === calls.length ? "Tout décocher" : "Tout cocher"}</button>}
           </div>
           {calls.length === 0 ? <div className="althea-card p-4 text-[13px] text-[var(--color-muted)]">Aucun call disponible.</div> : (
@@ -194,7 +194,7 @@ export function PropositionStudio({ calls: allCalls }: { calls: PropCall[] }) {
         <button onClick={generate} disabled={selCount === 0 || gen}
           className="flex items-center gap-2 rounded-xl bg-[var(--color-ink)] px-4 py-2.5 text-[13px] font-bold text-white transition hover:opacity-90 disabled:opacity-40">
           <Icon name={gen ? "Loader" : "FileSignature"} size={14} className={gen ? "animate-spin" : ""} />
-          {gen ? "Victor rédige…" : selCount <= 1 ? `Générer la proposition${selCount ? "" : ""}` : `Générer ${selCount} propositions d'un coup`}
+          {gen ? "Idriss rédige…" : selCount <= 1 ? `Générer la proposition${selCount ? "" : ""}` : `Générer ${selCount} propositions d'un coup`}
         </button>
         {progress && <span className="text-[12px] font-bold text-[var(--color-muted)]">{progress.done + 1}/{progress.total} · <b className="text-[var(--color-ink)]">{progress.name}</b>…</span>}
       </div>

@@ -1,5 +1,5 @@
 /**
- * Vue d'ensemble structurée de l'entreprise (Halo Studio) pour le dashboard de Clément.
+ * Vue d'ensemble structurée de l'entreprise (Halo Studio) pour le dashboard de Kéïta.
  * Aligné avec le vault Obsidian (profils managers + kits d'onboarding par département).
  */
 

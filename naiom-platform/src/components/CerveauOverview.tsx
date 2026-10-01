@@ -104,7 +104,7 @@ export function CerveauOverview({ onAsk }: { onAsk: (q: string) => void }) {
           <div>
             <div className="co-eyebrow" style={{ color: "#fff", opacity: .8 }}>Onboarding express · 1 clic</div>
             <h3>Une nouvelle recrue arrive ? Le cerveau l'onboarde.</h3>
-            <p>Choisis son département. Clément prépare tout : comptes, accès, formation, emails de bienvenue.</p>
+            <p>Choisis son département. Kéïta prépare tout : comptes, accès, formation, emails de bienvenue.</p>
           </div>
           <div className="co-onb-pick">
             {data.departments.map((d) => (

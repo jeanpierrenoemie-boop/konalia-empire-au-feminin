@@ -95,7 +95,7 @@ export default async function DashboardPage() {
       <section className="relative px-6 sm:px-10 pb-16">
         <div className="mx-auto max-w-[1400px]">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5">
-            {/* Noam (orchestrateur) — tuile featured violette, 2 colonnes */}
+            {/* Kélan (orchestrateur) — tuile featured violette, 2 colonnes */}
             {orchestrateur && <OrchestratorTile agent={orchestrateur} />}
             {team.map((agent, i) => (
               <AgentTile
@@ -213,7 +213,7 @@ export default async function DashboardPage() {
    COMPOSANTS LOCAUX — Bronx
    ================================================================= */
 
-/** Tuile featured de Noam (orchestrateur) — violette, s'étend sur 2 colonnes. */
+/** Tuile featured de Kélan (orchestrateur) — violette, s'étend sur 2 colonnes. */
 function OrchestratorTile({ agent }: { agent: AgentMeta }) {
   return (
     <Link

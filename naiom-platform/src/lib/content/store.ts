@@ -1,5 +1,5 @@
 /**
- * Store JSON des posts créés par Léa (agent contenu).
+ * Store JSON des posts créés par Aïna (agent contenu).
  * Fichier : content/store.json à la racine du repo.
  * Persiste les générations (on garde la session précédente) + programmation.
  */

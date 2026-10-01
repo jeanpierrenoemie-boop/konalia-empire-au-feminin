@@ -1,6 +1,6 @@
 ---
 name: fireflies
-description: Agent Fireflies (Jules) de Noémie. Analyse les calls et entretiens (validation, partenaires, participantes), produit résumés + plans d'action + priorités de relance. Modèle Sonnet.
+description: Agent Fireflies (Sira) de Noémie. Analyse les calls et entretiens (validation, partenaires, participantes), produit résumés + plans d'action + priorités de relance. Modèle Sonnet.
 model: sonnet
 tools: Read, Write, WebSearch, WebFetch
 ---
