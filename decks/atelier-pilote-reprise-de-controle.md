@@ -33,17 +33,13 @@ HUB: Votre expérience | Organisation, relation client, rédaction
 - Boîte mail | Réponses rédigées et classées
 - Agenda | Planning et rappels
 
-## [compare] Salariée vs prestataire
+## [pillars] Salariée et prestataire
 
-LEFT: En poste
-- Des missions confiées
-- Un cadre fixé par l'employeur
-- Un salaire chaque mois
+### En poste
+Des missions confiées, un cadre fixé par l'employeur, un salaire chaque mois.
 
-RIGHT: Prestataire
-- Un service précis proposé
-- Un cadre convenu avec le client
-- Un client à trouver et à facturer
+### Prestataire
+Un service précis proposé, un cadre convenu avec le client, un client à trouver et à facturer.
 
 ## L'idée à tester
 Proposer environ 10 heures par mois de soutien administratif à une petite entreprise ou à un artisan, en plus de votre emploi. Hypothèse de travail.
@@ -69,17 +65,13 @@ Quel prix vous semblerait juste pour un premier test ?
 ## Qu'est-ce qui pourrait vous freiner ?
 Le temps · Ce que je vaux · Serai-je capable ? · Mon employeur · Oser vendre
 
-## [compare] L'offre à l'étude
+## [pillars] L'offre à l'étude
 
-LEFT: La formation
-- 497 €
-- Paiement en 3 fois possible
-- Prix à tester
+### La formation
+497 €, paiement en 3 fois possible. Prix à tester.
 
-RIGHT: La première cohorte
-- 290 €
-- Paiement en 2 fois possible
-- Prix à tester
+### La première cohorte
+290 €, paiement en 2 fois possible. Prix à tester.
 
 ## Quel prix vous semblerait juste ?
 À partir de quel prix hésiteriez-vous ? Réponse anonyme, sans décision à prendre aujourd'hui.

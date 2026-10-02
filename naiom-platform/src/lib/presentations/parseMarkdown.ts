@@ -1,5 +1,5 @@
 import type { Presentation, Slide } from "./template";
-import { BRAND_HANDLE } from "@/lib/ownerContext";
+import { BRAND_HANDLE, BRAND_NAME } from "@/lib/ownerContext";
 
 /**
  * Parse un deck en markdown produit par l'agent Présentateur et le convertit
@@ -76,7 +76,7 @@ export function parseDeckMarkdown(markdown: string, fallbackTitle = "Présentati
     kind: "title",
     title: deckTitle,
     subtitle: deckSubtitle,
-    category: (fmBrand ?? "NAIOM").toUpperCase(),
+    category: (fmBrand ?? BRAND_NAME).toUpperCase(),
   });
 
   // Pour chaque H2 → 1 slide
@@ -501,7 +501,7 @@ export function parseDeckMarkdown(markdown: string, fallbackTitle = "Présentati
 
   return {
     title: deckTitle,
-    brand: fmBrand ?? "NAIOM",
+    brand: fmBrand ?? BRAND_NAME,
     date: fmDate,
     slides,
   };
