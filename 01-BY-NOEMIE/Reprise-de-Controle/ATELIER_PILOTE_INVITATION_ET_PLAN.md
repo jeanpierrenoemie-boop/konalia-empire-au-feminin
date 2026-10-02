@@ -67,3 +67,46 @@ Noter les mots exacts avant toute interprétation, puis remplir la grille de dé
 - Les noms, emails et réponses servent uniquement à préparer et exploiter l'atelier.
 - Information juridique sur le cumul d'activités : vérifier avant (voir `ATELIER_PILOTE_NOTES.md`).
 - Ne pas mélanger avec Code Liberté, qui s'adresse à d'autres publics.
+
+## 6. Versions adaptées aux réseaux (2026-10-02)
+
+### LinkedIn — note de connexion (environ 280 caractères)
+Bonjour [Prénom], je prépare un programme pour des assistantes qui veulent un revenu complémentaire sans quitter leur emploi. Je cherche 5 assistantes pour tester gratuitement un atelier de 2h et me dire honnêtement ce qu'elles en pensent. Seriez-vous intéressée ? Noémie
+
+### LinkedIn — message après acceptation
+Merci d'avoir accepté ma demande, [Prénom].
+
+Je prépare un programme destiné aux assistantes (de direction, administratives) et conseillères clientèle qui souhaitent générer un revenu complémentaire en proposant leurs compétences à de petites entreprises et artisans, sans quitter leur poste.
+
+Avant de le lancer, j'organise un atelier test gratuit de 2 heures, en visio, avec 5 participantes seulement. Je cherche un retour honnête, y compris critique. C'est un test d'une formation qui n'existe pas encore : aucune promesse de revenu, aucun engagement.
+
+Il est prévu le dimanche 1er novembre à 20 h (date à confirmer selon les inscriptions). Cela vous intéresserait-il ?
+
+Noémie
+
+### LinkedIn — publication
+Assistante de direction, assistante administrative ou conseillère clientèle ?
+
+Je prépare une formation pour celles qui voudraient un revenu complémentaire, sans quitter leur emploi, en proposant leurs compétences administratives à des TPE et artisans.
+
+Avant de la lancer, je cherche 5 assistantes pour tester gratuitement un atelier de 2h en visio. Je veux un retour honnête, même critique.
+
+Ce n'est pas une promesse de revenu ni une vente : c'est un test d'une formation qui n'existe pas encore.
+
+Dimanche 1er novembre à 20 h (date à confirmer). Si cela vous parle, écrivez-moi en message privé.
+
+### Facebook — publication pour un groupe
+Bonjour à toutes,
+
+Je suis Noémie, salariée et maman de 6 enfants. Je prépare une formation pour les assistantes (de direction, administratives) et conseillères clientèle qui aimeraient un revenu complémentaire sans quitter leur emploi, en proposant leurs compétences à de petites entreprises et artisans.
+
+Avant de la lancer, je cherche 5 assistantes pour tester gratuitement un atelier de 2h en visio (Zoom), et me dire honnêtement ce qu'elles en pensent, y compris les critiques.
+
+Pas de promesse de revenu, pas de vente pendant l'atelier : c'est un test.
+
+Prévu le dimanche 1er novembre à 20 h (date à confirmer selon les inscriptions). Si vous êtes intéressées, écrivez-moi en message privé.
+
+### Avant de publier
+- Lire les règles de chaque groupe (beaucoup interdisent la promotion) et demander l'accord des administratrices.
+- La mention « salariée et maman de 6 enfants » est facultative : à garder seulement si Noémie est à l'aise.
+- Répondre aux messages privés dans la journée ; ne pas publier d'adresse email dans le post.
