@@ -5,6 +5,8 @@
 ## Décisions de Noémie (2026-10-02)
 - **Prix de la formation** : 497 € (paiement en 3 fois possible).
 - **Première cohorte** : 290 €, prix de lancement.
+- **Durée de la formation** : 30 jours (elle était de 90 jours avant la refonte de l'offre). Les mentions de « cohorte de 90 jours » dans les notes d'origine sont obsolètes.
+- **Refonte de l'offre** : cible recentrée sur les assistantes de direction ; Noémie a conservé des éléments de l'offre de départ (détail à documenter).
 - **Atelier pilote** : gratuit, 5 participantes maximum, 2 heures.
 - **Date prévue** : dimanche 1er novembre 2026 à 20 h, **non figée**. Piste : fixer la date définitive quand les 5 participantes sont confirmées.
 - **Objectif de l'atelier** : confronter l'offre au terrain (problème, idée, prix, freins), pas vendre.

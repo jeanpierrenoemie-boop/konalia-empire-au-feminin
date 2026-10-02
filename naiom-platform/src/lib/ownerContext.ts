@@ -28,7 +28,7 @@ export const BUSINESS_CONTEXT = `
 **Cible** : les salarié·e·s du tertiaire, surtout les métiers d'assistanat — assistantes de direction, assistantes administratives, conseillères clientèle et postes similaires.
 **Promesse** : bâtir un revenu complémentaire SANS quitter son emploi, en monétisant ses compétences administratives et relationnelles.
 **Le modèle enseigné** : devenir prestataire administratif à distance pour les dirigeants de TPE/PME et les artisans (gestion administrative, relances, devis/factures, emails, organisation), avec environ 10 à 15 h de travail par mois. Les participantes disposent d'un agent IA pour les aider à produire plus vite.
-**Prix** : 497 € (paiement possible en 3 fois).
+**Prix** : 497 € (paiement possible en 3 fois) ; première cohorte à 290 € (paiement en 2 fois). **Durée** : 30 jours (elle était de 90 jours avant la refonte de l'offre ; ne cite plus « 90 jours »). Cible recentrée sur les assistantes de direction. Une mini-masterclass test gratuite de 2 h (5 participantes, Zoom) est prévue pour confronter l'offre, vers le 1er novembre 2026 (date non figée).
 **Vision long terme** : aider tout salarié qui veut se lancer dans le digital sans quitter le salariat tout de suite (promesse d'origine de l'offre).
 **En cours de décision** : le programme actuel compte 12 étapes (supports 07 à 12 dans le dossier supports/) ; on vérifie lesquelles restent nécessaires pour la nouvelle cible. Ne présente pas le format en 12 étapes comme définitif.
 
