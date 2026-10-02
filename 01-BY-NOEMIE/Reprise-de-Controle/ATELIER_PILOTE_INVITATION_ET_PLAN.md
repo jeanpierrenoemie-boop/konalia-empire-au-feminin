@@ -1,0 +1,69 @@
+# Atelier pilote Reprise de Contrôle — invitation, plan des 2 h et questions de retour
+
+*Brouillon du 2026-10-02. Format : Zoom. Date prévue le 1er novembre 2026 à 20 h, non figée (à confirmer quand les 5 places sont prises). À relire par Noémie avant tout envoi.*
+
+## 1. Message d'invitation (LinkedIn, groupe ou message direct)
+Bonjour [Prénom],
+
+Je prépare un programme pour des assistantes (de direction, administratives) et des conseillères clientèle qui souhaitent générer un revenu complémentaire sans quitter leur emploi, en proposant leurs compétences administratives à des petites entreprises et artisans.
+
+Avant de le lancer, j'organise un atelier test gratuit de 2 heures, en visio (Zoom), avec 5 participantes seulement. L'objectif : me dire honnêtement ce qui vous parle, ce qui ne vous parle pas et ce qui vous freinerait. Il s'agit d'un test d'une formation qui n'existe pas encore : aucune promesse de revenu, aucun engagement de votre part.
+
+L'atelier est prévu le dimanche 1er novembre à 20 h (date à confirmer selon les inscriptions). Seriez-vous intéressée ? Si oui, je vous envoie les détails.
+
+Noémie
+
+## 2. Invitation de confirmation (après accord)
+Objet : Atelier test Reprise de Contrôle — [date], 20 h, Zoom
+
+Bonjour [Prénom],
+
+Merci d'avoir accepté. Voici les informations :
+- **Date et heure** : [date], 20 h, durée 2 heures.
+- **Lien Zoom** : [lien]
+- **Format** : 5 participantes maximum, gratuit.
+- **Ce que nous allons faire** : comprendre votre situation, tester l'idée de proposer des services administratifs à des TPE et artisans, et recueillir votre avis franc.
+- **Ce que je vous demande** : un retour honnête, même critique, et 15 minutes d'échange après l'atelier.
+- **Ce que je ne fais pas** : promettre un revenu ou vous imposer une décision.
+
+Avant l'atelier, merci de répondre en quelques lignes : votre poste actuel, ce qui vous pèse le plus au travail et le temps que vous pourriez consacrer chaque semaine à un projet à côté.
+
+Vos réponses ne servent qu'à préparer l'atelier. Je n'enregistre pas la séance sans votre accord. Si vous ne pouvez plus venir, prévenez-moi : une autre personne pourra prendre votre place.
+
+À bientôt,
+Noémie
+
+## 3. Plan des 2 heures
+| Horaire | Étape | Contenu |
+|---|---|---|
+| 0:00–0:10 | Accueil et cadre | Rappeler : c'est un test, aucune promesse de revenu, temps de parole borné. Demander l'accord pour prendre des notes. |
+| 0:10–0:25 | Tour de table | 3 minutes chacune : poste, ce qui pèse, ce qui l'a amenée ici. |
+| 0:25–0:45 | L'idée | Présenter simplement : vendre environ 10 heures par mois de compétences administratives à une TPE ou un artisan (exemples : devis, relances, emails, organisation). Rester factuel, sans promesse. |
+| 0:45–1:25 | Travail individuel | 10 minutes d'écriture silencieuse sur le formulaire ci-dessous, puis environ 6 minutes par participante pour partager et recevoir un retour. |
+| 1:25–1:35 | Les freins | « Qu'est-ce qui vous ferait hésiter ? » Noter les mots exacts. Aborder la question du cumul avec un CDI comme information générale, avec vérification juridique préalable. |
+| 1:35–1:50 | Offre et prix | Présenter la formation (497 €, paiement en 3 fois possible) et la première cohorte (290 €, paiement en 2 fois possible). Poser la question du prix à voix haute, puis proposer un court formulaire anonyme. Aucune pression, aucune décision demandée sur place. |
+| 1:50–2:00 | Clôture | Remercier, expliquer la suite et envoyer le questionnaire de retour. |
+
+**Formulaire à compléter (étape 0:45)**
+- Mon expertise principale en poste : [ ]
+- Le problème urgent que je sais résoudre grâce à elle : [ ]
+- La personne ou l'entreprise qui a ce problème : [ ]
+- Une première offre test que j'imaginerais, et le tarif qui me semblerait juste : [ ]
+
+## 4. Questions de retour (à poser après, 15 minutes par personne)
+1. Qu'avez-vous retenu de l'atelier, en une phrase ?
+2. Qu'est-ce qui vous a le plus parlé ? Qu'est-ce qui vous a le moins parlé ?
+3. Pensez-vous pouvoir consacrer le temps nécessaire chaque semaine ? Qu'est-ce qui vous en empêcherait ?
+4. Quelle serait votre plus grande peur pour vous lancer ?
+5. Vous sentez-vous capable de proposer vos services à une petite entreprise ? Pourquoi ?
+6. Quel prix vous paraîtrait juste pour ce programme ? À partir de quel prix hésiteriez-vous ?
+7. Qu'est-ce qui manquerait pour que vous disiez oui ?
+8. Connaissez-vous une collègue qui serait intéressée ?
+
+Noter les mots exacts avant toute interprétation, puis remplir la grille de dépouillement (niveau de preuve E0 à E5).
+
+## 5. Points d'attention
+- Aucune promesse de revenu, jamais de chiffre présenté comme un résultat.
+- Les noms, emails et réponses servent uniquement à préparer et exploiter l'atelier.
+- Information juridique sur le cumul d'activités : vérifier avant (voir `ATELIER_PILOTE_NOTES.md`).
+- Ne pas mélanger avec Code Liberté, qui s'adresse à d'autres publics.
