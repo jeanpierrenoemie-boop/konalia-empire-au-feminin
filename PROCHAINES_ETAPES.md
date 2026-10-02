@@ -13,6 +13,7 @@ Prix : 497 € (3 fois possible).
 - [ ] Définir l'agent IA mis à disposition des participantes (quelles tâches, quel format)
 - [ ] Réécrire la page d'offre (promesse, cible, 497 € en 3 fois)
 - [ ] Parler à 5 assistantes / conseillères clientèle et à 3 patrons de TPE ou artisans pour valider le besoin
+- [ ] Atelier pilote gratuit (5 assistantes, 2 h, prévu le 1er novembre, date non figée) : voir `01-BY-NOEMIE/Reprise-de-Controle/ATELIER_PILOTE_NOTES.md` ; prix formation 497 €, première cohorte 290 €
 - [ ] Adapter les exemples et le vocabulaire des supports existants
 
 ## PRIORITÉ 1 BIS — CODE LIBERTÉ (affiliation, 372 € nets par vente)
