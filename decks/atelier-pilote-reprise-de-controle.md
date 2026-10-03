@@ -68,10 +68,10 @@ Le temps · Ce que je vaux · Serai-je capable ? · Mon employeur · Oser vendre
 ## [pillars] L'offre à l'étude
 
 ### La formation
-497 €, paiement en 3 fois possible. Prix à tester.
+597 €, paiement en 3 fois possible. Prix à tester.
 
 ### La première cohorte
-290 €, paiement en 2 fois possible. Prix à tester.
+297 €, paiement en 2 fois possible. Prix à tester.
 
 ## Quel prix vous semblerait juste ?
 À partir de quel prix hésiteriez-vous ? Réponse anonyme, sans décision à prendre aujourd'hui.

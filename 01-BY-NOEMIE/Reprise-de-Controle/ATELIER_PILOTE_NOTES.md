@@ -3,8 +3,8 @@
 *Notes de Noémie (échanges avec une IA), nettoyées le 2026-10-02. Rien ici n'est testé : tout est à confronter au terrain.*
 
 ## Décisions de Noémie (2026-10-02)
-- **Prix de la formation** : 497 € (paiement en 3 fois possible).
-- **Première cohorte** : 290 €, prix de lancement.
+- **Prix de la formation** : 597 € (paiement en 3 fois possible).
+- **Cohorte fondatrice** : 297 € (paiement en 2 fois possible), prix de lancement.
 - **Durée de la formation** : 30 jours (elle était de 90 jours avant la refonte de l'offre). Les mentions de « cohorte de 90 jours » dans les notes d'origine sont obsolètes.
 - **Refonte de l'offre** : cible recentrée sur les assistantes de direction ; Noémie a conservé des éléments de l'offre de départ (détail à documenter).
 - **Atelier pilote** : gratuit, 5 participantes maximum, 2 heures.

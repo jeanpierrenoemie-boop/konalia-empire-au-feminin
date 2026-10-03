@@ -41,7 +41,7 @@ Noémie
 | 0:25–0:45 | L'idée | Présenter simplement : vendre environ 10 heures par mois de compétences administratives à une TPE ou un artisan (exemples : devis, relances, emails, organisation). Rester factuel, sans promesse. |
 | 0:45–1:25 | Travail individuel | 10 minutes d'écriture silencieuse sur le formulaire ci-dessous, puis environ 6 minutes par participante pour partager et recevoir un retour. |
 | 1:25–1:35 | Les freins | « Qu'est-ce qui vous ferait hésiter ? » Noter les mots exacts. Aborder la question du cumul avec un CDI comme information générale, avec vérification juridique préalable. |
-| 1:35–1:50 | Offre et prix | Présenter la formation (497 €, paiement en 3 fois possible) et la première cohorte (290 €, paiement en 2 fois possible). Poser la question du prix à voix haute, puis proposer un court formulaire anonyme. Aucune pression, aucune décision demandée sur place. |
+| 1:35–1:50 | Offre et prix | Présenter la formation (597 €, paiement en 3 fois possible) et la première cohorte (297 €, paiement en 2 fois possible). Poser la question du prix à voix haute, puis proposer un court formulaire anonyme. Aucune pression, aucune décision demandée sur place. |
 | 1:50–2:00 | Clôture | Remercier, expliquer la suite et envoyer le questionnaire de retour. |
 
 **Formulaire à compléter (étape 0:45)**

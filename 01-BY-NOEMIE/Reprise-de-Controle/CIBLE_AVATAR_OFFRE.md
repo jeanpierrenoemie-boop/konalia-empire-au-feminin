@@ -40,7 +40,7 @@
 2. « Je ne sais pas où trouver des clients. »
 3. « Mon employeur va-t-il l'accepter ? » (clause d'exclusivité, non-concurrence)
 4. « Quel statut juridique ? Combien de charges ? »
-5. « 497 €, est-ce que ça marche vraiment ? »
+5. « 597 €, est-ce que ça marche vraiment ? »
 
 ---
 
@@ -59,7 +59,7 @@
 - Des modèles prêts à l'emploi (devis, contrat de prestation, emails de prospection)
 - Un cadre pour rester en règle avec son employeur et choisir son statut (information générale, pas du conseil juridique)
 
-**Prix** : 497 € ou 3 paiements.
+**Prix** : 597 € ou 3 paiements ; cohorte fondatrice 297 € (2 paiements).
 
 **Résultat visé** : décrocher un premier client. Le montant de revenu visible reste à définir à partir de tarifs réels, pas d'une promesse chiffrée sans base.
 

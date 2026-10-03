@@ -30,8 +30,8 @@ Atelier de construction : cible test, Bulle V0, offre V0, 3 prochaines actions. 
 *Différence avec le support « atelier test » préparé auparavant (`decks/atelier-pilote-reprise-de-controle.md`) : ce dernier est un pur test d'idée, sans présentation de l'offre complète. À choisir ou à fusionner.*
 
 ## À trancher (incohérences entre mes notes et tes documents)
-1. **Prix** : tes documents indiquent **597 €** (prix public) et **297 €** (tarif fondateur). Dans nos échanges, tu avais dit **497 €** (en 3 fois) et **290 €** (en 2 fois). Lequel est le bon ? Les agents utilisent 497 / 290 tant que ce n'est pas tranché.
-2. **Outils annoncés** : Cockpit, COPILOTE, Calculateur de Viabilité, Observatoire des Prix, Kit Commercial, Boîte à Conversations existent-ils déjà ? Ne vendre que ce qui est prêt le jour du lancement ; COPILOTE est décrit comme une V1 « volontairement simple ».
+1. **Prix (tranché le 2026-10-03)** : **597 €** (prix public, paiement en 3 fois possible) et **297 €** (cohorte fondatrice, paiement en 2 fois possible). L'ancien 497 / 290 est abandonné. À confirmer : les modalités de paiement en 3 fois et en 2 fois.
+2. **Outils annoncés** : Noémie indique qu'ils sont tous prêts, mais ils étaient prévus pour l'ancienne version de Reprise de Contrôle et doivent être **personnalisés pour l'offre V2**. À faire avant la vente : Cockpit, COPILOTE, Calculateur de Viabilité, Observatoire des Prix, Kit Commercial Artisan, Boîte à Conversations.
 3. **Urgence dans les emails** (« Ce soir, les inscriptions ferment ») : n'utiliser que si la fermeture est réelle.
 4. **Temps hebdomadaire** demandé aux participantes : à préciser (« quelques heures par semaine » dans le document).
 5. **Contenu juridique de SÉCURISE** : à faire vérifier par un professionnel avant la cohorte.

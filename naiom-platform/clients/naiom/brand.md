@@ -53,7 +53,7 @@ statut: actif
 ## 6. Informations opérationnelles
 
 - **Domaine** : katalymode.com (acheté)
-- **Offre principale** : Reprise de Contrôle — 497 € (3 fois possible), salarié·e·s du tertiaire
+- **Offre principale** : Reprise de Contrôle — 597 € (3 fois possible), cohorte fondatrice à 297 € (2 fois possible), salarié·e·s du tertiaire
 - **Code Liberté** : formation d'un tiers à 497 €, Noémie est affiliée (90 %, 372 € nets par vente). Public : mamans solo qui veulent apprendre une compétence et se lancer dans le digital. Public différent de Reprise de Contrôle : ne jamais mélanger les deux messages, ne jamais confondre les deux offres (même prix)
 - **Agence IA d'automatisation** (en construction) : cibles BTP et centres de formation, puis nettoyage B2B et événementiel B2B/B2C. Offres et tarifs à définir : ne rien inventer. Activité distincte de Reprise de Contrôle
 - **Mots à éviter** : « devenir riche rapidement », « revenus passifs sans effort », « quitter ton job en 30 jours », toute promesse de revenu chiffrée sans base réelle
@@ -68,7 +68,7 @@ statut: actif
 - Contenu réseaux sociaux (Aïna) : contenu pour Reprise de Contrôle (LinkedIn, Instagram) et contenu éducatif séparé pour KatalyMode et KatalyBeauty — ton chaleureux et structurant
 - Prospection (Sékou) : salarié·e·s du tertiaire pour Reprise de Contrôle ; partenaires créateurs et presse afro-européenne pour les marques Kataly
 - Veille (Nali) : freelancing administratif pour TPE/artisans, besoins des assistantes et conseillères clientèle ; mode afro-européenne et cosmétique naturelle
-- Propositions commerciales (Idriss) : offre Reprise de Contrôle 497 € ; partenariats pour les marques Kataly
+- Propositions commerciales (Idriss) : offre Reprise de Contrôle 597 € ; partenariats pour les marques Kataly
 - Analyse (Amara/Malik/Imani/Clara/Kéïta) : stratégie, roadmap, finances, RH, mémoire d'entreprise
 
 ---

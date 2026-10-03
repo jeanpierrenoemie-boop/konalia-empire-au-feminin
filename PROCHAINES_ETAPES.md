@@ -5,15 +5,15 @@
 ## PRIORITÉ 1 — REPRISE DE CONTRÔLE (nouvelle cible)
 Cible : salarié·e·s du tertiaire (assistantes de direction, assistantes administratives, conseillères clientèle…).
 Promesse : un revenu complémentaire sans quitter son emploi, en devenant prestataire administratif pour les dirigeants de TPE/PME et artisans (10 à 15 h/mois), avec un agent IA fourni.
-Prix : 497 € (3 fois possible).
+Prix : 597 € (3 fois possible) ; cohorte fondatrice 297 € (2 fois possible).
 
 - [ ] Valider le tri des étapes (voir `01-BY-NOEMIE/Reprise-de-Controle/TRI_DES_ETAPES.md`) et ajouter les supports 01 à 06 au dépôt
 - [ ] Faire les entretiens de validation (voir `GUIDES_ENTRETIENS_VALIDATION.md`)
 - [ ] Définir les 3 à 5 services administratifs vendables aux patrons de TPE et artisans
 - [ ] Définir l'agent IA mis à disposition des participantes (quelles tâches, quel format)
-- [ ] Réécrire la page d'offre (promesse, cible, 497 € en 3 fois)
+- [ ] Réécrire la page d'offre (promesse, cible, 597 € en 3 fois)
 - [ ] Parler à 5 assistantes / conseillères clientèle et à 3 patrons de TPE ou artisans pour valider le besoin
-- [ ] Atelier pilote gratuit (5 assistantes, 2 h, prévu le 1er novembre, date non figée) : voir `01-BY-NOEMIE/Reprise-de-Controle/ATELIER_PILOTE_NOTES.md` ; prix formation 497 €, première cohorte 290 €
+- [ ] Atelier pilote gratuit (5 assistantes, 2 h, prévu le 1er novembre, date non figée) : voir `01-BY-NOEMIE/Reprise-de-Controle/ATELIER_PILOTE_NOTES.md` ; prix formation 597 €, cohorte fondatrice 297 €
 - [ ] Adapter les exemples et le vocabulaire des supports existants
 
 ## PRIORITÉ 1 BIS — CODE LIBERTÉ (affiliation, 372 € nets par vente)
