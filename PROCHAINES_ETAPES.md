@@ -11,6 +11,7 @@ Prix : 597 € (3 fois possible) ; cohorte fondatrice 297 € (2 fois possible).
 - [ ] Faire les entretiens de validation (voir `GUIDES_ENTRETIENS_VALIDATION.md`)
 - [ ] Définir les 3 à 5 services administratifs vendables aux patrons de TPE et artisans
 - [ ] Définir l'agent IA mis à disposition des participantes (quelles tâches, quel format)
+- [ ] Cohorte fondatrice prévue en janvier 2027 : adapter les outils à la V2 (voir `OFFRE_V2_30_JOURS.md`)
 - [ ] Réécrire la page d'offre (promesse, cible, 597 € en 3 fois)
 - [ ] Parler à 5 assistantes / conseillères clientèle et à 3 patrons de TPE ou artisans pour valider le besoin
 - [ ] Atelier pilote gratuit (5 assistantes, 2 h, prévu le 1er novembre, date non figée) : voir `01-BY-NOEMIE/Reprise-de-Controle/ATELIER_PILOTE_NOTES.md` ; prix formation 597 €, cohorte fondatrice 297 €

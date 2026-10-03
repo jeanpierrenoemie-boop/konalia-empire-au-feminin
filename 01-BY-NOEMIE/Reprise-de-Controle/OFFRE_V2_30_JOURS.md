@@ -39,3 +39,10 @@ Atelier de construction : cible test, Bulle V0, offre V0, 3 prochaines actions. 
 
 ## Document lié à l'agence IA
 « Ingénierie des Systèmes d'Onboarding Autonomes » : architecture no-code et IA (déclencheur de devis ou contrat signé → orchestrateur Make ou n8n → moteur IA → outils de gestion) pour agences marketing, entreprises CVC et nettoyage B2B. Il explique le besoin d'un serveur n8n. Certains chiffres cités (par exemple « 80 % des litiges… ») n'ont pas de source : à ne pas reprendre en prospection sans vérification.
+
+## Calendrier et état des outils (précisions de Noémie, 2026-10-03)
+- **Atelier** : prévu le dimanche 1er novembre 2026 à 20 h (date non figée).
+- **Cohorte fondatrice** : prévue en **janvier 2027**. Elle pourrait démarrer fin novembre ou en décembre si l'atelier et les retours le permettent, mais janvier est la référence.
+- **Outils** : ils existent tous, mais organisés autour de **l'ancienne version** de Reprise de Contrôle (pas la cible assistantes de direction). Noémie les adapte à la V2. Le « Dossier maître V1 » classe encore chaque outil « À PRODUIRE » : le statut réel de chaque outil adapté reste à mettre à jour.
+- **Ancienne plateforme** : la formation originale a été créée sur Lovable (lien à transmettre).
+- **COPILOTE** : décision sur l'hébergement en attente (voir l'avis de l'assistante dans la conversation du 2026-10-03).
