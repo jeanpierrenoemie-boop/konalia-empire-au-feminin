@@ -88,7 +88,7 @@ Je veux devenir l'assistante qu'on appelle quand ______. Écris trois versions :
 Je maîtrise réellement ce sujet ? Le problème est concret ? Le résultat est compréhensible ? J'ai envie d'être connue pour ça ? Ma Bulle V0.
 
 ## Bulle Hot Seat
-60 secondes : « Je veux devenir l'assistante qu'on appelle quand… » Suffisamment clair pour tester, pas parfait.
+30 secondes chacune : « Je veux devenir l'assistante qu'on appelle quand… » Suffisamment clair pour tester, pas parfait.
 
 ## [pillars] Étape 4 : ta Bulle n'est pas ton offre
 
