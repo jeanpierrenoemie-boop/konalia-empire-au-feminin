@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Noémie.K · Reprise de Contrôle</title>
+<meta name="description" content="Noémie.K prépare Reprise de Contrôle, un programme pour les assistantes qui veulent un revenu complémentaire sans quitter leur emploi.">
+<style>
+:root{
+  --bg:#f3efe8; --ink:#1b1a17; --muted:#5f5b52; --card:#fbf9f5; --line:#ddd6c9;
+  --accent:#d9441f; --accent-ink:#ffffff; --navy:#1d2a55;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#14161f; --ink:#f1ede5; --muted:#b4afa3; --card:#1c1f2c; --line:#2c3042; --accent:#ee6a45; --accent-ink:#14161f; --navy:#9fb0ee; }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+header{padding:26px 0}
+header .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-weight:700;letter-spacing:.02em;text-decoration:none}
+.brand span{color:var(--accent)}
+nav a{margin-left:20px;text-decoration:none;color:var(--muted);font-size:15px}
+nav a:hover,nav a:focus-visible{color:var(--ink);text-decoration:underline}
+.hero{padding:56px 0 40px}
+.eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(34px,6vw,58px);line-height:1.08;margin:14px 0 18px;letter-spacing:-.02em;text-wrap:balance}
+.lead{font-size:clamp(18px,2.4vw,21px);color:var(--muted);max-width:60ch;margin:0 0 28px}
+.btn{display:inline-block;background:var(--accent);color:var(--accent-ink);padding:14px 22px;border-radius:10px;font-weight:600;text-decoration:none}
+.btn:hover,.btn:focus-visible{filter:brightness(1.07)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);margin-left:10px}
+section{padding:44px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(24px,3.4vw,32px);margin:0 0 16px;letter-spacing:-.01em;text-wrap:balance}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.card h3{margin:0 0 8px;font-size:18px}
+.card p{margin:0;color:var(--muted);font-size:16px}
+ul.plain{padding-left:20px;margin:12px 0}
+ul.plain li{margin:6px 0}
+.note{font-size:15px;color:var(--muted)}
+footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);font-size:15px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
+@media (max-width:520px){ nav a{margin-left:0;margin-right:16px} .btn.ghost{margin:12px 0 0} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top">Noémie<span>.K</span></a>
+    <nav aria-label="Navigation principale">
+      <a href="#programme">Le programme</a>
+      <a href="#atelier">Atelier test</a>
+      <a href="#apropos">À propos</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <div class="hero">
+      <p class="eyebrow">Reprise de Contrôle · en préparation</p>
+      <h1>Un revenu complémentaire, sans quitter votre emploi.</h1>
+      <p class="lead">Vous êtes assistante de direction, assistante administrative ou conseillère clientèle ? Vos compétences intéressent les petites entreprises et les artisans. Je prépare un programme pour vous aider à les proposer, à votre rythme.</p>
+      <a class="btn" href="mailto:contact@noemie-k.fr?subject=Atelier%20test%20Reprise%20de%20Contr%C3%B4le">Je veux en savoir plus</a>
+      <a class="btn ghost" href="#programme">Découvrir l'idée</a>
+    </div>
+  </div>
+
+  <section id="programme">
+    <div class="wrap">
+      <h2>L'idée en trois phrases</h2>
+      <p>Les patrons de TPE et les artisans manquent de temps pour leurs devis, leurs relances et leurs emails. Vous savez déjà faire cela. Reprise de Contrôle vous aide à en faire une petite prestation, quelques heures par mois, en plus de votre emploi.</p>
+      <div class="grid">
+        <div class="card"><h3>Un cadre simple</h3><p>Une méthode étape par étape pour définir votre première offre et la tester.</p></div>
+        <div class="card"><h3>Un rythme réaliste</h3><p>Pensé pour des salariées à temps plein : quelques minutes par jour, pas de bouleversement.</p></div>
+        <div class="card"><h3>Un retour du terrain</h3><p>On teste avant de s'engager : vous voyez si cela fonctionne pour vous.</p></div>
+      </div>
+      <p class="note">Le programme est en cours de préparation. Aucune promesse de revenu : chaque situation est différente.</p>
+    </div>
+  </section>
+
+  <section id="atelier">
+    <div class="wrap">
+      <h2>Atelier test gratuit</h2>
+      <p>Avant le lancement, j'organise un atelier test de 2 heures, en visio, avec 5 participantes seulement. Je cherche votre avis honnête, y compris critique.</p>
+      <ul class="plain">
+        <li>Gratuit, sans engagement</li>
+        <li>5 places</li>
+        <li>Prévu début novembre, date à confirmer</li>
+      </ul>
+      <p><a class="btn" href="mailto:contact@noemie-k.fr?subject=Atelier%20test%20Reprise%20de%20Contr%C3%B4le">Je suis intéressée</a></p>
+    </div>
+  </section>
+
+  <section id="apropos">
+    <div class="wrap">
+      <h2>À propos</h2>
+      <p>Je m'appelle Noémie. Je suis salariée, maman de six enfants, et j'ai obtenu mon BTS Gestion PME à 40 ans. Je construis Reprise de Contrôle à partir de ce que je vis : trouver du temps, reprendre confiance et avancer pas à pas.</p>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <h2>Contact</h2>
+      <p>Une question ? Écrivez-moi à <a href="mailto:contact@noemie-k.fr">contact@noemie-k.fr</a>. Je réponds personnellement.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Noémie.K</span>
+    <span>Mentions légales : à compléter</span>
+  </div>
+</footer>
+</body>
+</html>
