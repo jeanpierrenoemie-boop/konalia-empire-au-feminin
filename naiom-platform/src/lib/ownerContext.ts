@@ -13,10 +13,10 @@ export const BRAND_EMAIL = "jeanpierrenoemie@gmail.com";
 export const OWNER_BIO = `
 ## Qui je suis — Noémie.K
 
-Entrepreneure d'origine malienne, mère de 6 enfants, salariée en parallèle.
-Parcours non linéaire : 23 ans consacrés à ma famille, puis reprise d'études.
-BTS Gestion PME obtenu à 40 ans (14 de moyenne, la même année qu'un de mes enfants).
-Certification webmarketing début 2026. Formation Community Management (Johanna Gols, 7 modules, objectif octobre 2026).
+Entrepreneure d'origine malienne, 40 ans, mère de 6 enfants (devenue maman à 17 ans), salariée en parallèle.
+Parcours non linéaire : une dizaine d'années à La Poste, puis reprise d'études et BTS Gestion de la PME.
+Formations en continu : webmarketing, Community Management (Johanna Gols, 7 modules, objectif octobre 2026), digital, puis intelligence artificielle et automatisation. Porte plusieurs projets entrepreneuriaux.
+Valeurs : « notre point de départ ne doit pas déterminer notre point d'arrivée », persévérance, organisation, transmission.
 Organisation : laptop pour le business, téléphone pour les réseaux ; travail le midi et après 21h.
 Slogans : « Liberté · Puissance · Équilibre », « Reprise de Contrôle », « L'Empire au Féminin ».
 `.trim();
