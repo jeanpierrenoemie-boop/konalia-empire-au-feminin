@@ -110,3 +110,40 @@ Prévu le dimanche 1er novembre à 20 h (date à confirmer selon les inscription
 - Lire les règles de chaque groupe (beaucoup interdisent la promotion) et demander l'accord des administratrices.
 - La mention « salariée et maman de 6 enfants » est facultative : à garder seulement si Noémie est à l'aise.
 - Répondre aux messages privés dans la journée ; ne pas publier d'adresse email dans le post.
+
+## 7. Versions finales avec le site en ligne (2026-10-03)
+*Site : https://noemie-k.fr · Contact : contact@noemie-k.fr · Les versions LinkedIn et Facebook de la section 6 restent valables : ajouter la ligne « Plus d'informations : noemie-k.fr ».*
+
+### Message à ton réseau (WhatsApp, SMS, Messenger)
+Coucou [Prénom], j'ai un service à te demander. Je prépare une formation pour les assistantes qui veulent un revenu complémentaire sans quitter leur emploi. Avant de la lancer, je cherche 5 assistantes (de direction, administratives) pour tester un atelier gratuit de 2h en visio, et me dire franchement ce qu'elles en pensent, même les critiques. C'est prévu le dimanche 1er novembre à 20 h (date à confirmer). Tu connais quelqu'un qui pourrait être intéressée, ou c'est toi ? Plus d'infos : noemie-k.fr. Merci !
+
+### Email de confirmation (envoyé depuis contact@noemie-k.fr)
+Objet : Atelier test Reprise de Contrôle — [date], 20 h, Zoom
+
+Bonjour [Prénom],
+
+Merci d'avoir accepté. Voici les informations :
+- Date et heure : [date], 20 h, durée 2 heures
+- Lien Zoom : [lien]
+- Format : 5 participantes maximum, gratuit
+- Ce que nous allons faire : comprendre votre situation, tester l'idée de proposer des services administratifs à des TPE et artisans, et recueillir votre avis franc
+- Ce que je vous demande : un retour honnête, même critique, et 15 minutes d'échange après l'atelier
+
+Avant l'atelier, merci de me répondre en quelques lignes : votre poste actuel, ce qui vous pèse le plus au travail, et le temps que vous pourriez consacrer chaque semaine à un projet à côté.
+
+Je n'enregistre pas la séance sans votre accord. Si vous ne pouvez plus venir, prévenez-moi : une autre personne pourra prendre votre place.
+
+À bientôt,
+Noémie
+noemie-k.fr
+
+### Rappel la veille (J-1)
+Bonjour [Prénom], petit rappel : l'atelier test a lieu demain à 20 h en visio. Lien Zoom : [lien]. Prévoyez un papier ou un document ouvert pour noter vos idées. Si un imprévu survient, dites-le-moi simplement. À demain, Noémie
+
+### Merci après l'atelier (dans les 24 h)
+Bonjour [Prénom], merci d'avoir participé à l'atelier, et pour votre franchise. Je vous envoie le court questionnaire de retour, et je vous propose un échange de 15 minutes cette semaine : quels créneaux vous conviendraient ? Noémie
+
+### Rappels
+- Ne jamais promettre de revenu ; l'atelier est un test.
+- Si la date change, informer tout le monde par écrit.
+- Ne pas indiquer le prix dans l'invitation : il est abordé pendant l'atelier, comme question de test.
