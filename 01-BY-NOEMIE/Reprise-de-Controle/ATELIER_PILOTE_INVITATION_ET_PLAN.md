@@ -1,5 +1,8 @@
 # Atelier pilote Reprise de Contrôle — invitation, plan des 2 h et questions de retour
 
+> **Obsolète pour les invitations (2026-10-03)** : voir `ATELIER_INVITATIONS_V2.md`. Les sections « plan des 2 heures » et « questions de retour » restent utiles ; le plan fusionné est dans `ATELIER_FUSION_NOTES_ANIMATRICE.md`.
+
+
 *Brouillon du 2026-10-02. Format : Zoom. Date prévue le 1er novembre 2026 à 20 h, non figée (à confirmer quand les 5 places sont prises). À relire par Noémie avant tout envoi.*
 
 ## 1. Message d'invitation (LinkedIn, groupe ou message direct)
